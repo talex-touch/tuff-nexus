@@ -14,6 +14,12 @@ export default defineNuxtConfig({
   ],
 
   content: {
+    sources: {
+      content: {
+        driver: 'fs',
+        base: './app/content'
+      }
+    },
     highlight: {
       theme: 'github-dark',
     },

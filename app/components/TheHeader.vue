@@ -13,13 +13,13 @@ defineProps({
   >
     <!-- Left Side: Logo -->
     <div class="flex items-center space-x-3">
-      <NuxtLink to="/" class="flex items-center space-x-2 no-underline">
+      <NuxtLink to="/" class="flex items-center no-underline space-x-2">
         <img src="/logo.svg" alt="Tuff Logo" class="h-8 w-8 filter dark:invert">
         <span class="text-xl text-primary font-bold dark:text-light">{{ title }}</span>
       </NuxtLink>
       <span
         v-if="title === 'Tuff'"
-        class="rounded-lg bg-gray-200 dark:bg-gray-800 px-3 py-1 text-sm text-orange-400 font-semibold"
+        class="rounded-lg bg-gray-200 px-3 py-1 text-sm text-orange-400 font-semibold dark:bg-gray-800"
       >BETA</span>
     </div>
 
@@ -56,7 +56,7 @@ defineProps({
         About
       </NuxtLink>
 
-      <div class="w-px h-5 bg-gray-200 dark:bg-gray-800" />
+      <div class="h-5 w-px bg-gray-200 dark:bg-gray-800" />
 
       <Search />
       <DarkToggle />

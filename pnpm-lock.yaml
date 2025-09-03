@@ -6,12 +6,18 @@ settings:
 
 catalogs:
   build:
+    '@nuxt/content':
+      specifier: ^3.6.3
+      version: 3.6.3
     '@nuxt/eslint':
       specifier: ^1.5.2
       version: 1.9.0
     '@nuxtjs/color-mode':
       specifier: ^3.5.2
       version: 3.5.2
+    '@nuxtjs/i18n':
+      specifier: ^10.0.6
+      version: 10.0.6
     '@pinia/nuxt':
       specifier: ^0.11.1
       version: 0.11.2
@@ -21,12 +27,18 @@ catalogs:
     '@unocss/nuxt':
       specifier: ^66.3.3
       version: 66.5.0
+    '@unocss/preset-typography':
+      specifier: ^66.5.0
+      version: 66.5.0
     '@vite-pwa/nuxt':
       specifier: ^1.0.4
       version: 1.0.4
     '@vueuse/nuxt':
       specifier: ^13.5.0
       version: 13.9.0
+    better-sqlite3:
+      specifier: ^12.2.0
+      version: 12.2.0
     unocss:
       specifier: ^66.3.3
       version: 66.5.0
@@ -46,6 +58,9 @@ catalogs:
     vue-tsc:
       specifier: ^3.0.1
       version: 3.0.6
+    webpack:
+      specifier: ^5.101.3
+      version: 5.101.3
   frontend:
     '@vueuse/core':
       specifier: ^13.5.0
@@ -76,7 +91,7 @@ importers:
   .:
     dependencies:
       better-sqlite3:
-        specifier: ^12.2.0
+        specifier: catalog:build
         version: 12.2.0
     devDependencies:
       '@antfu/eslint-config':
@@ -89,7 +104,7 @@ importers:
         specifier: catalog:icons
         version: 1.2.4
       '@nuxt/content':
-        specifier: ^3.6.3
+        specifier: catalog:build
         version: 3.6.3(better-sqlite3@12.2.0)(magicast@0.3.5)
       '@nuxt/devtools':
         specifier: ^2.6.2
@@ -101,7 +116,7 @@ importers:
         specifier: catalog:build
         version: 3.5.2(magicast@0.3.5)
       '@nuxtjs/i18n':
-        specifier: ^10.0.6
+        specifier: catalog:build
         version: 10.0.6(db0@0.3.2(better-sqlite3@12.2.0))(eslint@9.34.0(jiti@2.5.1))(ioredis@5.7.0)(magicast@0.3.5)(rollup@4.50.0)(vue@3.5.21(typescript@5.9.2))
       '@pinia/nuxt':
         specifier: catalog:build
@@ -113,7 +128,7 @@ importers:
         specifier: catalog:build
         version: 66.5.0(magicast@0.3.5)(vite@7.1.4(@types/node@24.3.0)(jiti@2.5.1)(terser@5.44.0)(yaml@2.8.1))(webpack@5.101.3)
       '@unocss/preset-typography':
-        specifier: ^66.5.0
+        specifier: catalog:build
         version: 66.5.0
       '@vite-pwa/nuxt':
         specifier: catalog:build
@@ -149,7 +164,7 @@ importers:
         specifier: catalog:dev
         version: 3.0.6(typescript@5.9.2)
       webpack:
-        specifier: ^5.101.3
+        specifier: catalog:dev
         version: 5.101.3
 
 packages:
