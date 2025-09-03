@@ -44,5 +44,8 @@
   "iconify.inplace": true,
   "debug.javascript.defaultRuntimeExecutable": {
     "pwa-node": "/Users/talexdreamsoul/.local/share/mise/shims/node"
-  }
+  },
+  "cSpell.words": [
+    "Nuxt"
+  ]
 }

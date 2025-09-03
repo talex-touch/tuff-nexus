@@ -1,9 +1,9 @@
 <template>
-  <main class="px-10 py-20 text-center">
-    <slot />
-    <Footer />
-    <div class="text-sm mx-auto mt-5 text-center opacity-25">
-      [Home Layout]
-    </div>
-  </main>
+  <div class="bg-white dark:bg-primary text-primary dark:text-light h-screen">
+    <TheHeader title="Tuff" />
+    <!-- Main Content Area -->
+    <main class="text-center">
+      <slot />
+    </main>
+  </div>
 </template>
