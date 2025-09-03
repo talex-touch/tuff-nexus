@@ -1,21 +1,37 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+
 defineProps({
   title: {
     type: String,
     default: 'Tuff',
   },
 })
+
+const scrolled = ref(false)
+
+function handleScroll() {
+  scrolled.value = window.scrollY > 0
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
   <header
     class="container sticky top-0 z-10 mx-auto flex items-center justify-between p-4"
+    :class="{ 'header-scrolled': scrolled }"
   >
     <!-- Left Side: Logo -->
     <div class="flex items-center space-x-3">
       <NuxtLink to="/" class="flex items-center no-underline space-x-2">
-        <img src="/logo.svg" alt="Tuff Logo" class="h-8 w-8 filter">
-        <span class="text-xl text-primary font-bold dark:text-light">{{ title }}</span>
+        <span class="text-xl text-primary font-bold dark:text-light">{{ title.charAt(0).toUpperCase() + title.slice(1) }}</span>
       </NuxtLink>
       <span
         v-if="title === 'Tuff'"
@@ -29,43 +45,37 @@ defineProps({
         to="/"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-home text-xl" />
-        {{ $t('home') }}
+        {{ ($t('home') as string).charAt(0).toUpperCase() + ($t('home') as string).slice(1) }}
       </NuxtLink>
       <NuxtLink
         to="/docs"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-document text-xl" />
-        {{ $t('document') }}
+        {{ ($t('document') as string).charAt(0).toUpperCase() + ($t('document') as string).slice(1) }}
       </NuxtLink>
       <NuxtLink
         to="/api"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-api text-xl" />
-        {{ $t('api') }}
+        {{ ($t('api') as string).charAt(0).toUpperCase() + ($t('api') as string).slice(1) }}
       </NuxtLink>
       <NuxtLink
         to="/marketplace"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-shopping-bag text-xl" />
-        {{ $t('marketplace') }}
+        {{ ($t('marketplace') as string).charAt(0).toUpperCase() + ($t('marketplace') as string).slice(1) }}
       </NuxtLink>
       <NuxtLink
         to="/qa"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-help text-xl" />
-        {{ $t('qa') }}
+        {{ ($t('qa') as string).charAt(0).toUpperCase() + ($t('qa') as string).slice(1) }}
       </NuxtLink>
       <NuxtLink
         to="/about"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100 flex items-center space-x-1"
       >
-        <div class="i-carbon-information text-xl" />
-        {{ $t('about') }}
+        {{ ($t('about') as string).charAt(0).toUpperCase() + ($t('about') as string).slice(1) }}
       </NuxtLink>
 
       <div class="h-5 w-px bg-gray-200 dark:bg-gray-800" />
@@ -80,8 +90,15 @@ defineProps({
         rel="noopener noreferrer"
         class="text-primary/80 no-underline transition-all duration-300 dark:text-light/80 hover:text-primary/100 hover:-translate-y-px dark:hover:text-light/100"
       >
-        <div class="i-carbon-logo-github text-2xl" />
       </a>
     </nav>
   </header>
 </template>
+
+<style scoped>
+.header-scrolled {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  backdrop-filter: blur(8px); /* Blur effect */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+}
+</style>
