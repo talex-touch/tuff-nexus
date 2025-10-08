@@ -23,6 +23,9 @@ export default defineNuxtConfig({
     highlight: {
       theme: 'github-dark',
     },
+    experimental: {
+      nativeSqlite: true,
+    },
   },
 
   i18n: {
@@ -83,6 +86,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-08-14',
 
   nitro: {
+    preset: 'cloudflare-pages',
     esbuild: {
       options: {
         target: 'esnext',

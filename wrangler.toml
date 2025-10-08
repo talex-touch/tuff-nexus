@@ -1,0 +1,16 @@
+name = "tuff-nexus"
+compatibility_date = "2024-08-14"
+pages_build_output_dir = ".output/public"
+
+[env.production]
+workers_dev = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tuff-nexus-prod"
+database_id = "ebdeb7fc-74a4-4963-9bca-310a9aa0e4d6"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "tuff-nexus-imgable-prod"
+preview_bucket_name = "tuff-nexus-imgable-dev"

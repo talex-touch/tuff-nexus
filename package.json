@@ -12,16 +12,17 @@
     "generate": "nuxt generate",
     "prepare": "nuxt prepare",
     "preview": "nuxt preview",
+    "preview:cf": "pnpm build && npx wrangler pages dev .output/public --compatibility-date=2024-08-14",
+    "deploy:cf": "pnpm build && npx wrangler pages deploy .output/public",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck"
   },
-  "dependencies": {
-    "better-sqlite3": "catalog:build"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
+    "@cloudflare/workers-types": "catalog:dev",
     "@iconify-json/carbon": "catalog:icons",
     "@iconify-json/twemoji": "catalog:icons",
     "@nuxt/content": "catalog:build",
@@ -44,7 +45,8 @@
     "unocss": "catalog:build",
     "vue": "catalog:frontend",
     "vue-tsc": "catalog:dev",
-    "webpack": "catalog:dev"
+    "webpack": "catalog:dev",
+    "wrangler": "catalog:dev"
   },
   "resolutions": {
     "@nuxt/devtools": "catalog:build",
