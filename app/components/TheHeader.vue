@@ -35,8 +35,10 @@ onUnmounted(() => {
 
 <template>
   <header
-    class="sticky top-0 z-10 w-full border-b border-transparent bg-white/70 backdrop-blur-md transition duration-300 dark:bg-primary/70"
-    :class="{ 'border-primary/10 shadow-sm dark:border-light/15': scrolled }"
+    class="sticky top-0 z-10 w-full border-b border-transparent bg-transparent transition duration-300 dark:bg-transparent"
+    :class="{
+      'border-primary/10 bg-white/80 backdrop-blur-md shadow-sm dark:border-light/15 dark:bg-primary/75': scrolled,
+    }"
   >
     <div class="container mx-auto flex items-center justify-between px-5 py-4">
       <NuxtLink to="/" class="flex items-center gap-2 font-semibold tracking-tight text-primary no-underline dark:text-light">
