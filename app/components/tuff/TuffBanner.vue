@@ -257,7 +257,9 @@ onUnmounted(() => {
 
 <template>
   <div class="tuff-banner">
-    <canvas ref="canvasRef" class="tuff-banner-canvas" />
+    <div class="tuff-banner-canvas-wrap">
+      <canvas ref="canvasRef" class="tuff-banner-canvas" />
+    </div>
     <div class="tuff-banner-mask" />
     <div class="tuff-banner-layer">
       <div class="tuff-banner-core">
@@ -277,6 +279,18 @@ onUnmounted(() => {
   width: 100%;
   min-height: clamp(520px, 75vh, 760px);
   overflow: hidden;
+  align-items: stretch;
+  justify-content: center;
+  background: #000;
+}
+
+.tuff-banner-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .tuff-banner-layer {
@@ -317,11 +331,13 @@ onUnmounted(() => {
 }
 
 .tuff-banner-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  position: relative;
   display: block;
+  width: auto;
+  max-width: min(1200px, 100%);
+  height: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .tuff-banner-mask {

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white via-white to-gray-50 text-primary dark:from-primary dark:via-primary dark:to-primary/90 dark:text-light">
+  <div class="min-h-screen bg-black text-light">
     <TheHeader title="Tuff" initialHidden />
-    <main class="w-full">
+    <main class="w-full bg-black text-light">
       <slot />
     </main>
   </div>

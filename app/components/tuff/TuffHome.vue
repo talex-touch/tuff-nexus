@@ -1,8 +1,4 @@
 <script setup lang="ts">
-// 视觉横幅组件
-import TuffBanner from './TuffBanner.vue'
-import TuffText from './TuffText.vue'
-
 import { useTuffHeroAnimation } from '~/composables/useTuffHeroAnimation'
 import {
   extensionHighlights,
@@ -10,6 +6,10 @@ import {
   heroHighlights,
   testingHighlights,
 } from '~/data/tuffHeroContent'
+
+// 视觉横幅组件
+import TuffBanner from './TuffBanner.vue'
+import TuffText from './TuffText.vue'
 
 // 初始化滚动动画，返回英雄区的 ref。
 // 如果希望调整触发阈值，可传入 { headerAppearThreshold, paddingRevealThreshold }。
@@ -22,10 +22,8 @@ const { heroSection } = useTuffHeroAnimation()
     <section
       ref="heroSection"
       data-state="expanded"
-      class="hero-section relative w-full overflow-hidden rounded-3xl border border-primary/15 bg-black shadow-2xl dark:border-light/10"
+      class="hero-section relative flex w-full min-h-[100svh] items-center justify-center overflow-hidden rounded-3xl border border-primary/15 bg-black shadow-2xl dark:border-light/10"
     >
-      <div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),_transparent_60%)]" />
-      <div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_bottom,_rgba(12,35,255,0.28),_transparent_55%)]" />
       <TuffBanner>
         <template #center>
           <div class="flex w-full max-w-6xl flex-col gap-12 px-6 text-light self-center lg:flex-row lg:items-center lg:px-12">
@@ -243,35 +241,28 @@ const { heroSection } = useTuffHeroAnimation()
 <style scoped>
 .hero-section {
   position: relative;
-  transition: height 0.4s ease;
-}
-
-.hero-section[data-state='expanded'],
-.hero-section[data-state='animating'] {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  width: 100%;
+  background: #000;
+  transition: border-radius 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-.hero-section[data-state='expanded'],
-.hero-section[data-state='animating'] {
-  height: 100vh;
+.hero-section[data-state='expanded'] {
+  border-radius: 0;
+  border-width: 0;
+  box-shadow: none;
 }
 
-.hero-section[data-state='measuring'],
+.hero-section[data-state='animating'],
 .hero-section[data-state='compact'] {
-  height: auto;
-  display: block;
+  border-width: 1px;
 }
 
-.hero-section[data-state='expanded'] :deep(.tuff-banner),
-.hero-section[data-state='animating'] :deep(.tuff-banner) {
-  height: 100%;
-  min-height: 100%;
-}
-
-.hero-section[data-state='expanded'] :deep(.tuff-banner-layer),
-.hero-section[data-state='animating'] :deep(.tuff-banner-layer) {
-  min-height: 100%;
+.hero-section[data-state='compact'] {
+  box-shadow: 0 40px 160px rgba(0, 0, 0, 0.45);
 }
 
 .hero-section[data-state='expanded'] [data-hero-reveal],
@@ -282,5 +273,18 @@ const { heroSection } = useTuffHeroAnimation()
 
 .hero-section[data-state='expanded'] [data-hero-highlight] {
   transform: translateY(24px);
+}
+
+.hero-section :deep(.tuff-banner) {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.hero-section[data-state='expanded'] :deep(.tuff-banner) {
+  max-width: none;
+}
+
+.hero-section :deep(.tuff-banner-layer) {
+  width: 100%;
 }
 </style>
