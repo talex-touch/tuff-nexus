@@ -1,46 +1,64 @@
-# Get Started
+---
+title: Getting started with the Tuff Launcher
+description: Boot your bilingual docs workspace in minutes.
+navigation:
+  title: Get started
+---
 
-We believe you'll be amazed by the brilliant features of `Tuff`. Let's get started with the installation!
+# Getting started
 
-## Choose Your Platform
+Tuff Launcher spins up a Nuxt-based documentation workspace that already understands English and Chinese, ships with matching light/dark themes, and includes opinionated defaults for navigation, search, and deployment. Use this guide to move from clone to published docs in under an hour.
 
-We provide support for multiple platforms. Your choice will determine how the application functions.
+## 1. Install dependencies
 
-### Windows
+Tuff relies on **pnpm** for package management. After cloning the repository run:
 
-- x64 (64-bit)
-- x86 (32-bit)
-- ARM64
+```bash
+pnpm install
+pnpm dev
+```
 
-### macOS
+Tip: append `--open` to automatically open the local preview in your browser.
 
-- macOS 10.15 or later
+## 2. Shape your structure
 
-### Linux
+All documentation content lives under `content/docs`. Each subdirectory becomes a navigation group in the left sidebar. Create new Markdown or MDC files and include front matter to manage ordering:
 
-- Ubuntu (18.04+)
-- Debian (10+)
-- Fedora (32+)
-- Arch Linux
-- openSUSE
+```md
+---
+title: Release cadence
+navigation:
+  order: 4
+---
+```
 
-## Version Information
+The provided UnoCSS tokens ensure headings, lists, and code samples stay balanced in both light and dark themes without extra styling.
 
-Current version: v1.2.0
-Release date: May 203
+## 3. Localize a page
 
-## Q & A
+The launcher fetches localized content automatically. Duplicate any Markdown file and append `.zh.md` to supply a Chinese version:
 
-### Q: My platform is not listed
+```text
+content/docs/documents/start.md
+content/docs/documents/start.zh.md
+```
 
-A: We're doing our best to support as many platforms as possible. Please be patient as we expand our compatibility.
+When readers switch the language toggle, Tuff resolves the matching file transparently. If the localized file is missing, the English original is shown as a graceful fallback.
 
-### Q: Some platforms are not available
+## 4. Publish
 
-A: Currently, we officially support Windows. For other platforms, especially Apple systems, we don't have a Developer Account to publish applications. The WearOS and ColorOS platforms are still under development.
+Build a production bundle with:
 
-### Q: I can't start the program
+```bash
+pnpm generate
+```
 
-A: Please check if you've installed the application correctly and granted it the necessary permissions. The application requires read and write access to perform its functions. We recommend running it with administrator privileges to ensure full functionality. Rest assured that all code is open source. You can also build from GitHub to ensure privacy and security.
+The generated `dist` folder can be deployed to Netlify, Vercel, Cloudflare Pages, or any static host. For server-side rendering or edge runtimes, run `pnpm build` followed by the adapter command defined in `package.json`.
 
-(The `GitHub` button is in the top right corner of this page.)
+---
+
+Next steps:
+
+- Adjust typography, spacing, or tokens in `uno.config.ts`.
+- Extend translations inside `i18n.config.ts`.
+- Wire CI/CD to run `pnpm generate` before deploying to your hosting provider.

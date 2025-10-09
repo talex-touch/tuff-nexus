@@ -34,6 +34,10 @@ catalogs:
   icons:
     '@iconify-json/carbon': ^1.2.10
     '@iconify-json/twemoji': ^1.2.2
+  conflicts_frontend_h3_5_18:
+    vue: ^3.5.18
+  conflicts_build_h7_0_6:
+    vite: ^7.0.6
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
@@ -41,3 +45,10 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
   - workerd
+catalog:
+  fighting-design: 0.25.1
+  markdown-it: ^14.1.0
+  ogl: ^1.0.11
+  sass: ^1.89.2
+  typeit: ^8.8.7
+  vitepress: 2.0.0-alpha.9

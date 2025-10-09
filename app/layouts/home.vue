@@ -1,7 +1,6 @@
 <template>
-  <div class="bg-white dark:bg-primary text-primary dark:text-light h-screen">
+  <div class="min-h-screen bg-gradient-to-b from-white via-white to-gray-50 text-primary dark:from-primary dark:via-primary dark:to-primary/90 dark:text-light">
     <TheHeader title="Tuff" />
-    <!-- Main Content Area -->
     <main class="text-center">
       <slot />
     </main>

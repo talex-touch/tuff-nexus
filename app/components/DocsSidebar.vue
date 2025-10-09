@@ -5,6 +5,12 @@ const { data: navigationTree, pending, error } = await useAsyncData(
 )
 const items = computed(() => navigationTree.value ?? [])
 const route = useRoute()
+const { t } = useI18n()
+
+const docLabels = computed<Record<string, string>>(() => ({
+  '/docs/documents/start': t('docsNav.start'),
+  '/docs/documents/start.zh': t('docsNav.start'),
+}))
 
 function isLinkActive(path: string) {
   if (!path)
@@ -14,6 +20,12 @@ function isLinkActive(path: string) {
 }
 
 function itemTitle(title?: string, path?: string) {
+  if (path) {
+    const label = docLabels.value[path]
+    if (label)
+      return label
+  }
+
   if (title)
     return title
 
