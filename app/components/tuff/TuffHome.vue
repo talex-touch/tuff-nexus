@@ -24,84 +24,86 @@ const { heroSection } = useTuffHeroAnimation()
       data-state="expanded"
       class="hero-section relative flex w-full min-h-[100svh] items-center justify-center overflow-hidden rounded-3xl border border-primary/15 bg-black shadow-2xl dark:border-light/10"
     >
-      <TuffBanner>
-        <template #center>
-          <div class="flex w-full max-w-6xl flex-col gap-12 px-6 text-light self-center lg:flex-row lg:items-center lg:px-12">
-            <div class="flex flex-1 flex-col gap-6 text-left">
-              <!-- 顶部徽章与文案，滚动时依次浮现 -->
-              <span
-                data-hero-reveal
-                class="inline-flex w-max items-center gap-2 rounded-full border border-light/25 bg-light/10 px-4 py-1 text-xs font-semibold tracking-[0.28em] uppercase"
-              >
-                Beta Preview
-              </span>
-              <div data-hero-reveal class="space-y-4">
-                <TuffText />
-                <p class="max-w-xl text-base text-light/80 sm:text-lg">
-                  A strong adaptation more platform all-tool program that elevates your desktop into a responsive, intelligent control center.
-                </p>
-              </div>
-              <!-- CTA 按钮区域 -->
-              <div data-hero-reveal class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <NuxtLink
-                  to="/docs"
-                  class="inline-flex items-center justify-center gap-2 rounded-full bg-light px-6 py-3 text-sm font-semibold text-primary shadow-lg transition hover:-translate-y-0.5 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light/70 dark:hover:bg-white"
+      <div class="hero-stage" data-hero-content>
+        <TuffBanner>
+          <template #center>
+            <div class="flex w-full max-w-6xl flex-col gap-12 px-6 text-light self-center lg:flex-row lg:items-center lg:px-12">
+              <div class="flex flex-1 flex-col gap-6 text-left">
+                <!-- 顶部徽章与文案，滚动时依次浮现 -->
+                <span
+                  data-hero-reveal
+                  class="inline-flex w-max items-center gap-2 rounded-full border border-light/25 bg-light/10 px-4 py-1 text-xs font-semibold tracking-[0.28em] uppercase"
                 >
-                  <span class="i-carbon-download text-base" />
-                  Download Beta
-                </NuxtLink>
-                <NuxtLink
-                  to="/docs"
-                  class="inline-flex items-center justify-center gap-2 rounded-full border border-light/20 px-6 py-3 text-sm font-semibold text-light transition hover:bg-light/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light/40"
-                >
-                  <span class="i-carbon-arrow-right text-base" />
-                  Explore Docs
-                </NuxtLink>
-              </div>
-              <div class="grid gap-6 pt-4 text-left text-light/70 sm:grid-cols-3">
-                <div data-hero-reveal>
-                  <p class="text-2xl font-semibold text-light">2M+</p>
-                  <p class="text-xs uppercase tracking-[0.25em]">Commands automated</p>
+                  Beta Preview
+                </span>
+                <div data-hero-reveal class="space-y-4">
+                  <TuffText />
+                  <p class="max-w-xl text-base text-light/80 sm:text-lg">
+                    A strong adaptation more platform all-tool program that elevates your desktop into a responsive, intelligent control center.
+                  </p>
                 </div>
-                <div data-hero-reveal>
-                  <p class="text-2xl font-semibold text-light">48 ms</p>
-                  <p class="text-xs uppercase tracking-[0.25em]">Average response</p>
+                <!-- CTA 按钮区域 -->
+                <div data-hero-reveal class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <NuxtLink
+                    to="/docs"
+                    class="inline-flex items-center justify-center gap-2 rounded-full bg-light px-6 py-3 text-sm font-semibold text-primary shadow-lg transition hover:-translate-y-0.5 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light/70 dark:hover:bg-white"
+                  >
+                    <span class="i-carbon-download text-base" />
+                    Download Beta
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/docs"
+                    class="inline-flex items-center justify-center gap-2 rounded-full border border-light/20 px-6 py-3 text-sm font-semibold text-light transition hover:bg-light/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light/40"
+                  >
+                    <span class="i-carbon-arrow-right text-base" />
+                    Explore Docs
+                  </NuxtLink>
                 </div>
-                <div data-hero-reveal>
-                  <p class="text-2xl font-semibold text-light">120+</p>
-                  <p class="text-xs uppercase tracking-[0.25em]">Workspace layouts</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- 亮点列表面板 -->
-            <div
-              data-hero-reveal
-              class="flex w-full flex-col gap-4 rounded-3xl border border-white/10 bg-white/10 p-6 text-left shadow-xl backdrop-blur-xl lg:max-w-xs"
-            >
-              <p class="text-xs uppercase tracking-[0.4em] text-light/60">
-                Platform Highlights
-              </p>
-              <div class="space-y-4">
-                <article
-                  v-for="item in heroHighlights"
-                  :key="item.title"
-                  data-hero-highlight
-                  class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-white/20 hover:bg-white/10"
-                >
-                  <span :class="[item.icon, 'text-lg text-light']" />
-                  <div class="space-y-1 text-light/80">
-                    <p class="text-sm font-semibold text-light">{{ item.title }}</p>
-                    <p class="text-xs">
-                      {{ item.description }}
-                    </p>
+                <div class="grid gap-6 pt-4 text-left text-light/70 sm:grid-cols-3">
+                  <div data-hero-reveal>
+                    <p class="text-2xl font-semibold text-light">2M+</p>
+                    <p class="text-xs uppercase tracking-[0.25em]">Commands automated</p>
                   </div>
-                </article>
+                  <div data-hero-reveal>
+                    <p class="text-2xl font-semibold text-light">48 ms</p>
+                    <p class="text-xs uppercase tracking-[0.25em]">Average response</p>
+                  </div>
+                  <div data-hero-reveal>
+                    <p class="text-2xl font-semibold text-light">120+</p>
+                    <p class="text-xs uppercase tracking-[0.25em]">Workspace layouts</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 亮点列表面板 -->
+              <div
+                data-hero-reveal
+                class="flex w-full flex-col gap-4 rounded-3xl border border-white/10 bg-white/10 p-6 text-left shadow-xl backdrop-blur-xl lg:max-w-xs"
+              >
+                <p class="text-xs uppercase tracking-[0.4em] text-light/60">
+                  Platform Highlights
+                </p>
+                <div class="space-y-4">
+                  <article
+                    v-for="item in heroHighlights"
+                    :key="item.title"
+                    data-hero-highlight
+                    class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-white/20 hover:bg-white/10"
+                  >
+                    <span :class="[item.icon, 'text-lg text-light']" />
+                    <div class="space-y-1 text-light/80">
+                      <p class="text-sm font-semibold text-light">{{ item.title }}</p>
+                      <p class="text-xs">
+                        {{ item.description }}
+                      </p>
+                    </div>
+                  </article>
+                </div>
               </div>
             </div>
-          </div>
-        </template>
-      </TuffBanner>
+          </template>
+        </TuffBanner>
+      </div>
     </section>
 
     <section class="container mx-auto max-w-6xl space-y-12 px-6">
@@ -250,10 +252,24 @@ const { heroSection } = useTuffHeroAnimation()
   transition: border-radius 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
+.hero-stage {
+  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: stretch;
+  transition: margin-top 0.4s ease, width 0.4s ease;
+}
+
 .hero-section[data-state='expanded'] {
   border-radius: 0;
   border-width: 0;
   box-shadow: none;
+}
+
+.hero-section[data-state='expanded'],
+.hero-section[data-state='animating'] {
+  z-index: 40;
 }
 
 .hero-section[data-state='animating'],
@@ -262,7 +278,13 @@ const { heroSection } = useTuffHeroAnimation()
 }
 
 .hero-section[data-state='compact'] {
+  align-items: flex-start;
   box-shadow: 0 40px 160px rgba(0, 0, 0, 0.45);
+  z-index: 0;
+}
+
+.hero-section[data-state='compact'] .hero-stage {
+  margin-top: clamp(2rem, 6vh, 3.5rem);
 }
 
 .hero-section[data-state='expanded'] [data-hero-reveal],
@@ -275,16 +297,16 @@ const { heroSection } = useTuffHeroAnimation()
   transform: translateY(24px);
 }
 
-.hero-section :deep(.tuff-banner) {
+.hero-stage :deep(.tuff-banner) {
   width: 100%;
   max-width: 1200px;
 }
 
-.hero-section[data-state='expanded'] :deep(.tuff-banner) {
+.hero-section[data-state='expanded'] .hero-stage :deep(.tuff-banner) {
   max-width: none;
 }
 
-.hero-section :deep(.tuff-banner-layer) {
+.hero-stage :deep(.tuff-banner-layer) {
   width: 100%;
 }
 </style>

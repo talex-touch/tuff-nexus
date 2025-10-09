@@ -277,6 +277,7 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   width: 100%;
+  height: 100%;
   min-height: clamp(520px, 75vh, 760px);
   overflow: hidden;
   align-items: stretch;
@@ -333,10 +334,9 @@ onUnmounted(() => {
 .tuff-banner-canvas {
   position: relative;
   display: block;
-  width: auto;
-  max-width: min(1200px, 100%);
-  height: 100%;
-  max-height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
   aspect-ratio: 16 / 9;
 }
 

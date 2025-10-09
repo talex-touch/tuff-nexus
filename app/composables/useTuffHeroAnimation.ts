@@ -100,6 +100,7 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
 
       const canvasEl = heroEl.querySelector<HTMLCanvasElement>('.tuff-banner-canvas')
       const bannerEl = heroEl.querySelector<HTMLElement>('.tuff-banner')
+      const heroContentEl = heroEl.querySelector<HTMLElement>('[data-hero-content]')
       const revealTargets = Array.from(heroEl.querySelectorAll<HTMLElement>('[data-hero-reveal]'))
       const highlightCards = Array.from(heroEl.querySelectorAll<HTMLElement>('[data-hero-highlight]'))
 
@@ -132,6 +133,8 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
       }
 
       state.gsapInstance.set(heroEl, { clearProps: 'height,minHeight,overflow,borderRadius,transform,width,marginLeft,marginRight,backgroundColor' })
+      if (heroContentEl)
+        state.gsapInstance.set(heroContentEl, { clearProps: 'transform,opacity,borderRadius,width' })
       if (bannerEl)
         state.gsapInstance.set(bannerEl, { clearProps: 'transform,opacity' })
       if (canvasEl)
@@ -146,10 +149,20 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         state.gsapInstance.set(revealTargets, { opacity: state.hasBannerInitialReveal ? 1 : 0, y: state.hasBannerInitialReveal ? 0 : 36 })
       if (highlightCards.length)
         state.gsapInstance.set(highlightCards, { opacity: state.hasBannerInitialReveal ? 1 : 0, y: state.hasBannerInitialReveal ? 0 : 24 })
+      const shouldScaleDown = window.innerWidth >= 1024
+      if (heroContentEl) {
+        state.gsapInstance.set(heroContentEl, {
+          transformOrigin: 'center center',
+          scale: shouldScaleDown ? 1.08 : 1,
+          borderRadius: 0,
+          width: '100%',
+          yPercent: 0,
+        })
+      }
       if (bannerEl) {
         state.gsapInstance.set(bannerEl, {
           transformOrigin: 'center center',
-          scale: 1.08,
+          scale: 1,
           opacity: state.hasBannerInitialReveal ? 1 : 0,
         })
       }
@@ -157,14 +170,9 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         state.gsapInstance.set(canvasEl, { opacity: state.hasBannerInitialReveal ? 1 : 0 })
 
       const viewportHeight = window.innerHeight
-      const targetHeight = viewportHeight * 0.85
       const naturalHeight = measureCompactHeight(heroEl)
-      const compactHeight = Math.min(
-        viewportHeight,
-        Math.max(targetHeight, naturalHeight),
-      )
-      const shouldScaleDown = window.innerWidth >= 1024
-      const scrollDistance = Math.max(viewportHeight * 1.05, compactHeight + 320)
+      const targetScale = shouldScaleDown ? 0.85 : 1
+      const scrollDistance = Math.max(viewportHeight * 1.2, naturalHeight + 320)
 
       applyHeroState('expanded')
       state.gsapInstance.set(heroEl, {
@@ -172,7 +180,7 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         minHeight: viewportHeight,
         borderRadius: 0,
         overflow: 'hidden',
-        transformOrigin: 'center top',
+        transformOrigin: 'center center',
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -191,28 +199,67 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onEnter: () => applyHeroState('animating'),
-          onLeave: () => applyHeroState('compact'),
-          onEnterBack: () => applyHeroState('animating'),
+          onLeave: () => {
+            applyHeroState('compact')
+            state.gsapInstance?.set(heroEl, {
+              height: '',
+              minHeight: '',
+              backgroundColor: '',
+              marginLeft: '',
+              marginRight: '',
+            })
+          },
+          onEnterBack: () => {
+            applyHeroState('animating')
+            state.gsapInstance?.set(heroEl, {
+              height: viewportHeight,
+              minHeight: viewportHeight,
+              borderRadius: 0,
+              overflow: 'hidden',
+              transformOrigin: 'center center',
+              width: '100%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              backgroundColor: '#000',
+            })
+          },
           onLeaveBack: () => applyHeroState('expanded'),
           onRefresh: (self: any) => syncProgressState(self.progress),
         },
       })
 
-      state.heroTimeline.fromTo(
+      state.heroTimeline.to(
         heroEl,
         {
-          height: viewportHeight,
-          borderRadius: 0,
-          width: '100%',
-          scale: 1,
-        },
-        {
-          height: compactHeight,
-          borderRadius: '3rem',
-          scale: shouldScaleDown ? 0.85 : 1,
+          borderRadius: shouldScaleDown ? '3rem' : '1.5rem',
+          duration: 1,
+          ease: 'power2.out',
         },
         0,
       )
+
+      const targetLiftPercent = shouldScaleDown ? -(1 - targetScale) * 50 : 0
+
+      if (heroContentEl) {
+        state.heroTimeline.to(
+          heroContentEl,
+          {
+            scale: targetScale,
+            duration: 1.1,
+            ease: 'power3.out',
+          },
+          0,
+        )
+        state.heroTimeline.to(
+          heroContentEl,
+          {
+            yPercent: targetLiftPercent,
+            duration: 0.8,
+            ease: 'power2.out',
+          },
+          0.4,
+        )
+      }
 
       if (bannerEl) {
         state.heroTimeline.to(
@@ -364,6 +411,9 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
     if (heroSection.value && state.gsapInstance) {
       state.gsapInstance.set(heroSection.value, { clearProps: 'height,minHeight,overflow,borderRadius,width,marginLeft,marginRight,transform,backgroundColor' })
       heroSection.value.dataset.state = 'compact'
+      const heroContent = heroSection.value.querySelector<HTMLElement>('[data-hero-content]')
+      if (heroContent)
+        state.gsapInstance.set(heroContent, { clearProps: 'transform,borderRadius,width' })
     }
     if (state.shellElement && state.gsapInstance && state.shellPaddingDefaults) {
       state.gsapInstance.set(state.shellElement, {
