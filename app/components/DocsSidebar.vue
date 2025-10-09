@@ -53,7 +53,7 @@ function linkTarget(item: any) {
     </template>
     <template v-else-if="error">
       <div class="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-500 dark:border-gray-800 dark:bg-primary/80 dark:text-gray-300">
-        导航加载失败，请稍后再试。
+        {{ t('docsSidebar.error') }}
       </div>
     </template>
     <template v-else>

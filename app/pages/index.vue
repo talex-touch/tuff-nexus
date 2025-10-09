@@ -58,6 +58,39 @@ const faqs = computed(() => [
     answer: t('landing.faq.items.automation.answer'),
   },
 ])
+
+const deckItems = computed(() => [
+  {
+    icon: 'i-carbon-language',
+    title: t('landing.hero.deck.items.locale.title'),
+    description: t('landing.hero.deck.items.locale.description'),
+  },
+  {
+    icon: 'i-carbon-moon',
+    title: t('landing.hero.deck.items.theming.title'),
+    description: t('landing.hero.deck.items.theming.description'),
+  },
+  {
+    icon: 'i-carbon-cloud-upload',
+    title: t('landing.hero.deck.items.deploy.title'),
+    description: t('landing.hero.deck.items.deploy.description'),
+  },
+])
+
+const kitBullets = computed(() => [
+  {
+    icon: 'i-carbon-checkmark',
+    text: t('landing.kit.bullets.tokens'),
+  },
+  {
+    icon: 'i-carbon-checkmark',
+    text: t('landing.kit.bullets.content'),
+  },
+  {
+    icon: 'i-carbon-checkmark',
+    text: t('landing.kit.bullets.components'),
+  },
+])
 </script>
 
 <template>
@@ -104,28 +137,18 @@ const faqs = computed(() => [
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 blur-xl dark:from-light/10 dark:to-light/5" />
         <div class="relative overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-white via-white to-gray-50 shadow-lg dark:border-light/10 dark:from-primary dark:via-primary/95 dark:to-primary">
           <div class="border-b border-primary/10 bg-white/90 px-6 py-4 text-xs uppercase tracking-[0.3em] text-primary/60 dark:border-light/10 dark:bg-primary/80 dark:text-light/60">
-            Tuff Launcher Deck
+            {{ t('landing.hero.deck.title') }}
           </div>
           <div class="space-y-6 px-6 py-8">
-            <div class="flex items-center gap-3 rounded-2xl border border-primary/10 bg-white/80 p-4 text-sm shadow-sm dark:border-light/15 dark:bg-primary/70 dark:text-light/80">
-              <span class="i-carbon-language text-lg text-primary dark:text-light" />
+            <div
+              v-for="item in deckItems"
+              :key="item.title"
+              class="flex items-center gap-3 rounded-2xl border border-primary/10 bg-white/80 p-4 text-sm shadow-sm dark:border-light/15 dark:bg-primary/70 dark:text-light/80"
+            >
+              <span :class="[item.icon, 'text-lg text-primary dark:text-light']" />
               <div>
-                <p class="font-medium text-primary dark:text-light">Locale aware routing</p>
-                <p class="text-xs text-gray-500 dark:text-gray-300">EN ↔ ZH in one content tree</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 rounded-2xl border border-primary/10 bg-white/80 p-4 text-sm shadow-sm dark:border-light/15 dark:bg-primary/70 dark:text-light/80">
-              <span class="i-carbon-moon text-lg text-primary dark:text-light" />
-              <div>
-                <p class="font-medium text-primary dark:text-light">Light & dark tokens</p>
-                <p class="text-xs text-gray-500 dark:text-gray-300">Powered by UnoCSS design system</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 rounded-2xl border border-primary/10 bg-white/80 p-4 text-sm shadow-sm dark:border-light/15 dark:bg-primary/70 dark:text-light/80">
-              <span class="i-carbon-cloud-upload text-lg text-primary dark:text-light" />
-              <div>
-                <p class="font-medium text-primary dark:text-light">Ready for CI/CD</p>
-                <p class="text-xs text-gray-500 dark:text-gray-300">Ship to Pages, Netlify, Vercel</p>
+                <p class="font-medium text-primary dark:text-light">{{ item.title }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-300">{{ item.description }}</p>
               </div>
             </div>
           </div>
@@ -188,22 +211,20 @@ const faqs = computed(() => [
         </div>
       </div>
       <div class="flex flex-col justify-center gap-6 rounded-3xl border border-dashed border-primary/20 bg-gradient-to-br from-primary/5 via-white to-white p-8 dark:border-light/20 dark:from-primary/60 dark:via-primary/50 dark:to-primary/40">
-        <p class="text-sm uppercase tracking-[0.4em] text-primary/60 dark:text-light/60">Starter Kit</p>
+        <p class="text-sm uppercase tracking-[0.4em] text-primary/60 dark:text-light/60">
+          {{ t('landing.kit.label') }}
+        </p>
         <h3 class="text-xl font-semibold text-primary dark:text-light">
-          {{ t('landing.features.title') }}
+          {{ t('landing.kit.title') }}
         </h3>
         <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-200">
-          <li class="flex items-center gap-2">
-            <span class="i-carbon-checkmark text-primary dark:text-light" />
-            UnoCSS tokens tuned for light and dark
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="i-carbon-checkmark text-primary dark:text-light" />
-            Content collections wired for locale-aware docs
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="i-carbon-checkmark text-primary dark:text-light" />
-            Ready-made header, sidebar, and search integrations
+          <li
+            v-for="bullet in kitBullets"
+            :key="bullet.text"
+            class="flex items-center gap-2"
+          >
+            <span :class="[bullet.icon, 'text-primary dark:text-light']" />
+            {{ bullet.text }}
           </li>
         </ul>
         <NuxtLink
@@ -211,7 +232,7 @@ const faqs = computed(() => [
           class="inline-flex w-max items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-light transition hover:bg-black dark:bg-light dark:text-primary dark:hover:bg-light/90"
         >
           <span class="i-carbon-shopping-bag text-base" />
-          Marketplace
+          {{ t('landing.kit.marketplaceCta') }}
         </NuxtLink>
       </div>
     </section>

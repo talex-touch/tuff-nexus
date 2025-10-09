@@ -19,6 +19,23 @@ export default defineI18nConfig(() => ({
           primaryCta: 'Read the docs',
           secondaryCta: 'View on GitHub',
           offlineNotice: 'You are offline. Search and live previews will resume when the network is back.',
+          deck: {
+            title: 'Tuff Launcher Deck',
+            items: {
+              locale: {
+                title: 'Locale aware routing',
+                description: 'EN ↔ ZH in one content tree',
+              },
+              theming: {
+                title: 'Light & dark tokens',
+                description: 'Powered by UnoCSS design system',
+              },
+              deploy: {
+                title: 'Ready for CI/CD',
+                description: 'Ship to Pages, Netlify, Vercel',
+              },
+            },
+          },
         },
         features: {
           title: 'Built for teams who move fast',
@@ -56,6 +73,16 @@ export default defineI18nConfig(() => ({
             },
           },
         },
+        kit: {
+          label: 'Starter kit',
+          title: 'What ships in the box',
+          bullets: {
+            tokens: 'UnoCSS tokens tuned for light and dark',
+            content: 'Content collections wired for locale-aware docs',
+            components: 'Ready-made header, sidebar, and search integrations',
+          },
+          marketplaceCta: 'Browse marketplace',
+        },
         faq: {
           title: 'Questions we hear the most',
           description: 'Tuff stays minimal by default and expandable when you are ready.',
@@ -91,6 +118,9 @@ export default defineI18nConfig(() => ({
       docsNav: {
         start: 'Get started',
       },
+      docsSidebar: {
+        error: 'Navigation failed to load. Please try again.',
+      },
     },
     zh: {
       nav: {
@@ -109,6 +139,23 @@ export default defineI18nConfig(() => ({
           primaryCta: '查看文档',
           secondaryCta: '访问 GitHub',
           offlineNotice: '当前处于离线状态，搜索与即时预览将在网络恢复后自动启用。',
+          deck: {
+            title: 'Tuff Launcher Deck',
+            items: {
+              locale: {
+                title: '智能语言路由',
+                description: '同一内容树支持中英切换',
+              },
+              theming: {
+                title: '明暗主题令牌',
+                description: '基于 UnoCSS 的设计体系',
+              },
+              deploy: {
+                title: 'CI/CD 即刻上线',
+                description: '部署到 Pages、Netlify、Vercel',
+              },
+            },
+          },
         },
         features: {
           title: '为行动派团队而生',
@@ -146,6 +193,16 @@ export default defineI18nConfig(() => ({
             },
           },
         },
+        kit: {
+          label: '入门套件',
+          title: '开箱即用的配置',
+          bullets: {
+            tokens: 'UnoCSS 令牌适配明暗模式',
+            content: '内容集合天然支持多语言映射',
+            components: '内置页头、侧边栏与搜索组件',
+          },
+          marketplaceCta: '前往组件市场',
+        },
         faq: {
           title: '常见问题',
           description: 'Tuff 以极简为本，同时提供充分的扩展余地。',
@@ -180,6 +237,9 @@ export default defineI18nConfig(() => ({
       },
       docsNav: {
         start: '快速上手',
+      },
+      docsSidebar: {
+        error: '导航加载失败，请稍后再试。',
       },
     },
   },
