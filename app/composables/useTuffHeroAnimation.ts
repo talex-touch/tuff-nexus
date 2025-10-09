@@ -28,6 +28,7 @@ interface InternalState {
   headerElement: HTMLElement | null
   bodyOriginalBackground: string | null
   hasBannerInitialReveal: boolean
+  followingElements: HTMLElement[]
 }
 
 /**
@@ -54,6 +55,7 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
     headerElement: null,
     bodyOriginalBackground: null,
     hasBannerInitialReveal: false,
+    followingElements: [],
   }
 
   const applyHeroState = (value: 'expanded' | 'animating' | 'compact' | 'measuring') => {
@@ -103,6 +105,14 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
       const heroContentEl = heroEl.querySelector<HTMLElement>('[data-hero-content]')
       const revealTargets = Array.from(heroEl.querySelectorAll<HTMLElement>('[data-hero-reveal]'))
       const highlightCards = Array.from(heroEl.querySelectorAll<HTMLElement>('[data-hero-highlight]'))
+      const followingElements: HTMLElement[] = []
+      let sibling = heroEl.nextElementSibling as HTMLElement | null
+      while (sibling) {
+        if (sibling instanceof HTMLElement)
+          followingElements.push(sibling)
+        sibling = sibling.nextElementSibling as HTMLElement | null
+      }
+      state.followingElements = followingElements
 
       state.shellElement = heroEl.closest<HTMLElement>('[data-home-shell]') ?? state.shellElement
       state.headerElement = state.headerElement ?? document.querySelector<HTMLElement>('[data-role="main-header"]')
@@ -139,6 +149,8 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         state.gsapInstance.set(bannerEl, { clearProps: 'transform,opacity' })
       if (canvasEl)
         state.gsapInstance.set(canvasEl, { clearProps: 'transform,opacity' })
+      if (state.followingElements.length)
+        state.gsapInstance.set(state.followingElements, { clearProps: 'opacity,transform,pointerEvents' })
 
       if (state.headerElement) {
         state.headerElement.dataset.state = 'hidden'
@@ -150,6 +162,8 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
       if (highlightCards.length)
         state.gsapInstance.set(highlightCards, { opacity: state.hasBannerInitialReveal ? 1 : 0, y: state.hasBannerInitialReveal ? 0 : 24 })
       const shouldScaleDown = window.innerWidth >= 1024
+      if (state.followingElements.length)
+        state.gsapInstance.set(state.followingElements, { opacity: 0, y: 96, pointerEvents: 'none' })
       if (heroContentEl) {
         state.gsapInstance.set(heroContentEl, {
           transformOrigin: 'center center',
@@ -311,6 +325,20 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         )
       }
 
+      if (state.followingElements.length) {
+        state.heroTimeline.to(
+          state.followingElements,
+          {
+            opacity: 1,
+            y: 0,
+            pointerEvents: 'auto',
+            duration: 0.6,
+            ease: 'power2.out',
+          },
+          0.94,
+        )
+      }
+
       if (!state.hasBannerInitialReveal)
         state.hasBannerInitialReveal = true
 
@@ -414,6 +442,8 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
       const heroContent = heroSection.value.querySelector<HTMLElement>('[data-hero-content]')
       if (heroContent)
         state.gsapInstance.set(heroContent, { clearProps: 'transform,borderRadius,width' })
+      if (state.followingElements.length)
+        state.gsapInstance.set(state.followingElements, { clearProps: 'opacity,transform,pointerEvents' })
     }
     if (state.shellElement && state.gsapInstance && state.shellPaddingDefaults) {
       state.gsapInstance.set(state.shellElement, {
