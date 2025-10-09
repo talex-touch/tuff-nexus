@@ -1,7 +1,11 @@
 <script setup lang="ts">
-await navigateTo('/docs/start', { redirectCode: 301 })
+definePageMeta({
+  redirect: '/docs/documents/start',
+})
 </script>
 
 <template>
-  <!-- This page redirects to getting-started -->
+  <div class="py-20 text-center text-sm text-gray-500 dark:text-gray-400">
+    正在跳转至文档首页……
+  </div>
 </template>

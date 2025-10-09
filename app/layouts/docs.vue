@@ -10,7 +10,7 @@
     </div>
     <div class="flex-1 flex container mx-auto">
       <!-- Sidebar -->
-      <aside class="w-64 border-r border-gray-200 dark:border-gray-800 p-4 hidden lg:block">
+      <aside class="hidden w-64 shrink-0 border-r border-gray-200 dark:border-gray-800 p-4 lg:block lg:overflow-y-auto">
         <DocsSidebar />
       </aside>
 

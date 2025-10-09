@@ -4,7 +4,6 @@
 
 ## 0. 前置准备
 - 安装最新版本的 `pnpm`（项目使用 `pnpm@10.13.1`）。
-- 使用 Node.js 22+（内置 `node:sqlite`），项目已启用 `Nuxt Content` 的 `nativeSqlite`，无需再安装 `better-sqlite3`。
 - 全局或项目内安装 `wrangler`（已经添加到 `devDependencies`，执行 `pnpm install` 同步依赖）。
 - 确保本地已登录 Cloudflare：`npx wrangler login`。
 - 在 Cloudflare Dashboard 中提前创建：
