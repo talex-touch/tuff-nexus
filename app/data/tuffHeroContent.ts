@@ -1,101 +1,103 @@
-// 英雄区域展示用的静态文案与图标配置，方便在别处复用或单独维护。
+// 提供给页面的静态结构定义，具体文案由 i18n 管理。
 export const heroHighlights = [
   {
     icon: 'i-carbon-integration',
-    title: 'Native integrations',
-    description: 'Aligns with system automation, launchers, and voice control out of the box.',
+    titleKey: 'landing.hero.highlights.integrations.title',
+    descriptionKey: 'landing.hero.highlights.integrations.description',
   },
   {
     icon: 'i-carbon-document-blank',
-    title: 'Workspace DNA',
-    description: 'Curate dashboards, scripts, and messaging in a single adaptive surface.',
+    titleKey: 'landing.hero.highlights.workspace.title',
+    descriptionKey: 'landing.hero.highlights.workspace.description',
   },
   {
     icon: 'i-carbon-idea',
-    title: 'Realtime focus',
-    description: 'Ambient cues keep the most important signals one glance away.',
+    titleKey: 'landing.hero.highlights.focus.title',
+    descriptionKey: 'landing.hero.highlights.focus.description',
+  },
+]
+
+export const heroStats = [
+  {
+    valueKey: 'landing.hero.stats.commands.value',
+    labelKey: 'landing.hero.stats.commands.label',
+  },
+  {
+    valueKey: 'landing.hero.stats.response.value',
+    labelKey: 'landing.hero.stats.response.label',
+  },
+  {
+    valueKey: 'landing.hero.stats.layouts.value',
+    labelKey: 'landing.hero.stats.layouts.label',
   },
 ]
 
 export const featureCards = [
   {
-    title: 'Innovative Design',
-    description:
-      'A modern interface with cinematic motion that highlights the content you need while reducing visual noise.',
     icon: 'i-carbon-cube',
+    titleKey: 'landing.features.items.innovativeDesign.title',
+    descriptionKey: 'landing.features.items.innovativeDesign.description',
   },
   {
-    title: 'Lightning Fast',
-    description:
-      'Launch instantly, orchestrate tasks, and pivot between workspaces without dropping a single frame.',
     icon: 'i-carbon-flash-filled',
+    titleKey: 'landing.features.items.lightningFast.title',
+    descriptionKey: 'landing.features.items.lightningFast.description',
   },
   {
-    title: 'Secure & Reliable',
-    description:
-      'End-to-end encrypted channels keep your ideas safe while redundancy protects every sync.',
     icon: 'i-carbon-security',
+    titleKey: 'landing.features.items.secureReliable.title',
+    descriptionKey: 'landing.features.items.secureReliable.description',
   },
   {
-    title: 'Cross-Platform',
-    description:
-      'Stay in the flow across desktop environments with pixel-perfect parity and native gestures.',
     icon: 'i-carbon-devices',
+    titleKey: 'landing.features.items.crossPlatform.title',
+    descriptionKey: 'landing.features.items.crossPlatform.description',
   },
   {
-    title: 'Extensible',
-    description:
-      'Craft behaviours with a flexible plugin API and extension lifecycle tooling built for teams.',
     icon: 'i-carbon-api',
+    titleKey: 'landing.features.items.extensible.title',
+    descriptionKey: 'landing.features.items.extensible.description',
   },
   {
-    title: 'Customizable',
-    description:
-      'Dial in colour, layout, and automation so every workspace mirrors your personal rhythm.',
     icon: 'i-carbon-settings-adjust',
+    titleKey: 'landing.features.items.customizable.title',
+    descriptionKey: 'landing.features.items.customizable.description',
   },
 ]
 
 export const extensionHighlights = [
   {
-    title: 'Lightweight Plugins',
-    description:
-      'Ship focused utilities in minutes. Toggle and evolve them without shipping a full release.',
+    titleKey: 'landing.extensions.items.lightweight.title',
+    descriptionKey: 'landing.extensions.items.lightweight.description',
   },
   {
-    title: 'Heavyweight Extensions',
-    description:
-      'Transform navigation, panels, or data views with workspace-aware extensions and deep hooks.',
+    titleKey: 'landing.extensions.items.heavyweight.title',
+    descriptionKey: 'landing.extensions.items.heavyweight.description',
   },
   {
-    title: 'Seamless Integration',
-    description:
-      'Dial in the command palette, launcher, and automation stack without sacrificing performance.',
+    titleKey: 'landing.extensions.items.integration.title',
+    descriptionKey: 'landing.extensions.items.integration.description',
   },
   {
-    title: 'Developer Friendly',
-    description:
-      'Structured SDK, blazing-fast reloads, and precise diagnostics make iteration effortless.',
+    titleKey: 'landing.extensions.items.developer.title',
+    descriptionKey: 'landing.extensions.items.developer.description',
   },
 ]
 
 export const testingHighlights = [
   {
-    tag: 'Alpha Flight',
-    title: 'Early access builds',
-    description:
-      'Preview new capabilities, leave feedback in real time, and influence the next stable release.',
+    tagKey: 'landing.testing.items.alpha.tag',
+    titleKey: 'landing.testing.items.alpha.title',
+    descriptionKey: 'landing.testing.items.alpha.description',
   },
   {
-    tag: 'Touch Lab',
-    title: 'Scenario automation',
-    description:
-      'Record complex flows, attach assertions, and replay across builds with zero setup.',
+    tagKey: 'landing.testing.items.touch.tag',
+    titleKey: 'landing.testing.items.touch.title',
+    descriptionKey: 'landing.testing.items.touch.description',
   },
   {
-    tag: 'Shield',
-    title: 'Stability guarantees',
-    description:
-      'Every milestone goes through multi-platform verification, performance benchmarking, and regression sweeps.',
+    tagKey: 'landing.testing.items.shield.tag',
+    titleKey: 'landing.testing.items.shield.title',
+    descriptionKey: 'landing.testing.items.shield.description',
   },
 ]

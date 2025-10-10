@@ -59,5 +59,5 @@ pnpm generate
 后续建议：
 
 - 在 `uno.config.ts` 调整字重、间距或配色。
-- 在 `i18n.config.ts` 扩展更多中英文文案。
+- 在 `i18n/i18n.config.ts` 扩展更多中英文文案。
 - 配置 CI/CD，在部署前执行 `pnpm generate` 生成最新静态资源。

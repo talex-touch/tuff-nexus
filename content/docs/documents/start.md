@@ -60,5 +60,5 @@ The generated `dist` folder can be deployed to Netlify, Vercel, Cloudflare Pages
 Next steps:
 
 - Adjust typography, spacing, or tokens in `uno.config.ts`.
-- Extend translations inside `i18n.config.ts`.
+- Extend translations inside `i18n/i18n.config.ts`.
 - Wire CI/CD to run `pnpm generate` before deploying to your hosting provider.
