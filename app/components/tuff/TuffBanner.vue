@@ -288,10 +288,9 @@ onUnmounted(() => {
 .tuff-banner-canvas-wrap {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .tuff-banner-layer {
@@ -335,9 +334,7 @@ onUnmounted(() => {
   position: relative;
   display: block;
   width: 100%;
-  max-width: 1200px;
-  height: auto;
-  aspect-ratio: 16 / 9;
+  height: 100%;
 }
 
 .tuff-banner-mask {

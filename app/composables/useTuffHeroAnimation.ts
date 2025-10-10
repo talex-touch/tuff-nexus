@@ -11,8 +11,8 @@ export interface UseTuffHeroAnimationOptions {
    */
   headerAppearThreshold?: number
   /**
-   * 当滚动进度达到该值时，外围容器 padding 开始回复到最终值。
-   * 取值范围 0~1，默认 0.6。
+   * 当滚动进度达到该值时，英雄区以外的主体内容开始回归正常布局。
+   * 取值范围 0~1，默认 0.75。
    */
   paddingRevealThreshold?: number
 }
@@ -23,10 +23,9 @@ interface InternalState {
   heroTimeline: TimelineWithScrollTrigger | null
   resizeRaf: number | null
   isBuilding: boolean
-  shellElement: HTMLElement | null
-  shellPaddingDefaults: { top: number, right: number, bottom: number, left: number } | null
   headerElement: HTMLElement | null
   bodyOriginalBackground: string | null
+  bodyFinalBackground: string | null
   hasBannerInitialReveal: boolean
   followingElements: HTMLElement[]
 }
@@ -38,7 +37,7 @@ interface InternalState {
 export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) {
   const {
     headerAppearThreshold = 0.45,
-    paddingRevealThreshold = 0.6,
+    paddingRevealThreshold = 0.75,
   } = options
 
   // 英雄区根节点引用
@@ -50,12 +49,19 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
     heroTimeline: null,
     resizeRaf: null,
     isBuilding: false,
-    shellElement: null,
-    shellPaddingDefaults: null,
     headerElement: null,
     bodyOriginalBackground: null,
+    bodyFinalBackground: null,
     hasBannerInitialReveal: false,
     followingElements: [],
+  }
+
+  const resolveBodyTargetBackground = () => {
+    if (typeof document === 'undefined')
+      return '#181818'
+    const root = document.documentElement
+    const prefersDark = root.classList.contains('dark')
+    return prefersDark ? '#181818' : '#aaaaaa'
   }
 
   const applyHeroState = (value: 'expanded' | 'animating' | 'compact' | 'measuring') => {
@@ -114,26 +120,12 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
       }
       state.followingElements = followingElements
 
-      state.shellElement = heroEl.closest<HTMLElement>('[data-home-shell]') ?? state.shellElement
       state.headerElement = state.headerElement ?? document.querySelector<HTMLElement>('[data-role="main-header"]')
+      const bodyElement = typeof document !== 'undefined' ? document.body : null
 
-      if (state.shellElement && !state.shellPaddingDefaults && typeof window !== 'undefined') {
-        const computed = window.getComputedStyle(state.shellElement)
-        state.shellPaddingDefaults = {
-          top: Number.parseFloat(computed.paddingTop) || 0,
-          right: Number.parseFloat(computed.paddingRight) || 0,
-          bottom: Number.parseFloat(computed.paddingBottom) || 0,
-          left: Number.parseFloat(computed.paddingLeft) || 0,
-        }
-      }
-
-      if (state.shellElement && state.shellPaddingDefaults) {
-        state.gsapInstance.set(state.shellElement, {
-          paddingTop: 0,
-          paddingRight: 0,
-          paddingBottom: 0,
-          paddingLeft: 0,
-        })
+      if (bodyElement) {
+        state.bodyFinalBackground = resolveBodyTargetBackground()
+        state.gsapInstance.set(bodyElement, { backgroundColor: '#000' })
       }
 
       if (state.heroTimeline) {
@@ -161,13 +153,17 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         state.gsapInstance.set(revealTargets, { opacity: state.hasBannerInitialReveal ? 1 : 0, y: state.hasBannerInitialReveal ? 0 : 36 })
       if (highlightCards.length)
         state.gsapInstance.set(highlightCards, { opacity: state.hasBannerInitialReveal ? 1 : 0, y: state.hasBannerInitialReveal ? 0 : 24 })
-      const shouldScaleDown = window.innerWidth >= 1024
-      if (state.followingElements.length)
-        state.gsapInstance.set(state.followingElements, { opacity: 0, y: 96, pointerEvents: 'none' })
+      if (state.followingElements.length) {
+        state.gsapInstance.set(state.followingElements, {
+          opacity: state.hasBannerInitialReveal ? 1 : 0,
+          pointerEvents: state.hasBannerInitialReveal ? 'auto' : 'none',
+          y: state.hasBannerInitialReveal ? 0 : 48,
+        })
+      }
       if (heroContentEl) {
         state.gsapInstance.set(heroContentEl, {
           transformOrigin: 'center center',
-          scale: shouldScaleDown ? 1.08 : 1,
+          scale: 1,
           borderRadius: 0,
           width: '100%',
           yPercent: 0,
@@ -185,7 +181,8 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
 
       const viewportHeight = window.innerHeight
       const naturalHeight = measureCompactHeight(heroEl)
-      const targetScale = shouldScaleDown ? 0.85 : 1
+      const compactTargetHeight = Math.min(naturalHeight, Math.max(520, viewportHeight * 0.78))
+      const isWideViewport = window.innerWidth >= 1024
       const scrollDistance = Math.max(viewportHeight * 1.2, naturalHeight + 320)
 
       applyHeroState('expanded')
@@ -195,11 +192,9 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         borderRadius: 0,
         overflow: 'hidden',
         transformOrigin: 'center center',
-        width: '100%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
         backgroundColor: '#000',
         scale: 1,
+        yPercent: 0,
       })
 
       state.heroTimeline = state.gsapInstance.timeline({
@@ -215,26 +210,34 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
           onEnter: () => applyHeroState('animating'),
           onLeave: () => {
             applyHeroState('compact')
+            const finalBackground = state.bodyFinalBackground ?? resolveBodyTargetBackground()
             state.gsapInstance?.set(heroEl, {
               height: '',
               minHeight: '',
-              backgroundColor: '',
-              marginLeft: '',
-              marginRight: '',
+              backgroundColor: finalBackground,
+              yPercent: 0,
             })
+            if (typeof document !== 'undefined' && finalBackground) {
+              state.gsapInstance?.set(document.body, { backgroundColor: finalBackground })
+              state.bodyFinalBackground = finalBackground
+            }
+            if (state.followingElements.length)
+              state.gsapInstance?.set(state.followingElements, { opacity: 1, pointerEvents: 'auto', y: 0 })
           },
           onEnterBack: () => {
             applyHeroState('animating')
+            const finalBackground = resolveBodyTargetBackground()
+            state.bodyFinalBackground = finalBackground
+            if (typeof document !== 'undefined')
+              state.gsapInstance?.set(document.body, { backgroundColor: '#000' })
             state.gsapInstance?.set(heroEl, {
               height: viewportHeight,
               minHeight: viewportHeight,
               borderRadius: 0,
               overflow: 'hidden',
               transformOrigin: 'center center',
-              width: '100%',
-              marginLeft: 'auto',
-              marginRight: 'auto',
               backgroundColor: '#000',
+              yPercent: 0,
             })
           },
           onLeaveBack: () => applyHeroState('expanded'),
@@ -242,36 +245,57 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         },
       })
 
+      const paddingRevealStart = Math.min(Math.max(paddingRevealThreshold, 0.6), 0.88)
+
       state.heroTimeline.to(
         heroEl,
         {
-          borderRadius: shouldScaleDown ? '3rem' : '1.5rem',
+          borderRadius: isWideViewport ? '3rem' : '1.5rem',
           duration: 1,
-          ease: 'power2.out',
+          ease: 'power2.out'
         },
         0,
       )
 
-      const targetLiftPercent = shouldScaleDown ? -(1 - targetScale) * 50 : 0
+      state.heroTimeline.to(
+        heroEl,
+        {
+          height: compactTargetHeight,
+          minHeight: compactTargetHeight,
+          duration: 1.1,
+          ease: 'power3.out',
+        },
+        0.2,
+      )
 
-      if (heroContentEl) {
+      state.heroTimeline.to(
+        heroEl,
+        {
+          yPercent: isWideViewport ? -12 : -8,
+          duration: 0.9,
+          ease: 'power2.out',
+        },
+        0.4,
+      )
+
+      if (heroContentEl && isWideViewport) {
         state.heroTimeline.to(
           heroContentEl,
           {
-            scale: targetScale,
-            duration: 1.1,
+            scale: 0.95,
+            duration: 1.05,
             ease: 'power3.out',
           },
-          0,
+          0.1,
         )
         state.heroTimeline.to(
           heroContentEl,
           {
-            yPercent: targetLiftPercent,
-            duration: 0.8,
+            yPercent: -14,
+            duration: 0.9,
             ease: 'power2.out',
           },
-          0.4,
+          0.35,
         )
       }
 
@@ -330,12 +354,33 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
           state.followingElements,
           {
             opacity: 1,
-            y: 0,
             pointerEvents: 'auto',
             duration: 0.6,
             ease: 'power2.out',
+            y: 0,
           },
-          0.94,
+          paddingRevealStart,
+        )
+      }
+
+      if (state.bodyFinalBackground && bodyElement) {
+        state.heroTimeline.to(
+          heroEl,
+          {
+            backgroundColor: state.bodyFinalBackground,
+            duration: 0.6,
+            ease: 'power2.inOut',
+          },
+          paddingRevealStart,
+        )
+        state.heroTimeline.to(
+          bodyElement,
+          {
+            backgroundColor: state.bodyFinalBackground,
+            duration: 0.6,
+            ease: 'power2.inOut',
+          },
+          paddingRevealStart,
         )
       }
 
@@ -352,21 +397,6 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
             ease: 'power2.out',
           },
           headerAppearThreshold,
-        )
-      }
-
-      if (state.shellElement && state.shellPaddingDefaults) {
-        state.heroTimeline.to(
-          state.shellElement,
-          {
-            paddingTop: state.shellPaddingDefaults.top,
-            paddingRight: state.shellPaddingDefaults.right,
-            paddingBottom: state.shellPaddingDefaults.bottom,
-            paddingLeft: state.shellPaddingDefaults.left,
-            duration: 0.8,
-            ease: 'power2.out',
-          },
-          paddingRevealThreshold,
         )
       }
 
@@ -444,14 +474,6 @@ export function useTuffHeroAnimation(options: UseTuffHeroAnimationOptions = {}) 
         state.gsapInstance.set(heroContent, { clearProps: 'transform,borderRadius,width' })
       if (state.followingElements.length)
         state.gsapInstance.set(state.followingElements, { clearProps: 'opacity,transform,pointerEvents' })
-    }
-    if (state.shellElement && state.gsapInstance && state.shellPaddingDefaults) {
-      state.gsapInstance.set(state.shellElement, {
-        paddingTop: state.shellPaddingDefaults.top,
-        paddingRight: state.shellPaddingDefaults.right,
-        paddingBottom: state.shellPaddingDefaults.bottom,
-        paddingLeft: state.shellPaddingDefaults.left,
-      })
     }
     if (state.headerElement && state.gsapInstance) {
       state.gsapInstance.set(state.headerElement, { clearProps: 'opacity,transform,pointerEvents' })
