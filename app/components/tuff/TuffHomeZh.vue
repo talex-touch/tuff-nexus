@@ -2,57 +2,57 @@
 import TuffBanner from './TuffBanner.vue'
 
 const heroPoints = [
-  'Command every workspace from a single launcher.',
-  'Swap contexts without losing state or intent.',
-  'Ship ideas faster with extensions you can trust.',
+  '统一指挥所有工作区的启动、自动化与上下文。',
+  '设备无缝切换，状态实时同步。',
+  '可信扩展生态，加速团队交付节奏。',
 ]
 
 const essentials = [
   {
-    badge: 'Market · Extensions',
-    title: 'Curated marketplace',
-    copy: 'Discover signed extensions, versioned releases, and rollout controls that keep teams confident.',
-    link: { to: '/marketplace', label: 'Browse marketplace' },
+    badge: '市场 · 扩展',
+    title: '精选扩展市场',
+    copy: '签名发布、版本托管与分阶段上线，确保团队始终放心使用。',
+    link: { to: '/marketplace', label: '浏览市场' },
   },
   {
-    badge: 'Open Source',
-    title: 'Transparent core',
-    copy: 'Audit the orchestration engine, contribute on GitHub, and self-host with official container images.',
-    link: { to: 'https://github.com/tuff-docs/tuff-nexus', label: 'View repository' },
+    badge: '开源',
+    title: '透明的内核',
+    copy: '审阅编排引擎代码、在 GitHub 参与共建，亦可利用官方镜像自建部署。',
+    link: { to: 'https://github.com/tuff-docs/tuff-nexus', label: '前往仓库' },
   },
   {
-    badge: 'All Platforms',
-    title: 'Every device, same rhythm',
-    copy: 'Native desktop builds, web access, mobile companions, and a CLI—all synced in real time.',
-    link: { to: '/docs/platforms', label: 'See platform guide' },
+    badge: '全平台',
+    title: '多端同节奏',
+    copy: '原生桌面、Web、移动端与 CLI 全覆盖，实时同步体验一致。',
+    link: { to: '/docs/platforms', label: '查看平台指南' },
   },
   {
-    badge: 'Integrated Flow',
-    title: 'Connected by design',
-    copy: 'Link flows across SaaS, local runners, and shareable canvases with FlowScript and live presence.',
-    link: { to: '/docs/flows', label: 'Design a flow' },
+    badge: '链接一切',
+    title: '天生联动',
+    copy: '凭借 FlowScript 与实时协作，把 SaaS、本地运行器与共享画布串联起来。',
+    link: { to: '/docs/flows', label: '设计流程' },
   },
 ]
 
 const builderFocus = [
   {
-    badge: 'Developers',
-    title: 'Momentum for makers',
-    copy: 'Type-safe SDKs, hot reload sandboxes, and CI templates remove friction from every release.',
-    link: { to: '/docs/sdk', label: 'Build with the SDK' },
+    badge: '开发者',
+    title: '为创造者提速',
+    copy: '类型安全 SDK、热重载沙箱与 CI 模板，让每次发布都干净利落。',
+    link: { to: '/docs/sdk', label: '开始构建' },
   },
   {
-    badge: 'Documentation',
-    title: 'Guides when you need them',
-    copy: 'Playbooks, API explorers, and design tokens keep teams aligned from prototype to production.',
-    link: { to: '/docs', label: 'Open documentation' },
+    badge: '文档',
+    title: '随手可查的答案',
+    copy: '实战手册、API 交互式体验与设计令牌，帮助团队从原型到上线保持一致。',
+    link: { to: '/docs', label: '查阅文档' },
   },
 ]
 
 const waitlistPerks = [
-  'Free access through 2027·01·01.',
-  'Private previews and hands-on onboarding.',
-  'Priority support from the launcher crew.',
+  '免费使用期持续至 2027·01·01。',
+  '抢先体验新版本与深度迁移指南。',
+  '核心团队提供一对一专属支持。',
 ]
 
 useHead({
@@ -68,13 +68,13 @@ useHead({
       <div class="mx-auto grid max-w-5xl gap-12 lg:max-w-6xl lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div class="flex flex-col gap-7">
           <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
-            Tuff Launcher
+            Tuff 启动器
           </span>
           <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-tight">
-            Launch, orchestrate, and share your entire workspace flow.
+            启动、编排并共享你的全流程工作体验。
           </h1>
           <p class="max-w-xl text-base text-white/70 sm:text-lg">
-            Tuff keeps command palettes, automation, and context in sync across every surface—without asking your team to slow down.
+            Tuff 让指令面板、自动化与上下文在任意设备中保持同步，让团队无需放慢脚步。
           </p>
           <ul class="space-y-2 text-sm text-white/60">
             <li
@@ -92,17 +92,17 @@ useHead({
               class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-md transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             >
               <span class="i-carbon-play-filled text-base" />
-              Join waitlist
+              加入等候名单
             </NuxtLink>
             <NuxtLink
               to="/marketplace"
               class="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               <span class="i-carbon-catalog text-base" />
-              View marketplace
+              了解扩展市场
             </NuxtLink>
             <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/60">
-              Free through 2027·01·01
+              免费至 2027·01·01
             </span>
           </div>
         </div>
@@ -113,10 +113,10 @@ useHead({
               <template #center>
                 <div class="flex w-full flex-col items-center gap-6 px-10 py-16 text-center text-white/75">
                   <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
-                    Command Surface
+                    指令界面
                   </span>
                   <p class="max-w-sm text-base">
-                    Orchestrate tasks, extensions, and live sessions with cinematic WebGL motion that never stretches or distorts.
+                    在 WebGL 舞台中预览扩展、触发自动化与协作会话，视觉沉浸且响应迅速。
                   </p>
                 </div>
               </template>
@@ -130,10 +130,10 @@ useHead({
       <div class="mx-auto max-w-6xl">
         <div class="mb-10 flex flex-col gap-4">
           <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
-            Essentials
+            核心能力
           </span>
           <h2 class="text-3xl font-semibold text-white sm:text-4xl">
-            Everything you expect from a modern launcher, elevated.
+            现代启动器的标配，我们做得再精致一些。
           </h2>
         </div>
         <div class="grid gap-6 md:grid-cols-2">
@@ -198,13 +198,13 @@ useHead({
       <div class="mx-auto max-w-5xl overflow-hidden rounded-[32px] border border-white/10 bg-[#06070c]/95 px-8 py-16 text-center shadow-[0_28px_110px_rgba(0,0,0,0.5)] sm:px-12">
         <div class="mx-auto flex max-w-2xl flex-col items-center gap-6">
           <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
-            Waitlist
+            等候名单
           </span>
           <h2 class="text-3xl font-semibold text-white sm:text-4xl">
-            Step into the Tuff ecosystem early.
+            抢先体验 Tuff 生态。
           </h2>
           <p class="text-base text-white/70">
-            Enter your email and we’ll share the next wave of launcher builds, migration kits, and invite-only sessions.
+            留下邮箱即可收到下一批启动器版本、迁移手册与专属研讨邀请。
           </p>
           <form
             class="flex w-full max-w-md flex-col gap-3 sm:flex-row"
@@ -224,7 +224,7 @@ useHead({
               class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-md transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:w-auto"
             >
               <span class="i-carbon-send text-base" />
-              Notify me
+              通知我
             </button>
           </form>
           <ul class="flex flex-col gap-2 text-sm text-white/60 sm:flex-row sm:items-center sm:gap-6">
