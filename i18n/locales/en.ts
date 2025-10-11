@@ -59,47 +59,41 @@ export default {
         eyebrow: 'AI Spotlight',
         headline: 'One search. Everything, connected.',
         subheadline: "It doesn't just find. It understands.",
-        demo: {
-          queryLabel: 'Natural language query',
-          queryText: '“Show me the design draft Sarah shared last week.”',
-          summary: 'Tuff interprets intent, then fuses every relevant surface into one calm, living result set.',
-          results: [
-            {
-              icon: 'i-carbon-logo-figma',
-              title: 'Figma · Core layout revamp',
-              meta: 'Shared by Sarah M. · Updated 2 days ago',
-            },
-            {
-              icon: 'i-carbon-document',
-              title: 'Local Files · brand-refresh.sketch',
-              meta: 'Desktop › Campaigns',
-            },
-            {
-              icon: 'i-carbon-email',
-              title: 'Gmail · “Latest header iterations”',
-              meta: 'From Sarah · Mon 9:14 AM',
-            },
-            {
-              icon: 'i-carbon-logo-slack',
-              title: '#brand-refresh · “Attaching the final export now.”',
-              meta: 'Slack · Thread with design-pod',
-            },
-          ],
+        summary: 'Tuff interprets intent, then fuses every relevant surface into one calm, living result set.',
+        queryLabel: 'Natural language query',
+        queryText: '“Show me the design draft Sarah shared last week.”',
+        results: {
+          figma: {
+            title: 'Figma · Core layout revamp',
+            meta: 'Shared by Sarah M. · Updated 2 days ago',
+          },
+          files: {
+            title: 'Local Files · brand-refresh.sketch',
+            meta: 'Desktop › Campaigns',
+          },
+          gmail: {
+            title: 'Gmail · “Latest header iterations”',
+            meta: 'From Sarah · Mon 9:14 AM',
+          },
+          slack: {
+            title: '#brand-refresh · “Attaching the final export now.”',
+            meta: 'Slack · Thread with design-pod',
+          },
         },
-        highlights: [
-          {
+        highlights: {
+          context: {
             title: 'Understands context',
             copy: 'Intent parsing links people, tools, and time so you never sift through tabs again.',
           },
-          {
+          silo: {
             title: 'Breaks every silo',
             copy: 'Designs, files, conversations, and tasks flow back in one continuous pane.',
           },
-          {
+          breathe: {
             title: 'Breathes with you',
             copy: 'Animations stay measured and calm, keeping attention on what matters most.',
           },
-        ],
+        },
       },
       extensibility: {
         eyebrow: 'Capabilities Center',
@@ -107,66 +101,51 @@ export default {
         subheadline: "The power of Tuff, extended to every tool you use.",
         addLabel: '+ Add',
         addedLabel: 'Added',
-        capabilities: [
-          {
-            id: 'notion',
-            icon: 'i-carbon-logo-notion',
+        capabilities: {
+          notion: {
             name: 'Notion',
             description: 'Capture docs, meeting notes, and project hubs in one keystroke.',
           },
-          {
-            id: 'figma',
-            icon: 'i-carbon-logo-figma',
+          figma: {
             name: 'Figma',
             description: 'Preview frames, sync components, and ship design tokens instantly.',
           },
-          {
-            id: 'github',
-            icon: 'i-carbon-logo-github',
+          github: {
             name: 'GitHub',
             description: 'Review pull requests, diff changes, and trigger workflows from the command bar.',
           },
-          {
-            id: 'vscode',
-            icon: 'i-carbon-logo-vscode',
+          vscode: {
             name: 'VS Code',
             description: 'Jump between workspaces, run scripts, and surface diagnostics without breaking flow.',
           },
-          {
-            id: 'calendar',
-            icon: 'i-carbon-calendar',
+          calendar: {
             name: 'Google Calendar',
             description: 'See upcoming rituals, block focus time, and RSVP instantly.',
           },
-          {
-            id: 'spotify',
-            icon: 'i-carbon-logo-spotify',
+          spotify: {
             name: 'Spotify',
             description: 'Score your focus sessions with adaptive soundtracks.',
           },
-        ],
+        },
       },
       openFoundation: {
         eyebrow: 'Open by Design',
         headline: 'Built in the open. Crafted for builders.',
         subheadline: 'Transparent core, modular tooling, and a community that shapes the roadmap with you.',
-        pillars: [
-          {
-            icon: 'i-carbon-certificate-check',
+        pillars: {
+          core: {
             title: 'Transparent Core',
             copy: 'Audit the runtime, trace every decision, and fork the platform with confidence.',
           },
-          {
-            icon: 'i-carbon-cube',
+          sdk: {
             title: 'Modular SDK',
             copy: 'Typed APIs, sandboxes, and signing pipelines so shipping your next extension feels effortless.',
           },
-          {
-            icon: 'i-carbon-collaborate',
+          community: {
             title: 'Vibrant Community',
             copy: 'Pair with pioneers, review manifests together, and keep the platform evolving out in the open.',
           },
-        ],
+        },
         footnote: 'Everything we build is documented, versioned, and ready for your pull request.',
       },
       proactive: {
@@ -174,79 +153,70 @@ export default {
         headline: 'It knows what you need. Before you do.',
         subheadline: 'Introducing Tuff Intelligence. On-device, private, and deeply aware of your context.',
         shieldLabel: 'On-Device AI · Your privacy is paramount',
-        scenarios: [
-          {
-            id: 'developer',
-            icon: 'i-carbon-code',
+        scenarios: {
+          developer: {
             tab: 'Developer · VS Code',
             title: 'Select any import and Tuff suggests the docs you need.',
             copy: 'Inline recommendations open the correct reference, example snippets, and recent changelog entries.',
             action: 'Open FlowScript API reference',
           },
-          {
-            id: 'designer',
-            icon: 'i-carbon-brush-freehand',
+          designer: {
             tab: 'Designer · Figma',
             title: 'Contextual actions appear the moment you select a layer.',
             copy: 'Export presets, CSS tokens, and accessibility checks line up without breaking your stride.',
             action: 'Export layer as PNG · Copy CSS',
           },
-          {
-            id: 'zero',
-            icon: 'i-carbon-sail-boat',
+          zero: {
             tab: 'Zero Input',
             title: 'Summon Tuff and your next moves are already queued.',
             copy: 'Recent files, meetings, and automation scenes appear based on the rhythm of your day.',
             action: 'Resume “Launch Prep” workspace · Join Daily Sync',
           },
-        ],
+        },
       },
       craftsmanship: {
         eyebrow: 'Craftsmanship & Utility',
         headline: 'Every detail, elevated.',
         subheadline: 'Because a seamless experience is built on a foundation of flawless fundamentals.',
-        clips: [
-          {
-            id: 'system',
+        clips: {
+          system: {
             tag: 'System control',
             title: '“Dark mode” switches everything instantly.',
             copy: 'Animations stay buttery-smooth at 120 fps, even when orchestrating OS-level changes.',
           },
-          {
-            id: 'clipboard',
+          clipboard: {
             tag: 'Clipboard vault',
             title: 'History, reimagined as a cinematic reel.',
             copy: 'Images, palettes, and text previews hover with gentle parallax so you find the right item at a glance.',
           },
-          {
-            id: 'performance',
+          performance: {
             tag: 'Latency lab',
             title: 'Invoke Tuff. Zero lag. Zero wasted motion.',
             copy: 'Keystroke to render averages 18 ms across devices, tuned in the same rig we use for docs transitions.',
           },
-        ],
+        },
       },
       pioneer: {
         eyebrow: 'Pioneer Program',
         headline: 'The future of work is coming. Be the first to build it.',
         subheadline: 'Join the Tuff Pioneer Program. Get early access, shape the development, and define the next generation of productivity.',
-        formTitle: 'Request Pioneer Access',
+        formTitle: 'Email',
         cta: 'Request Pioneer Access',
         benefitsTitle: 'Your Pioneer perks',
-        benefits: [
-          {
+        benefits: {
+          early: {
             title: 'Early Access',
             copy: 'Preview every frontier build before the public release.',
           },
-          {
+          shape: {
             title: 'Shape the Product',
             copy: 'Work directly with the team; your feedback steers the roadmap.',
           },
-          {
+          community: {
             title: 'Exclusive Community',
             copy: 'Access private sessions, office hours, and recognition across the platform.',
           },
-        ],
+        },
         privacy: 'We use your email only to coordinate Pioneer access and updates.',
       },
     },
