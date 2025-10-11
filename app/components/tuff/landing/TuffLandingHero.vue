@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useGsapReveal } from '~/composables/useGsapReveal'
 import TuffBanner from '../TuffBanner.vue'
 import TuffLandingWebglBackground from './TuffLandingWebglBackground.vue'
@@ -17,7 +17,7 @@ interface HeroConfig {
   secondaryCta: HeroCta
 }
 
-const props = defineProps<{
+const { hero } = defineProps<{
   hero: HeroConfig
 }>()
 
@@ -40,7 +40,6 @@ useGsapReveal(sectionRef, {
     <div class="TuffHome-HeroSection-BannerCore absolute left-0 top-0 h-full w-full -z-10">
       <TuffBanner>
         <template #center>
-          <TuffLandingWebglBackground />
           <div class="hero-content min-h-screen w-full flex flex-col items-center justify-center gap-8 px-8 py-20 text-center text-white/85">
             <div class="hero-wordmark" data-reveal aria-hidden="true">
               <span class="hero-wordmark-text" data-text="Tuff">Tuff</span>

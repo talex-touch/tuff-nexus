@@ -80,7 +80,8 @@ let startTime = Date.now()
 
 function createShader(glContext: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
   const shader = glContext.createShader(type)
-  if (!shader) return null
+  if (!shader)
+    return null
 
   glContext.shaderSource(shader, source)
   glContext.compileShader(shader)
@@ -96,7 +97,8 @@ function createShader(glContext: WebGLRenderingContext, type: number, source: st
 
 function createProgram(glContext: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram | null {
   const programInstance = glContext.createProgram()
-  if (!programInstance) return null
+  if (!programInstance)
+    return null
 
   glContext.attachShader(programInstance, vertexShader)
   glContext.attachShader(programInstance, fragmentShader)
@@ -112,7 +114,8 @@ function createProgram(glContext: WebGLRenderingContext, vertexShader: WebGLShad
 }
 
 function resizeCanvas() {
-  if (!canvasRef.value) return
+  if (!canvasRef.value)
+    return
   const canvas = canvasRef.value
   const rect = canvas.getBoundingClientRect()
   const ratio = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1
@@ -126,7 +129,8 @@ function resizeCanvas() {
 }
 
 function render() {
-  if (!gl || !program || !canvasRef.value) return
+  if (!gl || !program || !canvasRef.value)
+    return
 
   const canvas = canvasRef.value
   const time = (Date.now() - startTime) / 1000
@@ -142,10 +146,10 @@ function render() {
   const modelViewMatrixLocation = gl.getUniformLocation(program, 'uModelViewMatrix')
 
   if (
-    !resolutionLocation ||
-    !timeLocation ||
-    !projectionMatrixLocation ||
-    !modelViewMatrixLocation
+    !resolutionLocation
+    || !timeLocation
+    || !projectionMatrixLocation
+    || !modelViewMatrixLocation
   ) {
     return
   }
@@ -154,10 +158,22 @@ function render() {
   gl.uniform1f(timeLocation, time)
 
   const identityMatrix = new Float32Array([
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
   ])
 
   gl.uniformMatrix4fv(projectionMatrixLocation, false, identityMatrix)
@@ -169,7 +185,8 @@ function render() {
 }
 
 function initWebGL() {
-  if (!canvasRef.value) return
+  if (!canvasRef.value)
+    return
 
   const canvas = canvasRef.value
   const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
@@ -183,42 +200,60 @@ function initWebGL() {
   resizeCanvas()
 
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertSource)
-  if (!vertexShader) return
+  if (!vertexShader)
+    return
 
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragSource)
-  if (!fragmentShader) return
+  if (!fragmentShader)
+    return
 
   program = createProgram(gl, vertexShader, fragmentShader)
-  if (!program) return
+  if (!program)
+    return
 
   const positions = new Float32Array([
-    -1.0, -1.0, 0.0,
-    1.0, -1.0, 0.0,
-    -1.0, 1.0, 0.0,
-    1.0, 1.0, 0.0,
+    -1.0,
+    -1.0,
+    0.0,
+    1.0,
+    -1.0,
+    0.0,
+    -1.0,
+    1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
   ])
 
   const texCoords = new Float32Array([
-    0.0, 0.0,
-    1.0, 0.0,
-    0.0, 1.0,
-    1.0, 1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
   ])
 
   const positionBuffer = gl.createBuffer()
-  if (!positionBuffer) return
+  if (!positionBuffer)
+    return
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
 
   const texCoordBuffer = gl.createBuffer()
-  if (!texCoordBuffer) return
+  if (!texCoordBuffer)
+    return
   gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW)
 
   const positionLocation = gl.getAttribLocation(program, 'aPosition')
   const texCoordLocation = gl.getAttribLocation(program, 'aTexCoord')
 
-  if (positionLocation === -1 || texCoordLocation === -1) return
+  if (positionLocation === -1 || texCoordLocation === -1)
+    return
 
   gl.useProgram(program)
 
@@ -262,6 +297,7 @@ onUnmounted(() => {
     </div>
     <div class="tuff-banner-mask" />
     <div class="tuff-banner-layer">
+      <TuffLandingWebglBackground />
       <div class="tuff-banner-core">
         <slot name="core-box" />
       </div>
@@ -288,7 +324,9 @@ onUnmounted(() => {
 .tuff-banner-canvas-wrap {
   position: absolute;
   inset: 0;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
   overflow: hidden;
 }
@@ -333,8 +371,9 @@ onUnmounted(() => {
 .tuff-banner-canvas {
   position: relative;
   display: block;
-  width: 100%;
-  height: 100%;
+  width: clamp(1600px, 180vw, 3200px);
+  height: clamp(960px, 130vh, 2200px);
+  max-width: none;
 }
 
 .tuff-banner-mask {
@@ -346,6 +385,24 @@ onUnmounted(() => {
   mask: radial-gradient(circle at center, transparent 50%, black 60%);
   -webkit-mask: radial-gradient(circle at center, transparent 50%, black 55%);
   pointer-events: none;
+}
+
+@keyframes tuff-banner-smoke-pulse {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(1.03);
+  }
+
+  45% {
+    opacity: 0.46;
+    transform: scale(1.07) translate3d(0, -1%, 0);
+  }
+
+  70% {
+    opacity: 0.4;
+    transform: scale(1.05) translate3d(0, 0.6%, 0);
+  }
 }
 
 @media (min-width: 1024px) {

@@ -11,7 +11,7 @@ let startTime = 0
 let uResolution: WebGLUniformLocation | null = null
 let uTime: WebGLUniformLocation | null = null
 
-const createShader = (context: WebGLRenderingContext, type: number, source: string) => {
+function createShader(context: WebGLRenderingContext, type: number, source: string) {
   const shader = context.createShader(type)
   if (!shader)
     return null
@@ -28,11 +28,7 @@ const createShader = (context: WebGLRenderingContext, type: number, source: stri
   return shader
 }
 
-const createProgram = (
-  context: WebGLRenderingContext,
-  vertexShader: WebGLShader,
-  fragmentShader: WebGLShader,
-) => {
+function createProgram(context: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader) {
   const program = context.createProgram()
   if (!program)
     return null
@@ -50,7 +46,7 @@ const createProgram = (
   return program
 }
 
-const handleResize = () => {
+function handleResize() {
   if (!canvasRef.value || !gl)
     return
 
@@ -144,9 +140,12 @@ onMounted(() => {
   buffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    -1, -1,
-    3, -1,
-    -1, 3,
+    -1,
+    -1,
+    3,
+    -1,
+    -1,
+    3,
   ]), gl.STATIC_DRAW)
 
   const positionLocation = gl.getAttribLocation(program, 'position')
@@ -201,6 +200,6 @@ onBeforeUnmount(() => {
 <template>
   <canvas
     ref="canvasRef"
-    class="pointer-events-none absolute inset-0 -z-40 h-full w-full opacity-95"
+    class="pointer-events-none absolute inset-0 h-full w-full opacity-50 -z-40"
   />
 </template>
