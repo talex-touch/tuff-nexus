@@ -163,6 +163,7 @@ const headerRevealStyle = computed(() => {
 
   border-radius: 24px;
   transform: translateX(-50%);
+
   backdrop-filter: blur(18px) saturate(180%);
 }
 
