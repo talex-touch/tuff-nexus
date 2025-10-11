@@ -121,7 +121,15 @@ onMounted(() => {
       float vignette = smoothstep(1.0, 0.2, dist * 1.2);
       color *= vignette;
 
-      gl_FragColor = vec4(color, 0.65);
+      float fadeIn = smoothstep(0.0, 3.0, u_time);
+      float dissolveNoise = fbm(st * 4.0 - u_time * 0.03) * 0.35;
+      float revealSignal = fadeIn + dissolveNoise - 0.35;
+      float reveal = smoothstep(0.0, 1.0, revealSignal);
+
+      vec3 finalColor = mix(vec3(0.0), color, reveal);
+      float finalAlpha = mix(1.0, 0.65, reveal);
+
+      gl_FragColor = vec4(finalColor, finalAlpha);
     }
   `
 
@@ -167,6 +175,14 @@ onMounted(() => {
       return
 
     const elapsed = (now - startTime) / 1000
+    // Ease canvas opacity from opaque black toward the ambient translucency
+    const fadeDuration = 3
+    const fadeProgress = Math.min(elapsed / fadeDuration, 1)
+    const easedFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress)
+    const targetOpacity = 1 - easedFade * 0.5
+    const nextOpacity = `${targetOpacity}`
+    if (canvas.style.opacity !== nextOpacity)
+      canvas.style.opacity = nextOpacity
 
     handleResize()
     gl.uniform2f(uResolution, canvas.width, canvas.height)
