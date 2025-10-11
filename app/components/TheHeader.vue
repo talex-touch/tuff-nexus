@@ -31,7 +31,7 @@ onUnmounted(() => {
     class="TuffHeader"
   >
     <div
-      class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-5 py-4 sm:flex-nowrap"
+      class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-4 py-2 sm:flex-nowrap"
       :class="{
         'border-primary/10 bg-white/80 shadow-sm dark:border-light/10 dark:bg-primary/90': scrolled,
       }"
@@ -60,26 +60,7 @@ onUnmounted(() => {
           </NuxtLink>
         </div>
 
-        <div class="hidden h-5 w-px bg-primary/10 sm:block dark:bg-light/20" />
-
-        <div
-          class="flex items-center gap-3 border border-primary/10 rounded-full bg-white/70 px-3 py-1.5 text-primary/70 shadow-sm backdrop-blur-md dark:border-light/15 dark:bg-primary/65 dark:text-light/70"
-        >
-          <Search />
-          <div class="hidden items-center gap-2 sm:flex">
-            <DarkToggle />
-            <LanguageToggle />
-          </div>
-          <a
-            href="https://github.com/tuff-docs/tuff-nexus"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm text-primary/70 no-underline transition hover:bg-primary/5 dark:text-light/70 hover:text-primary dark:hover:bg-light/10 dark:hover:text-light"
-          >
-            <span class="i-carbon-logo-github text-base" />
-            <span class="hidden sm:inline">GitHub</span>
-          </a>
-        </div>
+        <HeaderControls class="w-full lg:max-w-[420px] sm:min-w-[320px] sm:flex-1" />
 
         <div
           class="flex items-center gap-2 border border-primary/10 rounded-full bg-primary/5 px-2 py-1 text-xs text-primary/80 font-semibold shadow-sm dark:border-light/15 dark:bg-light/10 dark:text-light/80"

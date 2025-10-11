@@ -22,6 +22,12 @@ body,
   padding: 0;
 }
 
+body {
+  font-family: 'PingFang SC', '-apple-system', 'Helvetica Neue', 'Segoe UI', 'Microsoft YaHei', 'Noto Sans SC', 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 html.dark {
   color-scheme: dark;
 }
