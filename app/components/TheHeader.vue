@@ -1,21 +1,44 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
+const route = useRoute()
+
 const scrolled = ref(false)
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 function handleScroll() {
   scrolled.value = window.scrollY > 0
 }
 
 const links = computed(() => [
-  { to: '/', label: t('nav.home') },
   { to: '/docs', label: t('nav.docs') },
-  { to: '/api', label: t('nav.api') },
   { to: '/marketplace', label: t('nav.marketplace') },
-  { to: '/qa', label: t('nav.qa') },
-  { to: '/about', label: t('nav.about') },
+  { to: '/developers', label: t('nav.developers') },
 ])
+
+const currentPath = computed(() => route.path || '/')
+const normalizedPath = computed(() => {
+  const path = currentPath.value
+  const code = locale.value
+  if (!code)
+    return path
+  const prefix = `/${code}`
+  if (path === prefix || path === `${prefix}/`)
+    return '/'
+  if (path.startsWith(`${prefix}/`))
+    return path.slice(prefix.length) || '/'
+  return path
+})
+
+const isDocs = computed(() => normalizedPath.value.startsWith('/docs'))
+const isHome = computed(() => normalizedPath.value === '/')
+
+function isActiveLink(link: { to: string }) {
+  const path = normalizedPath.value
+  if (link.to === '/')
+    return path === '/'
+  return path === link.to || path.startsWith(`${link.to}/`)
+}
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -48,19 +71,24 @@ onUnmounted(() => {
         </span>
       </NuxtLink>
 
-      <nav class="flex flex-1 flex-wrap items-center justify-end gap-4 text-sm">
-        <div class="flex flex-wrap items-center gap-2">
+      <nav class="flex flex-1 flex-wrap items-center justify-end gap-4 text-sm sm:gap-5">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
           <NuxtLink
             v-for="link in links"
             :key="link.to"
             :to="link.to"
-            class="rounded-full px-3 py-1 text-primary/70 no-underline transition-all duration-200 hover:bg-primary/5 dark:text-light/70 hover:text-primary dark:hover:bg-light/10 dark:hover:text-light"
+            class="rounded-full px-3 py-1 font-medium text-primary/65 no-underline transition-colors duration-200 hover:bg-primary/5 hover:text-primary dark:text-light/70 dark:hover:bg-light/10 dark:hover:text-light"
+            :class="isActiveLink(link) ? 'bg-primary/5 text-primary dark:bg-light/15 dark:text-light' : ''"
           >
             {{ link.label }}
           </NuxtLink>
         </div>
 
-        <HeaderControls class="w-full lg:max-w-[420px] sm:min-w-[320px] sm:flex-1" />
+        <HeaderControls
+          class="w-full sm:min-w-[280px] sm:flex-1 lg:max-w-[420px]"
+          :show-search-button="isDocs"
+          :show-dark-toggle="!isHome"
+        />
 
         <div
           class="flex items-center gap-2 border border-primary/10 rounded-full bg-primary/5 px-2 py-1 text-xs text-primary/80 font-semibold shadow-sm dark:border-light/15 dark:bg-light/10 dark:text-light/80"

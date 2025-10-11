@@ -6,6 +6,7 @@ export default {
     marketplace: '组件市场',
     about: '关于',
     qa: '问答',
+    developers: '开发者',
   },
   landing: {
     hero: {
@@ -142,4 +143,3 @@ export default {
     error: '导航加载失败，请稍后再试。',
   },
 } as const
-

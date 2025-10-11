@@ -6,6 +6,7 @@ export default {
     marketplace: 'Marketplace',
     about: 'About',
     qa: 'Q & A',
+    developers: 'Developers',
   },
   landing: {
     hero: {
@@ -160,4 +161,3 @@ export default {
     error: 'Navigation failed to load. Please try again.',
   },
 } as const
-

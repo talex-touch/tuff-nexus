@@ -27,7 +27,7 @@ watch(searchTerm, async (newTerm) => {
     />
     <ul
       v-if="searchResults.length"
-      class="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-primary/10 bg-white/95 shadow-xl backdrop-blur-sm dark:border-light/10 dark:bg-primary/90"
+      class="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 max-h-64 overflow-y-auto rounded-2xl border border-primary/10 bg-white/95 shadow-xl backdrop-blur-sm dark:border-light/10 dark:bg-primary/90"
     >
       <li
         v-for="result in searchResults"
