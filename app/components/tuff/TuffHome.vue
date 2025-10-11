@@ -1,244 +1,192 @@
 <script setup lang="ts">
-import TuffBanner from './TuffBanner.vue'
+import TuffLandingEcosystem from './landing/TuffLandingEcosystem.vue'
+import TuffLandingExperience from './landing/TuffLandingExperience.vue'
+import TuffLandingFeatures from './landing/TuffLandingFeatures.vue'
+import TuffLandingHero from './landing/TuffLandingHero.vue'
+import TuffLandingIntegrations from './landing/TuffLandingIntegrations.vue'
+import TuffLandingStats from './landing/TuffLandingStats.vue'
+import TuffLandingWaitlist from './landing/TuffLandingWaitlist.vue'
 
-const heroPoints = [
-  'Command every workspace from a single launcher.',
-  'Swap contexts without losing state or intent.',
-  'Ship ideas faster with extensions you can trust.',
+const hero = {
+  badge: 'Tuff Launcher',
+  title: 'Launch, orchestrate, and share your entire workspace flow.',
+  copy: 'Tuff brings the luminous aesthetic from the docs experience into product surfaces. Command palettes, live presence, and automation boards stay in lockstep across every device.',
+  bullets: [
+    'Cinematic command surfaces with synchronized transitions on desktop, web, and mobile.',
+    'Policy-aware rollout controls with signed extensions and regional manifests.',
+    'Realtime collaboration that mirrors the intent of your FlowScript and docs playbooks.',
+  ],
+  primaryCta: { label: 'Join waitlist', to: '#waitlist', icon: 'i-carbon-play-filled' },
+  secondaryCta: { label: 'Preview docs', to: '/docs', icon: 'i-carbon-book' },
+  highlights: [
+    { value: '0.29s', label: 'Command cold start' },
+    { value: '140+', label: 'Signed extensions' },
+    { value: '12 regions', label: 'Launch coverage' },
+  ],
+  bannerCopy:
+    'Compose flows with responsive motion surfaces that translate perfectly from 4K showreels to mobile check-ins—no distortion, no guesswork.',
+}
+
+const stats = [
+  {
+    value: '2.3k+',
+    label: 'Studio teams',
+    copy: 'Teams orchestrating reviews, launches, and rituals inside shared Tuff spaces every day.',
+  },
+  {
+    value: '28 ms',
+    label: 'Average sync',
+    copy: 'State diff streaming keeps input, presence, and GSAP motion cues in near real time.',
+  },
+  {
+    value: '99.9%',
+    label: 'Uptime target',
+    copy: 'Multi-region brokers mirrored across CN, EU, and US footprints to match compliance needs.',
+  },
 ]
 
-const essentials = [
+const features = [
   {
-    badge: 'Market · Extensions',
-    title: 'Curated marketplace',
-    copy: 'Discover signed extensions, versioned releases, and rollout controls that keep teams confident.',
+    badge: 'Flow Kernel',
+    title: 'Orchestrated workspaces',
+    copy: 'Lay out automation scenes that feel purposeful. Swap between coding canvases, docs, and reviews with motion that never breaks context.',
+    bullets: [
+      'Scene graph with typed events that stitches together extensions and native surfaces.',
+      'Granular role lanes so ops, design, and eng move together without stepping on workflows.',
+    ],
+    link: { to: '/docs/flows', label: 'Design your flow' },
+  },
+  {
+    badge: 'Marketplace',
+    title: 'Signed extension market',
+    copy: 'Curated, versioned extensions with rollout rings. Ship to beta teams, observe metrics, then promote to everyone with one toggle.',
+    bullets: [
+      'Signature and provenance baked into every release artifact.',
+      'Progressive delivery and rollback controls built right into the launcher.',
+    ],
     link: { to: '/marketplace', label: 'Browse marketplace' },
   },
   {
-    badge: 'Open Source',
-    title: 'Transparent core',
-    copy: 'Audit the orchestration engine, contribute on GitHub, and self-host with official container images.',
-    link: { to: 'https://github.com/tuff-docs/tuff-nexus', label: 'View repository' },
-  },
-  {
-    badge: 'All Platforms',
-    title: 'Every device, same rhythm',
-    copy: 'Native desktop builds, web access, mobile companions, and a CLI—all synced in real time.',
-    link: { to: '/docs/platforms', label: 'See platform guide' },
-  },
-  {
-    badge: 'Integrated Flow',
-    title: 'Connected by design',
-    copy: 'Link flows across SaaS, local runners, and shareable canvases with FlowScript and live presence.',
-    link: { to: '/docs/flows', label: 'Design a flow' },
-  },
-]
-
-const builderFocus = [
-  {
-    badge: 'Developers',
-    title: 'Momentum for makers',
-    copy: 'Type-safe SDKs, hot reload sandboxes, and CI templates remove friction from every release.',
+    badge: 'SDK · Tooling',
+    title: 'Developer momentum',
+    copy: 'Type-safe SDKs, VS Code sandboxes, and CI manifests mean your team iterates on flows without waiting on core platform updates.',
+    bullets: [
+      'Local dev server with GSAP-aware preview harnesses.',
+      'CI templates mirroring the docs `.vitepress` linting and formatting rules.',
+    ],
     link: { to: '/docs/sdk', label: 'Build with the SDK' },
   },
   {
-    badge: 'Documentation',
-    title: 'Guides when you need them',
-    copy: 'Playbooks, API explorers, and design tokens keep teams aligned from prototype to production.',
-    link: { to: '/docs', label: 'Open documentation' },
+    badge: 'Governance',
+    title: 'Compliance ready',
+    copy: 'Keep audit logs, sign-ins, and customer data segmented by geography without maintaining multiple builds.',
+    bullets: [
+      'Region-aware policy packs with instant enforcement toggles.',
+      'Privacy-preserving presence that still surfaces intent and context.',
+    ],
+    link: { to: '/docs/platforms', label: 'See platform guide' },
   },
 ]
 
-const waitlistPerks = [
-  'Free access through 2027·01·01.',
-  'Private previews and hands-on onboarding.',
-  'Priority support from the launcher crew.',
+const experiences = [
+  {
+    badge: 'Live Boards',
+    title: 'Synchronize motion across every surface.',
+    copy: 'GSAP timelines power micro-interactions that match the luminous gradients from the docs theme. Launchers, docs, and dashboards move together.',
+    points: [
+      'Adaptive easing curves tune to input latency so animations feel natural on touch and desktop.',
+      'Presence indicators glow with the same palette used in the VitePress docs headers.',
+      'Scene capture lets you pin a moment and replay it inside documentation for async teams.',
+    ],
+    accent: 'Latency-aware motion cues',
+  },
+  {
+    badge: 'Presence Graph',
+    title: 'Context that respects privacy.',
+    copy: 'Know who is editing, what they changed, and how the flow adapts—without leaking sensitive panels.',
+    points: [
+      'Diff previews surface highlights directly in the docs theme callouts.',
+      'Ephemeral rooms for launches inherit typography and rhythm from docs `.vitepress` layouts.',
+      'Escalation routes integrate with ops tooling so nothing slips during a deploy.',
+    ],
+    accent: 'Privacy guardrails by default',
+  },
 ]
+
+const ecosystem = [
+  {
+    title: 'Design tokens in lockstep',
+    copy: 'Typography scale, gradients, and border radii are shared with the docs implementation so product teams can echo the tone instantly.',
+    icon: 'i-carbon-color-palette',
+    badge: 'Visual system',
+    link: { to: '/docs/design', label: 'Review tokens' },
+  },
+  {
+    title: 'Guides that match the product',
+    copy: 'Tutorials in `docs/.vitepress` are written with the same states you see in the launcher, so screenshots and motion capture stay accurate.',
+    icon: 'i-carbon-notebook-reference',
+    badge: 'Documentation',
+    link: { to: '/docs', label: 'Open documentation' },
+  },
+  {
+    title: 'API + CLI parity',
+    copy: 'Extend the launcher or automate flows using the same schema across REST, GraphQL, and CLI—no drift between tools.',
+    icon: 'i-carbon-api',
+    badge: 'Engine',
+    link: { to: '/docs/api', label: 'Explore API' },
+  },
+]
+
+const integrations = [
+  {
+    icon: 'i-carbon-logo-github',
+    label: 'GitHub Actions',
+    copy: 'Trigger flows from checks, releases, and PR discussions without leaving the launcher.',
+  },
+  {
+    icon: 'i-carbon-logo-figma',
+    label: 'Figma',
+    copy: 'Drop live frames into boards and keep design handoff synced with FlowScript events.',
+  },
+  {
+    icon: 'i-carbon-logo-slack',
+    label: 'Slack + Lark',
+    copy: 'Push adaptive announcements based on region manifests and recipient roles.',
+  },
+  {
+    icon: 'i-carbon-logo-aws',
+    label: 'Cloud runners',
+    copy: 'Provision preview runners in CN/EU/US regions with mirrored configs and keys.',
+  },
+]
+
+const waitlist = {
+  eyebrow: 'Waitlist',
+  title: 'Step into the Tuff ecosystem early.',
+  copy: 'Drop your email and we’ll invite you to private previews, migration clinics, and the first extension showcase.',
+  placeholder: 'you@studio.com',
+  submitLabel: 'Notify me',
+  perks: [
+    { label: 'Free access through 2027·01·01.' },
+    { label: 'Private previews and concierge onboarding.' },
+    { label: 'Priority support from the launcher crew.' },
+  ],
+}
 
 useHead({
   htmlAttrs: { class: 'dark' },
-  bodyAttrs: { class: 'bg-[#040406] text-light antialiased' },
+  bodyAttrs: { class: 'text-light antialiased' },
 })
 </script>
 
 <template>
-  <div class="relative flex min-h-screen flex-col gap-24 bg-[#040406] pb-32 text-light lg:gap-28">
-    <section class="relative overflow-hidden px-6 pt-28 pb-16 sm:pt-32">
-      <div class="absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(circle_at_top,_rgba(64,118,255,0.32),_rgba(4,4,6,0))]" />
-      <div class="mx-auto grid max-w-5xl gap-12 lg:max-w-6xl lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div class="flex flex-col gap-7">
-          <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
-            Tuff Launcher
-          </span>
-          <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-tight">
-            Launch, orchestrate, and share your entire workspace flow.
-          </h1>
-          <p class="max-w-xl text-base text-white/70 sm:text-lg">
-            Tuff keeps command palettes, automation, and context in sync across every surface—without asking your team to slow down.
-          </p>
-          <ul class="space-y-2 text-sm text-white/60">
-            <li
-              v-for="point in heroPoints"
-              :key="point"
-              class="flex items-start gap-3"
-            >
-              <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-white/40" />
-              <span>{{ point }}</span>
-            </li>
-          </ul>
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <NuxtLink
-              to="#waitlist"
-              class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-md transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-            >
-              <span class="i-carbon-play-filled text-base" />
-              Join waitlist
-            </NuxtLink>
-            <NuxtLink
-              to="/marketplace"
-              class="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <span class="i-carbon-catalog text-base" />
-              View marketplace
-            </NuxtLink>
-            <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/60">
-              Free through 2027·01·01
-            </span>
-          </div>
-        </div>
-        <div class="relative">
-          <div class="absolute inset-0 -z-10 translate-x-10 blur-[130px] bg-[radial-gradient(circle_at_center,_rgba(92,142,255,0.28),_transparent_75%)]" />
-          <div class="overflow-hidden rounded-[32px] border border-white/10 bg-white/5 shadow-[0_35px_140px_rgba(0,0,0,0.6)]">
-            <TuffBanner>
-              <template #center>
-                <div class="flex w-full flex-col items-center gap-6 px-10 py-16 text-center text-white/75">
-                  <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
-                    Command Surface
-                  </span>
-                  <p class="max-w-sm text-base">
-                    Orchestrate tasks, extensions, and live sessions with cinematic WebGL motion that never stretches or distorts.
-                  </p>
-                </div>
-              </template>
-            </TuffBanner>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="px-6">
-      <div class="mx-auto max-w-6xl">
-        <div class="mb-10 flex flex-col gap-4">
-          <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
-            Essentials
-          </span>
-          <h2 class="text-3xl font-semibold text-white sm:text-4xl">
-            Everything you expect from a modern launcher, elevated.
-          </h2>
-        </div>
-        <div class="grid gap-6 md:grid-cols-2">
-          <article
-            v-for="item in essentials"
-            :key="item.title"
-            class="group flex h-full flex-col justify-between gap-4 rounded-[28px] border border-white/10 bg-[#06070c]/90 p-8 shadow-[0_28px_110px_rgba(0,0,0,0.5)] transition hover:-translate-y-1 hover:border-white/20 hover:bg-[#080910]"
-          >
-            <div class="space-y-4">
-              <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/60">
-                {{ item.badge }}
-              </span>
-              <h3 class="text-xl font-semibold text-white">
-                {{ item.title }}
-              </h3>
-              <p class="text-sm text-white/65">
-                {{ item.copy }}
-              </p>
-            </div>
-            <NuxtLink
-              :to="item.link.to"
-              class="inline-flex w-max items-center gap-2 text-sm font-semibold text-white/70 transition group-hover:text-white"
-            >
-              <span>{{ item.link.label }}</span>
-              <span class="i-carbon-arrow-right text-base" />
-            </NuxtLink>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="px-6">
-      <div class="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <article
-          v-for="item in builderFocus"
-          :key="item.title"
-          class="flex flex-col gap-6 overflow-hidden rounded-[28px] border border-white/10 bg-[#06070c]/90 p-10 shadow-[0_28px_110px_rgba(0,0,0,0.5)] transition hover:-translate-y-1 hover:border-white/20 hover:bg-[#080910]"
-        >
-          <div class="space-y-4">
-            <span class="inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/60">
-              {{ item.badge }}
-            </span>
-            <h2 class="text-3xl font-semibold text-white">
-              {{ item.title }}
-            </h2>
-            <p class="text-sm text-white/65">
-              {{ item.copy }}
-            </p>
-          </div>
-          <NuxtLink
-            :to="item.link.to"
-            class="inline-flex w-max items-center gap-2 text-sm font-semibold text-white/70 transition hover:text-white"
-          >
-            <span>{{ item.link.label }}</span>
-            <span class="i-carbon-arrow-right text-base" />
-          </NuxtLink>
-        </article>
-      </div>
-    </section>
-
-    <section id="waitlist" class="px-6">
-      <div class="mx-auto max-w-5xl overflow-hidden rounded-[32px] border border-white/10 bg-[#06070c]/95 px-8 py-16 text-center shadow-[0_28px_110px_rgba(0,0,0,0.5)] sm:px-12">
-        <div class="mx-auto flex max-w-2xl flex-col items-center gap-6">
-          <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
-            Waitlist
-          </span>
-          <h2 class="text-3xl font-semibold text-white sm:text-4xl">
-            Step into the Tuff ecosystem early.
-          </h2>
-          <p class="text-base text-white/70">
-            Enter your email and we’ll share the next wave of launcher builds, migration kits, and invite-only sessions.
-          </p>
-          <form
-            class="flex w-full max-w-md flex-col gap-3 sm:flex-row"
-            action="/waitlist"
-            method="post"
-          >
-            <input
-              type="email"
-              name="email"
-              required
-              autocomplete="email"
-              placeholder="you@studio.com"
-              class="w-full rounded-full border border-white/25 bg-transparent px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/30"
-            >
-            <button
-              type="submit"
-              class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-md transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 sm:w-auto"
-            >
-              <span class="i-carbon-send text-base" />
-              Notify me
-            </button>
-          </form>
-          <ul class="flex flex-col gap-2 text-sm text-white/60 sm:flex-row sm:items-center sm:gap-6">
-            <li
-              v-for="perk in waitlistPerks"
-              :key="perk"
-              class="flex items-center gap-2"
-            >
-              <span class="h-1.5 w-1.5 rounded-full bg-white/40" />
-              <span>{{ perk }}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
+  <div class="relative min-h-screen flex flex-col text-light">
+    <TuffLandingHero :hero="hero" />
+    <TuffLandingStats :stats="stats" />
+    <TuffLandingFeatures :features="features" />
+    <TuffLandingExperience :experiences="experiences" />
+    <TuffLandingEcosystem :items="ecosystem" />
+    <TuffLandingIntegrations :integrations="integrations" />
+    <TuffLandingWaitlist :waitlist="waitlist" />
   </div>
 </template>
