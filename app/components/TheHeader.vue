@@ -71,13 +71,13 @@ onUnmounted(() => {
         </span>
       </NuxtLink>
 
-      <nav class="flex flex-1 flex-wrap items-center justify-end gap-4 text-sm sm:gap-5">
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <nav class="flex flex-1 items-center justify-between gap-4 overflow-hidden text-sm sm:gap-5">
+        <div class="ml-auto flex items-center gap-2 sm:gap-3">
           <NuxtLink
             v-for="link in links"
             :key="link.to"
             :to="link.to"
-            class="rounded-full px-3 py-1 font-medium text-primary/65 no-underline transition-colors duration-200 hover:bg-primary/5 hover:text-primary dark:text-light/70 dark:hover:bg-light/10 dark:hover:text-light"
+            class="rounded-full px-3 py-1 text-primary/65 font-medium no-underline transition-colors duration-200 hover:bg-primary/5 dark:text-light/70 hover:text-primary dark:hover:bg-light/10 dark:hover:text-light"
             :class="isActiveLink(link) ? 'bg-primary/5 text-primary dark:bg-light/15 dark:text-light' : ''"
           >
             {{ link.label }}
@@ -85,7 +85,6 @@ onUnmounted(() => {
         </div>
 
         <HeaderControls
-          class="w-full sm:min-w-[280px] sm:flex-1 lg:max-w-[420px]"
           :show-search-button="isDocs"
           :show-dark-toggle="!isHome"
         />

@@ -8,6 +8,14 @@ export default {
     qa: 'Q & A',
     developers: 'Developers',
   },
+  ui: {
+    languageToggle: {
+      zhLabel: '中文',
+      enLabel: 'English',
+      switchToZh: 'Switch language to Chinese',
+      switchToEn: 'Switch language to English',
+    },
+  },
   landing: {
     hero: {
       badge: 'Beta Preview',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
 import { onClickOutside, useEventListener } from '@vueuse/core'
+import { computed, nextTick, ref, watch } from 'vue'
 
 interface Props {
   githubUrl?: string
@@ -62,16 +62,16 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
 
 <template>
   <div
-    class="HeaderControls flex w-full flex-wrap items-center justify-end gap-2 rounded-full border border-primary/10 bg-white/80 px-3.5 py-2 text-sm text-primary/75 shadow-[0_10px_30px_rgba(24,24,32,0.1)] backdrop-blur-xl transition dark:border-light/10 dark:bg-primary/70 dark:text-light/80 dark:shadow-[0_16px_34px_rgba(0,0,0,0.45)]"
+    class="HeaderControls flex items-center justify-end gap-2 overflow-hidden text-sm"
   >
-    <div
+    <!-- <div
       v-if="props.showSearchButton"
       class="relative w-full sm:w-auto"
     >
       <button
         ref="searchButtonRef"
         type="button"
-        class="inline-flex w-full items-center justify-between gap-3 rounded-full border border-transparent bg-white/85 px-4 py-2 text-left font-medium text-primary/70 shadow-[0_8px_18px_rgba(18,18,24,0.06)] transition hover:border-primary/20 hover:bg-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 dark:bg-primary/80 dark:text-light/75 dark:hover:bg-primary/70 dark:hover:text-light dark:focus-visible:ring-light/25"
+        class="w-full inline-flex items-center justify-between gap-3 border border-transparent rounded-full bg-white/85 px-4 py-2 text-left text-primary/70 font-medium shadow-[0_8px_18px_rgba(18,18,24,0.06)] transition hover:border-primary/20 dark:bg-primary/80 hover:bg-white dark:text-light/75 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 dark:hover:bg-primary/70 dark:hover:text-light dark:focus-visible:ring-light/25"
         :aria-label="searchButtonAriaLabel"
         @click="toggleSearch"
       >
@@ -79,7 +79,7 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
           <span class="i-carbon-search text-lg" />
           <span>{{ searchButtonLabel }}</span>
         </span>
-        <kbd class="hidden rounded border border-primary/10 bg-primary/5 px-2 py-0.5 text-xs text-primary/60 sm:inline-flex dark:border-light/15 dark:bg-light/10 dark:text-light/60">
+        <kbd class="hidden border border-primary/10 rounded bg-primary/5 px-2 py-0.5 text-xs text-primary/60 sm:inline-flex dark:border-light/15 dark:bg-light/10 dark:text-light/60">
           /
         </kbd>
       </button>
@@ -95,18 +95,17 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
         <div
           v-if="isSearchOpen"
           ref="searchPanelRef"
-          class="absolute right-0 top-[calc(100%+0.75rem)] z-30 w-[min(380px,85vw)] rounded-3xl border border-primary/10 bg-white/95 p-4 shadow-[0_20px_40px_rgba(18,18,28,0.18)] backdrop-blur-2xl dark:border-light/15 dark:bg-primary/90 dark:shadow-[0_24px_48px_rgba(0,0,0,0.65)]"
+          class="absolute right-0 top-[calc(100%+0.75rem)] z-30 w-[min(380px,85vw)] border border-primary/10 rounded-3xl bg-white/95 p-4 shadow-[0_20px_40px_rgba(18,18,28,0.18)] backdrop-blur-2xl dark:border-light/15 dark:bg-primary/90 dark:shadow-[0_24px_48px_rgba(0,0,0,0.65)]"
           @click="onSearchPanelClick"
         >
           <Search />
         </div>
       </transition>
-    </div>
+    </div> -->
 
     <div class="flex items-center gap-1.5 sm:ml-auto">
       <DarkToggle
         v-if="props.showDarkToggle"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/5 text-lg text-primary/80 transition hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 dark:bg-light/10 dark:text-light/80 dark:hover:bg-light/15 dark:hover:text-light dark:focus-visible:ring-light/25"
       />
       <LanguageToggle />
     </div>
@@ -115,10 +114,9 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
       :href="props.githubUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-light shadow-sm transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-light/90 dark:text-primary dark:hover:bg-light"
+      class="inline-flex items-center gap-2 rounded-full text-sm text-black font-semibold transition dark:text-white focus-visible:outline-none"
     >
       <span class="i-carbon-logo-github text-lg" />
-      <span>GitHub</span>
     </a>
   </div>
 </template>
