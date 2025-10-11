@@ -9,10 +9,10 @@ interface LandingRevealTimings {
 }
 
 const DEFAULT_TIMINGS: LandingRevealTimings = {
-  mask: 900,
-  content: 1600,
-  interactive: 2300,
-  header: 3200,
+  mask: 0,
+  content: 980,
+  interactive: 1460,
+  header: 2100,
 }
 
 function isClient() {
@@ -46,19 +46,26 @@ function clearTimers(timers: Ref<number[]>) {
 
 export function useLandingRevealState() {
   const sequenceStarted = useState('landing-reveal-sequence-started', () => false)
-  const maskProgress = useState('landing-reveal-mask-progress', () => 0)
+  const maskScale = useState('landing-reveal-mask-scale', () => 0.9)
+  const maskOpacity = useState('landing-reveal-mask-opacity', () => 0.92)
   const contentVisible = useState('landing-reveal-content-visible', () => false)
   const interactiveReady = useState('landing-reveal-interactive-ready', () => false)
   const headerVisible = useState('landing-reveal-header-visible', () => false)
   const timers = useState('landing-reveal-timers', () => [] as number[])
 
-  const resetSequence = () => {
+  const setHeaderVisibility = (visible: boolean) => {
+    headerVisible.value = visible
+  }
+
+  const resetSequence = (options: { preserveHeader?: boolean } = {}) => {
     clearTimers(timers)
     sequenceStarted.value = false
-    maskProgress.value = 0
+    maskScale.value = 0.9
+    maskOpacity.value = 0.92
     contentVisible.value = false
     interactiveReady.value = false
-    headerVisible.value = false
+    if (!options.preserveHeader)
+      headerVisible.value = false
   }
 
   const beginSequence = (timings: Partial<LandingRevealTimings> = {}) => {
@@ -66,7 +73,8 @@ export function useLandingRevealState() {
       return
 
     sequenceStarted.value = true
-    maskProgress.value = 0
+    maskScale.value = 0.9
+    maskOpacity.value = 0.92
     contentVisible.value = false
     interactiveReady.value = false
     headerVisible.value = false
@@ -82,15 +90,19 @@ export function useLandingRevealState() {
     // Slight delay so layout paints before we apply transitions
     window.requestAnimationFrame(() => {
       schedule(timers, merged.mask, () => {
-        maskProgress.value = 1
+        maskScale.value = 1.4
+        maskOpacity.value = 0.82
       })
 
       schedule(timers, merged.content, () => {
         contentVisible.value = true
+        maskOpacity.value = 0.72
       })
 
       schedule(timers, merged.interactive, () => {
         interactiveReady.value = true
+        maskScale.value = 1
+        maskOpacity.value = 0.8
       })
 
       schedule(timers, merged.header, () => {
@@ -109,9 +121,11 @@ export function useLandingRevealState() {
     beginSequence,
     resetSequence,
     sequenceStarted,
-    maskProgress,
+    maskScale,
+    maskOpacity,
     contentVisible,
     interactiveReady,
     headerVisible,
+    setHeaderVisibility,
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useLandingRevealState } from '~/composables/useLandingRevealState'
 
 const route = useRoute()
@@ -49,16 +49,30 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
-const { headerVisible, sequenceStarted } = useLandingRevealState()
+const { headerVisible, sequenceStarted, setHeaderVisibility } = useLandingRevealState()
 
-const landingHeaderClass = computed(() => {
-  if (!isHome.value)
-    return {}
+if (!isHome.value) {
+  setHeaderVisibility(true)
+}
+else if (!sequenceStarted.value) {
+  setHeaderVisibility(false)
+}
 
-  return {
-    'landing-header': sequenceStarted.value,
-    'landing-header--visible': headerVisible.value,
+watchEffect(() => {
+  if (!isHome.value) {
+    setHeaderVisibility(true)
   }
+})
+
+const landingHeaderClass = computed(() => ({
+  'landing-header': true,
+  'landing-header--visible': headerVisible.value,
+}))
+
+const headerRevealStyle = computed(() => {
+  if (!isHome.value)
+    return { '--header-delay': '0s' }
+  return undefined
 })
 </script>
 
@@ -67,6 +81,7 @@ const landingHeaderClass = computed(() => {
     class="TuffHeader"
     data-role="main-header"
     :class="landingHeaderClass"
+    :style="headerRevealStyle"
   >
     <div
       class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-4 py-2 sm:flex-nowrap"
@@ -169,7 +184,7 @@ const landingHeaderClass = computed(() => {
     opacity 1.15s cubic-bezier(0.22, 0.61, 0.36, 1),
     filter 1.25s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 1.15s cubic-bezier(0.22, 0.61, 0.36, 1);
-  transition-delay: 0.2s;
+  transition-delay: var(--header-delay, 0.2s);
 }
 
 .landing-header--visible {

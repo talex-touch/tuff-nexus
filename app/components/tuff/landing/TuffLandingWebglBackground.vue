@@ -121,7 +121,7 @@ onMounted(() => {
       float vignette = smoothstep(1.0, 0.2, dist * 1.2);
       color *= vignette;
 
-      float fadeIn = smoothstep(0.0, 3.0, u_time);
+      float fadeIn = smoothstep(0.0, 2.2, u_time);
       float dissolveNoise = fbm(st * 4.0 - u_time * 0.03) * 0.35;
       float revealSignal = fadeIn + dissolveNoise - 0.35;
       float reveal = smoothstep(0.0, 1.0, revealSignal);
@@ -176,7 +176,7 @@ onMounted(() => {
 
     const elapsed = (now - startTime) / 1000
     // Ease canvas opacity from opaque black toward the ambient translucency
-    const fadeDuration = 3
+    const fadeDuration = 2.2
     const fadeProgress = Math.min(elapsed / fadeDuration, 1)
     const easedFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress)
     const targetOpacity = 1 - easedFade * 0.5

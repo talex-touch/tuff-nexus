@@ -81,7 +81,8 @@ let startTime = Date.now()
 
 const {
   sequenceStarted,
-  maskProgress,
+  maskScale,
+  maskOpacity,
   contentVisible,
 } = useLandingRevealState()
 
@@ -91,11 +92,9 @@ const bannerLayerClass = computed(() => ({
 }))
 
 const maskStyle = computed(() => {
-  const scale = (0.86 + maskProgress.value * 0.24).toFixed(3)
-  const opacity = (0.86 - maskProgress.value * 0.12).toFixed(3)
   return {
-    '--mask-scale': scale,
-    '--mask-opacity': opacity,
+    '--mask-scale': maskScale.value.toFixed(3),
+    '--mask-opacity': maskOpacity.value.toFixed(3),
   }
 })
 

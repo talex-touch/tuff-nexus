@@ -54,7 +54,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  resetSequence()
+  resetSequence({ preserveHeader: true })
 })
 </script>
 
@@ -125,6 +125,7 @@ onBeforeUnmount(() => {
 
 .hero-wordmark-text {
   position: relative;
+  display: inline-block;
   font-family: 'Poppins', sans-serif;
   font-size: clamp(4rem, 12vw, 9rem);
   font-weight: 700;
