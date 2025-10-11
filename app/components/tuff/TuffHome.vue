@@ -8,9 +8,7 @@ import TuffLandingStats from './landing/TuffLandingStats.vue'
 import TuffLandingWaitlist from './landing/TuffLandingWaitlist.vue'
 
 const hero = {
-  badge: 'Tuff Launcher',
-  title: 'Launch, orchestrate, and share your entire workspace flow.',
-  copy: 'Tuff brings the luminous aesthetic from the docs experience into product surfaces. Command palettes, live presence, and automation boards stay in lockstep across every device.',
+  title: 'Profoundly Powerful. Deceptively Simple.',
   bullets: [
     'Cinematic command surfaces with synchronized transitions on desktop, web, and mobile.',
     'Policy-aware rollout controls with signed extensions and regional manifests.',
@@ -18,8 +16,6 @@ const hero = {
   ],
   primaryCta: { label: 'Join waitlist', to: '#waitlist', icon: 'i-carbon-play-filled' },
   secondaryCta: { label: 'Preview docs', to: '/docs', icon: 'i-carbon-book' },
-  bannerCopy:
-    'Compose flows with responsive motion surfaces that translate perfectly from 4K showreels to mobile check-ins—no distortion, no guesswork.',
 }
 
 const stats = [

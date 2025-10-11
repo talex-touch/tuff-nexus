@@ -56,7 +56,7 @@ onUnmounted(() => {
     <div
       class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-4 py-2 sm:flex-nowrap"
       :class="{
-        'border-primary/10 bg-white/80 shadow-sm dark:border-light/10 dark:bg-primary/90': scrolled,
+        'border-primary/10 bg-white/50 shadow-sm dark:border-light/10 dark:bg-primary/50': scrolled,
       }"
     >
       <NuxtLink
