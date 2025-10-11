@@ -20,7 +20,7 @@ function toggleLocale() {
 <template>
   <button
     type="button"
-    class="LanguageToggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/10 bg-white/80 text-primary/80 shadow-[0_8px_20px_rgba(15,23,42,0.08)] backdrop-blur-md transition-colors duration-200 hover:border-primary/20 hover:bg-white dark:border-light/20 dark:bg-white/10 dark:text-light/80 dark:shadow-[0_12px_28px_rgba(0,0,0,0.35)] dark:hover:border-light/30 dark:hover:bg-white/15"
+    class="LanguageToggle h-9 w-9 inline-flex items-center justify-center rounded-full border-none bg-white/80 text-primary/80 transition-colors duration-200 dark:bg-white/10 hover:bg-white dark:text-light/80 dark:hover:bg-white/15"
     :aria-label="ariaLabel"
     :title="tooltipLabel"
     :aria-pressed="locale === 'zh'"
