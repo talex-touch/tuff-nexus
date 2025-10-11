@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TuffShowcase from './showcase/TuffShowcase.vue'
 import { ref } from 'vue'
 import { useGsapReveal } from '~/composables/useGsapReveal'
+import TuffShowcase from './showcase/TuffShowcase.vue'
 
 interface SpotlightResult {
   icon: string
@@ -45,16 +45,17 @@ useGsapReveal(sectionRef, {
 <template>
   <section
     ref="sectionRef"
-    class="min-h-screen flex flex-col overflow-hidden"
+    class="min-h-screen flex flex-col gap-12 overflow-hidden py-24"
   >
-    <header class="text-center text-neutral-900 space-y-5">
-      <TuffStickyBar>
-        {{ spotlight.eyebrow }}
-      </TuffStickyBar>
-      <h2 class="text-[clamp(2.2rem,1vw+2.4rem,3.4rem)] font-semibold leading-tight">
+    <TuffStickyBar>
+      {{ spotlight.eyebrow }}
+    </TuffStickyBar>
+
+    <header class="text-center text-neutral-900 text-white">
+      <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
         {{ spotlight.headline }}
       </h2>
-      <p class="mx-auto max-w-3xl text-base text-neutral-600 leading-relaxed sm:text-lg">
+      <p class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70">
         {{ spotlight.subheadline }}
       </p>
     </header>
@@ -63,7 +64,6 @@ useGsapReveal(sectionRef, {
       <TuffLandingShowcaseTuffShowcaseContainer>
         <TuffShowcase />
       </TuffLandingShowcaseTuffShowcaseContainer>
-
     </div>
   </section>
 </template>
