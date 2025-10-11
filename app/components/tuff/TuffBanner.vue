@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useLandingRevealState } from '~/composables/useLandingRevealState'
 
 const vertSource = `
 #ifdef GL_ES
@@ -77,6 +78,26 @@ let animationFrameId: number | null = null
 let gl: WebGLRenderingContext | null = null
 let program: WebGLProgram | null = null
 let startTime = Date.now()
+
+const {
+  sequenceStarted,
+  maskProgress,
+  contentVisible,
+} = useLandingRevealState()
+
+const bannerLayerClass = computed(() => ({
+  'landing-reveal-layer': sequenceStarted.value,
+  'landing-reveal-layer--visible': contentVisible.value,
+}))
+
+const maskStyle = computed(() => {
+  const scale = (0.86 + maskProgress.value * 0.24).toFixed(3)
+  const opacity = (0.86 - maskProgress.value * 0.12).toFixed(3)
+  return {
+    '--mask-scale': scale,
+    '--mask-opacity': opacity,
+  }
+})
 
 function createShader(glContext: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
   const shader = glContext.createShader(type)
@@ -295,8 +316,14 @@ onUnmounted(() => {
     <div class="tuff-banner-canvas-wrap">
       <canvas ref="canvasRef" class="tuff-banner-canvas" />
     </div>
-    <div class="tuff-banner-mask" />
-    <div class="tuff-banner-layer">
+    <div
+      class="tuff-banner-mask"
+      :style="maskStyle"
+    />
+    <div
+      class="tuff-banner-layer"
+      :class="bannerLayerClass"
+    >
       <TuffLandingWebglBackground />
       <div class="tuff-banner-core">
         <slot name="core-box" />
@@ -343,6 +370,22 @@ onUnmounted(() => {
   flex-wrap: wrap;
 }
 
+.tuff-banner-layer.landing-reveal-layer {
+  opacity: 0;
+  filter: blur(40px);
+  transform: translate3d(0, 64px, 0);
+  transition:
+    opacity 1.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 1.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.tuff-banner-layer.landing-reveal-layer--visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0);
+}
+
 .tuff-banner-core {
   display: flex;
   flex: 1;
@@ -381,10 +424,23 @@ onUnmounted(() => {
   inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tuff-banner-mask::after {
+  content: '';
+  position: absolute;
+  inset: -12%;
   background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 60%, rgba(0, 0, 0, 0.9) 100%);
   mask: radial-gradient(circle at center, transparent 50%, black 60%);
-  -webkit-mask: radial-gradient(circle at center, transparent 50%, black 55%);
-  pointer-events: none;
+  -webkit-mask: radial-gradient(circle at center, transparent 52%, black 58%);
+  opacity: var(--mask-opacity, 0.82);
+  transform-origin: center;
+  transform: scale(var(--mask-scale, 1));
+  transition:
+    transform 2.4s cubic-bezier(0.25, 0.74, 0.15, 0.99),
+    opacity 2.4s cubic-bezier(0.25, 0.74, 0.15, 0.99);
 }
 
 @keyframes tuff-banner-smoke-pulse {

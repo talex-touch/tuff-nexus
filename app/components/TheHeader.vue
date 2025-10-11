@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useLandingRevealState } from '~/composables/useLandingRevealState'
 
 const route = useRoute()
 
@@ -47,11 +48,25 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
+const { headerVisible, sequenceStarted } = useLandingRevealState()
+
+const landingHeaderClass = computed(() => {
+  if (!isHome.value)
+    return {}
+
+  return {
+    'landing-header': sequenceStarted.value,
+    'landing-header--visible': headerVisible.value,
+  }
+})
 </script>
 
 <template>
   <header
     class="TuffHeader"
+    data-role="main-header"
+    :class="landingHeaderClass"
   >
     <div
       class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-4 py-2 sm:flex-nowrap"
@@ -143,5 +158,24 @@ onUnmounted(() => {
   margin: 0px 0.5rem;
   padding: 4px 8px;
   border-radius: 12px;
+}
+
+.landing-header {
+  opacity: 0;
+  filter: blur(18px);
+  transform: translate3d(0, -48px, 0);
+  pointer-events: none;
+  transition:
+    opacity 1.15s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 1.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1.15s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: 0.2s;
+}
+
+.landing-header--visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
 }
 </style>
