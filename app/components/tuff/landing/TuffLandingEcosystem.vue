@@ -42,22 +42,22 @@ useGsapReveal(sectionRef, {
     class="px-6 py-24"
   >
     <div class="mx-auto max-w-6xl space-y-12">
-      <header class="space-y-6 text-white">
+      <header class="space-y-5 text-center text-neutral-900">
         <span
           data-reveal
-          class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white/70"
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-100/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-neutral-500"
         >
           {{ openFoundation.eyebrow }}
         </span>
         <h2
           data-reveal
-          class="text-[clamp(2rem,1.1vw+2.25rem,3.1rem)] font-semibold leading-tight text-white"
+          class="text-[clamp(2.1rem,1vw+2.4rem,3.1rem)] font-semibold leading-tight"
         >
           {{ openFoundation.headline }}
         </h2>
         <p
           data-reveal
-          class="max-w-3xl text-base leading-relaxed text-white/65 sm:text-lg"
+          class="mx-auto max-w-3xl text-base leading-relaxed text-neutral-600 sm:text-lg"
         >
           {{ openFoundation.subheadline }}
         </p>
@@ -68,17 +68,17 @@ useGsapReveal(sectionRef, {
           v-for="pillar in openFoundation.pillars"
           :key="pillar.title"
           data-reveal
-          class="flex h-full flex-col gap-5 rounded-[28px] border border-white/10 bg-[#04050f]/92 p-8 shadow-[0_28px_110px_rgba(0,0,0,0.5)] transition hover:-translate-y-1 hover:border-white/20 hover:bg-[#060719]"
+          class="flex h-full flex-col items-center gap-5 rounded-[28px] border border-neutral-200/80 bg-white/80 p-8 text-center text-neutral-600 shadow-[0_24px_80px_rgba(35,31,32,0.12)] transition hover:-translate-y-1 hover:border-neutral-300 hover:bg-white"
         >
-          <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white/80">
-            <span :class="pillar.icon" class="text-2xl" aria-hidden="true" />
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-[0_12px_30px_rgba(35,31,32,0.2)]">
+            <span :class="pillar.icon" class="text-xl" aria-hidden="true" />
           </span>
           <div class="space-y-2">
-            <h3 class="text-lg font-semibold text-white/90">
+            <h3 class="text-lg font-semibold text-neutral-900">
               {{ pillar.title }}
             </h3>
           </div>
-          <p class="text-sm text-white/60">
+          <p class="text-sm leading-relaxed text-neutral-600">
             {{ pillar.copy }}
           </p>
         </article>
@@ -86,9 +86,9 @@ useGsapReveal(sectionRef, {
 
       <footer
         data-reveal
-        class="rounded-[24px] border border-white/10 bg-white/5 px-6 py-5 text-sm text-white/65"
+        class="rounded-[24px] border border-neutral-200/80 bg-white/70 px-6 py-5 text-sm text-neutral-600 text-center"
       >
-        <span class="block text-white/70">
+        <span class="block">
           {{ openFoundation.footnote }}
         </span>
       </footer>

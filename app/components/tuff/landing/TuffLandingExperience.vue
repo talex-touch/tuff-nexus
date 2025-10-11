@@ -54,22 +54,22 @@ function selectScenario(id: string) {
     class="px-6 py-24"
   >
     <div class="mx-auto max-w-6xl space-y-12">
-      <header class="space-y-6 text-white">
+      <header class="space-y-5 text-center text-neutral-900">
         <span
           data-reveal
-          class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white/70"
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-100/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-neutral-500"
         >
           {{ proactive.eyebrow }}
         </span>
         <h2
           data-reveal
-          class="text-[clamp(2rem,1.2vw+2.25rem,3.3rem)] font-semibold leading-tight text-white"
+          class="text-[clamp(2.2rem,1vw+2.4rem,3.3rem)] font-semibold leading-tight"
         >
           {{ proactive.headline }}
         </h2>
         <p
           data-reveal
-          class="max-w-3xl text-base leading-relaxed text-white/65 sm:text-lg"
+          class="mx-auto max-w-3xl text-base leading-relaxed text-neutral-600 sm:text-lg"
         >
           {{ proactive.subheadline }}
         </p>
@@ -77,37 +77,35 @@ function selectScenario(id: string) {
 
       <div
         data-reveal
-        class="flex flex-wrap items-center gap-4 rounded-[24px] border border-white/15 bg-white/10 px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/70"
+        class="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-3 rounded-full border border-neutral-200/80 bg-white/80 px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500"
       >
-        <span class="inline-flex items-center gap-2 text-white">
+        <span class="inline-flex items-center gap-2 text-neutral-700">
           <span class="i-carbon-shield text-base" />
           {{ proactive.shieldLabel }}
         </span>
       </div>
 
-      <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+      <div class="flex flex-col items-center gap-8">
         <nav
           data-reveal
-          class="flex flex-col gap-3 rounded-[28px] border border-white/10 bg-[#040713]/90 p-6 shadow-[0_24px_110px_rgba(0,0,0,0.5)] lg:w-72"
+          class="flex flex-wrap justify-center gap-4"
         >
           <button
             v-for="scenario in proactive.scenarios"
             :key="scenario.id"
             type="button"
-            class="flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2"
+            class="flex w-44 flex-col items-center gap-3 rounded-[24px] border px-5 py-5 text-center transition focus-visible:outline-none focus-visible:ring-2"
             :class="scenario.id === activeScenarioId
-              ? 'bg-white/15 border border-white/25 text-white focus-visible:ring-white/40'
-              : 'bg-transparent border border-white/10 text-white/70 hover:border-white/20 hover:bg-white/10 focus-visible:ring-white/30'"
+              ? 'border-neutral-900 bg-neutral-900 text-white shadow-[0_20px_50px_rgba(35,31,32,0.18)] focus-visible:ring-neutral-600'
+              : 'border-neutral-200/80 bg-white/80 text-neutral-600 hover:-translate-y-1 hover:border-neutral-300 hover:bg-white focus-visible:ring-neutral-300'"
             @click="selectScenario(scenario.id)"
           >
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white/70">
-              <span :class="scenario.icon" class="text-xl" aria-hidden="true" />
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-300 bg-white text-neutral-700">
+              <span :class="scenario.icon" class="text-lg" aria-hidden="true" />
             </span>
-            <div class="space-y-1 text-sm">
-              <span class="block font-semibold text-white">
-                {{ scenario.tab }}
-              </span>
-            </div>
+            <span class="text-sm font-semibold">
+              {{ scenario.tab }}
+            </span>
           </button>
         </nav>
 
@@ -115,19 +113,19 @@ function selectScenario(id: string) {
           v-if="activeScenario"
           data-reveal
           key="scenario-panel"
-          class="flex-1 overflow-hidden rounded-[32px] border border-white/10 bg-[#050817]/95 p-10 shadow-[0_32px_120px_rgba(0,0,0,0.55)]"
+          class="w-full max-w-3xl overflow-hidden rounded-[36px] border border-neutral-200/80 bg-white/90 px-10 py-12 text-center text-neutral-700 shadow-[0_28px_90px_rgba(35,31,32,0.12)]"
         >
-          <div class="space-y-5 text-white">
-            <h3 class="text-2xl font-semibold">
+          <div class="space-y-5">
+            <h3 class="text-2xl font-semibold text-neutral-900">
               {{ activeScenario.title }}
             </h3>
-            <p class="text-sm leading-relaxed text-white/65">
+            <p class="text-sm leading-relaxed text-neutral-600 sm:text-base">
               {{ activeScenario.copy }}
             </p>
           </div>
 
-          <div class="mt-8 space-y-3 rounded-[24px] border border-white/10 bg-white/5 px-6 py-5 text-sm text-white/70">
-            <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white">
+          <div class="mt-10 flex justify-center">
+            <span class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-neutral-100/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-neutral-600">
               <span class="i-carbon-connection-signal text-base" />
               {{ activeScenario.action }}
             </span>

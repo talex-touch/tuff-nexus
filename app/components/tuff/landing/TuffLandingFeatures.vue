@@ -56,22 +56,22 @@ function isActivated(id: string) {
     class="px-6 py-24"
   >
     <div class="mx-auto max-w-6xl space-y-12">
-      <header class="space-y-6 text-white">
+      <header class="space-y-5 text-center text-neutral-900">
         <span
           data-reveal
-          class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-white/70"
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200/80 bg-neutral-100/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-neutral-500"
         >
           {{ capabilities.eyebrow }}
         </span>
         <h2
           data-reveal
-          class="text-[clamp(2rem,1.1vw+2.25rem,3.2rem)] font-semibold leading-tight text-white"
+          class="text-[clamp(2.1rem,1vw+2.3rem,3.2rem)] font-semibold leading-tight"
         >
           {{ capabilities.headline }}
         </h2>
         <p
           data-reveal
-          class="max-w-3xl text-base leading-relaxed text-white/65 sm:text-lg"
+          class="mx-auto max-w-3xl text-base leading-relaxed text-neutral-600 sm:text-lg"
         >
           {{ capabilities.subheadline }}
         </p>
@@ -82,27 +82,27 @@ function isActivated(id: string) {
           v-for="capability in cards"
           :key="capability.id"
           data-reveal
-          class="group flex h-full flex-col justify-between gap-6 rounded-[28px] border border-white/10 bg-[#050712]/92 p-8 shadow-[0_26px_100px_rgba(0,0,0,0.5)] transition hover:-translate-y-1 hover:border-white/20 hover:bg-[#080a18]"
+          class="group flex h-full flex-col items-center justify-between gap-6 rounded-[28px] border border-neutral-200/80 bg-white/80 p-8 text-center text-neutral-600 shadow-[0_22px_70px_rgba(35,31,32,0.12)] transition hover:-translate-y-1 hover:border-neutral-300 hover:bg-white"
         >
           <div class="space-y-4">
-            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white/80 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
-              <span :class="capability.icon" class="text-2xl" aria-hidden="true" />
+            <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-[0_12px_30px_rgba(35,31,32,0.22)]">
+              <span :class="capability.icon" class="text-xl" aria-hidden="true" />
             </span>
             <div class="space-y-1">
-              <h3 class="text-lg font-semibold text-white">
+              <h3 class="text-lg font-semibold text-neutral-900">
                 {{ capability.name }}
               </h3>
             </div>
-            <p class="text-sm text-white/60">
+            <p class="text-sm leading-relaxed text-neutral-600">
               {{ capability.description }}
             </p>
           </div>
           <button
             type="button"
-            class="inline-flex w-max items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] transition focus-visible:outline-none focus-visible:ring-2"
+            class="inline-flex items-center gap-2 rounded-full border border-neutral-200/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-neutral-600 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300"
             :class="isActivated(capability.id)
-              ? 'border-white/30 bg-white/10 text-white focus-visible:ring-white/50'
-              : 'border-white/15 bg-transparent text-white/70 hover:border-white/25 hover:bg-white/8 focus-visible:ring-white/30'"
+              ? 'bg-neutral-900 text-white shadow-[0_12px_30px_rgba(35,31,32,0.18)] focus-visible:ring-neutral-500'
+              : 'hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-white'"
             @click="toggleCapability(capability.id)"
           >
             <span v-if="!isActivated(capability.id)">{{ capabilities.addLabel }}</span>
