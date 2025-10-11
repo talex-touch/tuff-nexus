@@ -57,6 +57,9 @@ useGsapReveal(sectionRef, {
       </h2>
       <p class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70">
         {{ spotlight.subheadline }}
+        <span class="mt-3 block text-sm text-neutral-500 font-medium tracking-wide dark:text-neutral-300/80">
+          {{ spotlight.demo.summary }}
+        </span>
       </p>
     </header>
 
@@ -64,6 +67,12 @@ useGsapReveal(sectionRef, {
       <TuffLandingShowcaseTuffShowcaseContainer>
         <TuffShowcase />
       </TuffLandingShowcaseTuffShowcaseContainer>
+
+      <p>
+        <span class="block text-sm text-neutral-500/80 font-medium tracking-wide dark:text-neutral-300/70">
+          {{ spotlight.highlights[0]?.copy ?? 'Precision insights orchestrated for your next launch.' }}
+        </span>
+      </p>
     </div>
   </section>
 </template>

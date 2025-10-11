@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { gsap } from 'gsap'
 
 type StickyState = 'idle' | 'active' | 'leaving'
 
 const sentinelRef = ref<HTMLElement | null>(null)
+const barRef = ref<HTMLElement | null>(null)
 const state = ref<StickyState>('idle')
 
 let observer: IntersectionObserver | null = null
 let leaveTimeout: ReturnType<typeof setTimeout> | undefined
+let motionCleanup: (() => void) | null = null
+let reduceMotion = false
+let activeTimeline: gsap.core.Timeline | null = null
 
 const isActive = computed(() => state.value === 'active')
 const isLeaving = computed(() => state.value === 'leaving')
@@ -31,6 +36,146 @@ function scheduleLeave() {
 
     clearLeaveTimeout()
   }, LEAVE_DURATION)
+}
+
+const killActiveTimeline = () => {
+  if (activeTimeline) {
+    activeTimeline.kill()
+    activeTimeline = null
+  }
+}
+
+const playEnter = (target: HTMLElement) => {
+  killActiveTimeline()
+
+  if (reduceMotion) {
+    gsap.set(target, {
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      '--sticky-bar-blur': '0px',
+      visibility: 'visible',
+      pointerEvents: 'auto',
+    })
+    return
+  }
+
+  activeTimeline = gsap.timeline({
+    onComplete: () => {
+      gsap.set(target, { willChange: 'auto' })
+      activeTimeline = null
+    },
+  })
+
+  activeTimeline
+    .set(target, {
+      visibility: 'visible',
+      pointerEvents: 'auto',
+      willChange: 'transform, opacity, filter',
+      opacity: 1,
+    })
+    .fromTo(target,
+      {
+        y: 104,
+        scale: 0.8,
+        opacity: 0,
+        '--sticky-bar-blur': '26px',
+      },
+      {
+        duration: 0.48,
+        y: -18,
+        scale: 1.14,
+        opacity: 1,
+        '--sticky-bar-blur': '10px',
+        ease: 'power3.out',
+      })
+    .to(target, {
+      duration: 0.26,
+      y: 14,
+      scale: 0.9,
+      '--sticky-bar-blur': '4px',
+      ease: 'power2.inOut',
+    })
+    .to(target, {
+      duration: 0.52,
+      y: 0,
+      scale: 1,
+      '--sticky-bar-blur': '0px',
+      ease: 'elastic.out(1, 0.74)',
+    })
+}
+
+const playExit = (target: HTMLElement) => {
+  killActiveTimeline()
+
+  if (reduceMotion) {
+    gsap.set(target, {
+      y: 0,
+      scale: 1,
+      opacity: 0,
+      '--sticky-bar-blur': '0px',
+      visibility: 'hidden',
+      pointerEvents: 'none',
+    })
+    return
+  }
+
+  activeTimeline = gsap.timeline({
+    onComplete: () => {
+      gsap.set(target, {
+        visibility: 'hidden',
+        pointerEvents: 'none',
+        y: 0,
+        scale: 1,
+        opacity: 0,
+        '--sticky-bar-blur': '24px',
+        willChange: 'auto',
+      })
+      activeTimeline = null
+    },
+  })
+
+  activeTimeline
+    .set(target, {
+      pointerEvents: 'none',
+      willChange: 'transform, opacity, filter',
+    })
+    .to(target, {
+      duration: 0.2,
+      y: -10,
+      scale: 1.05,
+      '--sticky-bar-blur': '12px',
+      ease: 'power1.out',
+    })
+    .to(target, {
+      duration: 0.4,
+      y: 92,
+      scale: 0.82,
+      opacity: 0,
+      '--sticky-bar-blur': '26px',
+      ease: 'power3.in',
+    })
+}
+
+const setupMotionPreference = () => {
+  if (typeof window === 'undefined' || !('matchMedia' in window))
+    return
+
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+  reduceMotion = media.matches
+
+  const update = (event: MediaQueryListEvent) => {
+    reduceMotion = event.matches
+  }
+
+  if (typeof media.addEventListener === 'function') {
+    media.addEventListener('change', update)
+    motionCleanup = () => media.removeEventListener('change', update)
+  }
+  else {
+    media.addListener(update)
+    motionCleanup = () => media.removeListener(update)
+  }
 }
 
 const intersectionHandler: IntersectionObserverCallback = (entries) => {
@@ -65,6 +210,7 @@ function initObserver(target: HTMLElement | null) {
 
 onMounted(() => {
   initObserver(sentinelRef.value)
+  setupMotionPreference()
 })
 
 watch(sentinelRef, (el) => {
@@ -73,9 +219,28 @@ watch(sentinelRef, (el) => {
   initObserver(el)
 })
 
+watch(state, async (value) => {
+  if (value === 'idle')
+    return
+
+  await nextTick()
+  const bar = barRef.value
+  if (!bar)
+    return
+
+  if (value === 'active')
+    playEnter(bar)
+  else if (value === 'leaving')
+    playExit(bar)
+}, { flush: 'post' })
+
 onBeforeUnmount(() => {
   observer?.disconnect()
   clearLeaveTimeout()
+  motionCleanup?.()
+  killActiveTimeline()
+  if (barRef.value)
+    gsap.killTweensOf(barRef.value)
 })
 </script>
 
@@ -88,6 +253,7 @@ onBeforeUnmount(() => {
 
   <div
     v-if="shouldRender"
+    ref="barRef"
     class="TuffStickyBar"
     :class="{
       'is-active': isActive,
@@ -112,100 +278,32 @@ onBeforeUnmount(() => {
 .TuffStickyBar {
   position: fixed;
   left: 50%;
-  bottom: 2.5vh;
+  bottom: 10vh;
   display: flex;
   justify-content: center;
   width: min(90vw, 480px);
-  transform: translate3d(-50%, 96px, 0) scale(0.8);
+  transform: translateX(-50%);
   opacity: 0;
-  filter: blur(28px);
+  --sticky-bar-blur: 24px;
+  filter: blur(var(--sticky-bar-blur));
   pointer-events: none;
   visibility: hidden;
   color: #4bd77d;
   z-index: 40;
-  will-change: transform, opacity, filter;
 }
 
 .TuffStickyBar.is-active {
   pointer-events: auto;
   visibility: visible;
-  animation: sticky-bar-enter 0.94s cubic-bezier(0.25, 1.15, 0.45, 1) forwards;
 }
 
 .TuffStickyBar.is-leaving {
   pointer-events: none;
   visibility: visible;
-  animation: sticky-bar-exit 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 .TuffStickyBar__inner {
   backdrop-filter: blur(6px);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
-}
-
-@keyframes sticky-bar-enter {
-  0% {
-    transform: translate3d(-50%, 110px, 0) scale(0.74);
-    opacity: 0;
-    filter: blur(32px);
-  }
-
-  46% {
-    transform: translate3d(-50%, -18px, 0) scale(1.14);
-    opacity: 1;
-    filter: blur(12px);
-  }
-
-  68% {
-    transform: translate3d(-50%, 16px, 0) scale(0.9);
-    filter: blur(5px);
-  }
-
-  82% {
-    transform: translate3d(-50%, -6px, 0) scale(1.06);
-    filter: blur(2px);
-  }
-
-  100% {
-    transform: translate3d(-50%, 0, 0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
-}
-
-@keyframes sticky-bar-exit {
-  0% {
-    transform: translate3d(-50%, 0, 0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
-
-  28% {
-    transform: translate3d(-50%, -10px, 0) scale(1.05);
-    filter: blur(10px);
-  }
-
-  48% {
-    transform: translate3d(-50%, 8px, 0) scale(0.92);
-    opacity: 0.6;
-    filter: blur(14px);
-  }
-
-  100% {
-    transform: translate3d(-50%, 96px, 0) scale(0.78);
-    opacity: 0;
-    filter: blur(26px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .TuffStickyBar,
-  .TuffStickyBar.is-active,
-  .TuffStickyBar.is-leaving {
-    animation: none;
-    transform: translate3d(-50%, 0, 0) scale(1);
-    filter: none;
-    opacity: 1;
-  }
 }
 </style>
