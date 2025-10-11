@@ -18,11 +18,6 @@ const hero = {
   ],
   primaryCta: { label: 'Join waitlist', to: '#waitlist', icon: 'i-carbon-play-filled' },
   secondaryCta: { label: 'Preview docs', to: '/docs', icon: 'i-carbon-book' },
-  highlights: [
-    { value: '0.29s', label: 'Command cold start' },
-    { value: '140+', label: 'Signed extensions' },
-    { value: '12 regions', label: 'Launch coverage' },
-  ],
   bannerCopy:
     'Compose flows with responsive motion surfaces that translate perfectly from 4K showreels to mobile check-ins—no distortion, no guesswork.',
 }

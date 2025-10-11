@@ -113,8 +113,7 @@ onUnmounted(() => {
 
 <style scoped>
 .TuffHeader {
-  z-index: 10;
-  position: sticky;
+  position: fixed;
 
   top: 0;
   left: 0;
