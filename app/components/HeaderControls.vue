@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside, useEventListener } from '@vueuse/core'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 interface Props {
   githubUrl?: string
@@ -16,19 +16,24 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { locale } = useI18n()
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const searchButtonLabel = computed(() => locale.value === 'zh' ? '搜索文档' : 'Search docs')
+// eslint-disable-next-line unused-imports/no-unused-vars
 const searchButtonAriaLabel = computed(() => locale.value === 'zh' ? '打开文档搜索' : 'Open docs search')
 
 const isSearchOpen = ref(false)
 const searchButtonRef = ref<HTMLElement | null>(null)
 const searchPanelRef = ref<HTMLElement | null>(null)
+let stopClickOutside: (() => void) | null = null
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function toggleSearch() {
   if (!props.showSearchButton)
     return
   isSearchOpen.value = !isSearchOpen.value
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function onSearchPanelClick(event: MouseEvent) {
   const target = event.target as HTMLElement | null
   if (target?.closest('a'))
@@ -38,6 +43,7 @@ function onSearchPanelClick(event: MouseEvent) {
 watch(() => props.showSearchButton, (value) => {
   if (!value)
     isSearchOpen.value = false
+  registerClickOutside()
 })
 
 watch(isSearchOpen, (open) => {
@@ -50,13 +56,38 @@ watch(isSearchOpen, (open) => {
   })
 })
 
-onClickOutside([searchButtonRef, searchPanelRef], () => {
-  isSearchOpen.value = false
-})
-
 useEventListener(window, 'keydown', (event: KeyboardEvent) => {
   if (event.key === 'Escape')
     isSearchOpen.value = false
+})
+
+function registerClickOutside() {
+  stopClickOutside?.()
+  stopClickOutside = null
+
+  if (!props.showSearchButton)
+    return
+
+  const targets = [searchButtonRef.value, searchPanelRef.value].filter((el): el is HTMLElement => !!el)
+  if (!targets.length)
+    return
+
+  stopClickOutside = onClickOutside(targets, () => {
+    isSearchOpen.value = false
+  })
+}
+
+onMounted(() => {
+  registerClickOutside()
+})
+
+watch([searchButtonRef, searchPanelRef], () => {
+  registerClickOutside()
+})
+
+onBeforeUnmount(() => {
+  stopClickOutside?.()
+  stopClickOutside = null
 })
 </script>
 

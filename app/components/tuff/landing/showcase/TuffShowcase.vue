@@ -1,5 +1,7 @@
 <template>
-  <div class="tuff-showcase" aria-hidden="true"></div>
+  <div class="tuff-showcase" aria-hidden="true">
+    <TuffLandingShowcaseTuffShowcaseDisplayer />
+  </div>
 </template>
 
 <style scoped>
@@ -8,13 +10,13 @@
   --showcase-effective-width: min(92vw, var(--showcase-width));
 
   position: relative;
+  padding: 1rem;
   display: block;
   width: var(--showcase-effective-width);
   max-width: 100%;
   aspect-ratio: 16 / 9;
   flex-shrink: 0;
   background: transparent;
-  pointer-events: none;
 }
 
 /* Fixed width presets tied to common device classes */
