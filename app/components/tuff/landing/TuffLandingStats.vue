@@ -51,7 +51,7 @@ useGsapReveal(sectionRef, {
       {{ spotlight.eyebrow }}
     </TuffStickyBar>
 
-    <header class="text-center text-neutral-900 text-white">
+    <header class="text-center text-white">
       <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
         {{ spotlight.headline }}
       </h2>
