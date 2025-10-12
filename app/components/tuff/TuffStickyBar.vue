@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { gsap } from 'gsap'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type StickyState = 'idle' | 'active' | 'leaving'
 
@@ -18,7 +18,7 @@ const isActive = computed(() => state.value === 'active')
 const isLeaving = computed(() => state.value === 'leaving')
 const shouldRender = computed(() => state.value !== 'idle')
 
-const LEAVE_DURATION = 620
+const LEAVE_DURATION = 680
 
 function clearLeaveTimeout() {
   if (leaveTimeout !== undefined) {
@@ -38,24 +38,24 @@ function scheduleLeave() {
   }, LEAVE_DURATION)
 }
 
-const killActiveTimeline = () => {
+function killActiveTimeline() {
   if (activeTimeline) {
     activeTimeline.kill()
     activeTimeline = null
   }
 }
 
-const playEnter = (target: HTMLElement) => {
+function playEnter(target: HTMLElement) {
   killActiveTimeline()
 
   if (reduceMotion) {
     gsap.set(target, {
-      y: 0,
-      scale: 1,
-      opacity: 1,
+      'y': 0,
+      'scale': 1,
+      'opacity': 1,
       '--sticky-bar-blur': '0px',
-      visibility: 'visible',
-      pointerEvents: 'auto',
+      'visibility': 'visible',
+      'pointerEvents': 'auto',
     })
     return
   }
@@ -74,48 +74,46 @@ const playEnter = (target: HTMLElement) => {
       willChange: 'transform, opacity, filter',
       opacity: 1,
     })
-    .fromTo(target,
-      {
-        y: 104,
-        scale: 0.8,
-        opacity: 0,
-        '--sticky-bar-blur': '26px',
-      },
-      {
-        duration: 0.48,
-        y: -18,
-        scale: 1.14,
-        opacity: 1,
-        '--sticky-bar-blur': '10px',
-        ease: 'power3.out',
-      })
-    .to(target, {
-      duration: 0.26,
-      y: 14,
-      scale: 0.9,
-      '--sticky-bar-blur': '4px',
-      ease: 'power2.inOut',
+    .fromTo(target, {
+      'y': 96,
+      'scale': 0.84,
+      'opacity': 0,
+      '--sticky-bar-blur': '24px',
+    }, {
+      'duration': 0.58,
+      'y': -14,
+      'scale': 1.1,
+      'opacity': 1,
+      '--sticky-bar-blur': '12px',
+      'ease': 'expo.out',
     })
     .to(target, {
-      duration: 0.52,
-      y: 0,
-      scale: 1,
+      'duration': 0.24,
+      'y': 6,
+      'scale': 0.94,
+      '--sticky-bar-blur': '5px',
+      'ease': 'power2.inOut',
+    })
+    .to(target, {
+      'duration': 0.62,
+      'y': 0,
+      'scale': 1,
       '--sticky-bar-blur': '0px',
-      ease: 'elastic.out(1, 0.74)',
+      'ease': 'elastic.out(1.04, 0.68)',
     })
 }
 
-const playExit = (target: HTMLElement) => {
+function playExit(target: HTMLElement) {
   killActiveTimeline()
 
   if (reduceMotion) {
     gsap.set(target, {
-      y: 0,
-      scale: 1,
-      opacity: 0,
-      '--sticky-bar-blur': '0px',
-      visibility: 'hidden',
-      pointerEvents: 'none',
+      'y': 0,
+      'scale': 1,
+      'opacity': 0,
+      '--sticky-bar-blur': '24px',
+      'visibility': 'hidden',
+      'pointerEvents': 'none',
     })
     return
   }
@@ -123,13 +121,13 @@ const playExit = (target: HTMLElement) => {
   activeTimeline = gsap.timeline({
     onComplete: () => {
       gsap.set(target, {
-        visibility: 'hidden',
-        pointerEvents: 'none',
-        y: 0,
-        scale: 1,
-        opacity: 0,
+        'visibility': 'hidden',
+        'pointerEvents': 'none',
+        'y': 0,
+        'scale': 1,
+        'opacity': 0,
         '--sticky-bar-blur': '24px',
-        willChange: 'auto',
+        'willChange': 'auto',
       })
       activeTimeline = null
     },
@@ -141,23 +139,23 @@ const playExit = (target: HTMLElement) => {
       willChange: 'transform, opacity, filter',
     })
     .to(target, {
-      duration: 0.2,
-      y: -10,
-      scale: 1.05,
-      '--sticky-bar-blur': '12px',
-      ease: 'power1.out',
+      'duration': 0.24,
+      'y': -8,
+      'scale': 1.02,
+      '--sticky-bar-blur': '6px',
+      'ease': 'power2.inOut',
     })
     .to(target, {
-      duration: 0.4,
-      y: 92,
-      scale: 0.82,
-      opacity: 0,
-      '--sticky-bar-blur': '26px',
-      ease: 'power3.in',
-    })
+      'duration': 0.44,
+      'y': 112,
+      'scale': 0.78,
+      'opacity': 0,
+      '--sticky-bar-blur': '18px',
+      'ease': 'power3.in',
+    }, '>-0.04')
 }
 
-const setupMotionPreference = () => {
+function setupMotionPreference() {
   if (typeof window === 'undefined' || !('matchMedia' in window))
     return
 
@@ -278,7 +276,7 @@ onBeforeUnmount(() => {
 .TuffStickyBar {
   position: fixed;
   left: 50%;
-  bottom: 10vh;
+  bottom: 2.5vh;
   display: flex;
   justify-content: center;
   width: min(90vw, 480px);

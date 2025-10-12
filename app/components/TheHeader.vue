@@ -164,7 +164,10 @@ const headerRevealStyle = computed(() => {
   border-radius: 24px;
   transform: translateX(-50%);
 
-  backdrop-filter: blur(18px) saturate(180%);
+  isolation: isolate;
+  overflow: hidden;
+  backdrop-filter: var(--header-backdrop-filter, blur(18px) saturate(180%)) !important;
+  -webkit-backdrop-filter: var(--header-backdrop-filter, blur(18px) saturate(180%)) !important;
 }
 
 .beta-tag {

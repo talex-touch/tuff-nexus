@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
   speed: 18000,
   thickness: 2.4,
   radius: 28,
-  background: 'rgba(9, 13, 27, 0.78)',
+  background: 'transparent',
   glowBlur: 72,
 })
 
@@ -90,7 +90,7 @@ const containerStyle = computed(() => ({
   --showcase-speed: 18000ms;
   --showcase-border-width: 2px;
   --showcase-radius: 24px;
-  --showcase-surface: rgba(9, 13, 27, 0.78);
+  --showcase-surface: transparent;
   --showcase-glow-blur: 72px;
 
   position: relative;
@@ -102,7 +102,10 @@ const containerStyle = computed(() => ({
   overflow: hidden;
   border-radius: var(--showcase-radius);
   padding: var(--showcase-border-width);
-  background: conic-gradient(from var(--showcase-angle), var(--showcase-stops));
+  border: var(--showcase-border-width) solid transparent;
+  background:
+    linear-gradient(transparent, transparent) padding-box,
+    conic-gradient(from var(--showcase-angle), var(--showcase-stops)) border-box;
   animation: rotate-border var(--showcase-speed) linear infinite;
   box-shadow:
     0 24px 80px rgba(15, 19, 39, 0.55),
@@ -116,43 +119,11 @@ const containerStyle = computed(() => ({
   flex-direction: column;
   border-radius: calc(var(--showcase-radius) - var(--showcase-border-width));
   background: var(--showcase-surface);
-  background-image:
-    radial-gradient(120% 120% at 15% 0%, rgba(255, 255, 255, 0.24), transparent 55%),
-    radial-gradient(140% 140% at 85% 10%, rgba(164, 215, 255, 0.32), transparent 62%),
-    linear-gradient(150deg, rgba(32, 48, 112, 0.52), rgba(17, 24, 56, 0.35));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    inset 0 -12px 32px rgba(2, 8, 20, 0.65),
-    inset 0 20px 36px rgba(82, 115, 255, 0.18);
+  border: 0;
+  box-shadow: none;
   box-sizing: border-box;
-  backdrop-filter: blur(18px) saturate(120%);
-}
-
-.tuff-showcase-container__inner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 40%),
-    radial-gradient(220% 80% at 50% 0%, rgba(255, 255, 255, 0.32), transparent 60%);
-  mix-blend-mode: screen;
-  opacity: 0.65;
-  z-index: 1;
-}
-
-.tuff-showcase-container__inner::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  pointer-events: none;
-  border-radius: calc(var(--showcase-radius) - var(--showcase-border-width) - 1px);
-  background: radial-gradient(160% 100% at 50% 20%, rgba(255, 255, 255, 0.08), transparent 60%);
-  mix-blend-mode: overlay;
-  opacity: 0.35;
-  z-index: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .tuff-showcase-container__glow {
