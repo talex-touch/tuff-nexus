@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<{
     '#4776e6',
     '#b967ff',
   ],
-  speed: 18000,
+  speed: 1800,
   thickness: 2.4,
   radius: 28,
   background: 'transparent',
