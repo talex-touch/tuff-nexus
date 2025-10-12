@@ -213,20 +213,28 @@ const fadeStyle = {
         }"
       />
 
-      <div class="relative z-10 box-border flex-1 bg-transparent p-[10px] transition-colors duration-300">
-        <img :src="c.image" :alt="c.title" loading="lazy" class="block h-full w-full rounded-[10px] object-cover">
-      </div>
-
-      <footer class="relative z-10 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 p-3 text-white font-sans">
-        <h3 class="m-0 text-[1.05rem] font-semibold">
-          {{ c.title }}
-        </h3>
-        <span v-if="c.handle" class="text-right text-[0.95rem] text-[#aaa]">{{ c.handle }}</span>
-        <p class="m-0 text-[0.85rem] text-[#aaa]">
+      <div
+        class="relative z-10 box-border flex flex-1 flex-col gap-3 bg-transparent p-6 text-white font-sans transition-colors duration-300"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <img
+              :src="c.image"
+              :alt="c.title"
+              loading="lazy"
+              class="block max-h-8 max-w-8 object-contain"
+            >
+            <h3 class="m-0 text-[1.05rem] font-semibold">
+              {{ c.title }}
+            </h3>
+          </div>
+        </div>
+        <p v-if="c.subtitle" class="m-0 text-[0.85rem] text-[#aaa]">
           {{ c.subtitle }}
         </p>
-        <span v-if="c.location" class="text-right text-[0.85rem] text-[#aaa]">{{ c.location }}</span>
-      </footer>
+        <span v-if="c.location" class="self-end text-right text-[0.85rem] text-[#aaa]">{{ c.location }}</span>
+        <span v-if="c.handle" class="text-[0.95rem] text-[#aaa]">{{ c.handle }}</span>
+      </div>
     </article>
 
     <div class="pointer-events-none absolute inset-0 z-30" :style="spotlightStyle" />
