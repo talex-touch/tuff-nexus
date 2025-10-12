@@ -63,7 +63,7 @@ useGsapReveal(sectionRef, {
       </p>
     </header>
 
-    <div class="flex flex-col items-center gap-12 text-center">
+    <div class="flex flex-col items-center gap-8 text-center">
       <TuffLandingShowcaseTuffShowcaseContainer>
         <TuffVortexBackground>
           <TuffShowcase />

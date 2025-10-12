@@ -1,5 +1,6 @@
 <template>
-  <div class="tuff-showcase" aria-hidden="true">
+  <div class="tuff-showcase flex flex-col gap-12" aria-hidden="true">
+    <TuffLandingShowcaseTuffShowcaseMockHeader />
     <TuffLandingShowcaseTuffShowcaseDisplayer />
   </div>
 </template>
@@ -11,7 +12,6 @@
 
   position: relative;
   padding: 1rem;
-  display: block;
   width: var(--showcase-effective-width);
   max-width: 100%;
   aspect-ratio: 16 / 9;
