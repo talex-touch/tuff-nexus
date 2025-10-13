@@ -8,7 +8,6 @@ import VSCodeBackground from '~/images/assets/plugin-cards/vscode.png'
       :src="VSCodeBackground"
       alt="VSCode"
       class="absolute bottom-0 z-1 h-[80%] w-full object-cover"
-      :fill="true"
     />
   </div>
 </template>

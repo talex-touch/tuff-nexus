@@ -8,7 +8,6 @@ import SpotifyBackground from '~/images/assets/plugin-cards/spotify.png'
       :src="SpotifyBackground"
       alt="Spotify"
       class="absolute bottom-0 z-1 h-[80%] w-full object-cover"
-      :fill="true"
     />
 
     <div class="PluginCardNotion-Overlay absolute top-0 z-3 z-5 h-[20%] w-full bg-[#00061850] backdrop-blur-sm" />

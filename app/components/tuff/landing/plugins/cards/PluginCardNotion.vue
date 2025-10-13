@@ -8,7 +8,6 @@ import NotionBackground from '~/images/assets/plugin-cards/notion.png'
       :src="NotionBackground"
       alt="Notion"
       class="absolute inset-0 z-1 object-cover"
-      :fill="true"
     />
 
     <div class="PluginCardNotion-Overlay absolute bottom-0 z-3 z-5 h-[40%] w-full bg-black/30 backdrop-blur-sm" />

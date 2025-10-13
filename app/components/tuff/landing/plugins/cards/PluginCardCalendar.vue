@@ -8,7 +8,6 @@ import CalendarBackground from '~/images/assets/plugin-cards/calendar.png'
       :src="CalendarBackground"
       alt="Calendar"
       class="absolute bottom-0 z-1 h-[80%] w-full object-cover"
-      :fill="true"
     />
 
     <div class="PluginCardNotion-Overlay absolute top-0 z-3 z-5 h-[30%] w-full bg-[#4E110280] backdrop-blur-sm" />
