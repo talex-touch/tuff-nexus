@@ -10,6 +10,7 @@ interface Card {
   src: string
   title: string
   category: string
+  [key: string]: any
 }
 
 interface Props {
@@ -144,10 +145,14 @@ function handleClose() {
       </Motion>
     </div>
     <AppleBlurImage
+      v-if="card.src?.length"
       :src="card.src"
       :alt="card.title"
       class="absolute inset-0 z-10 object-cover"
       :fill="true"
     />
+    <div v-if="card.component" class="absolute inset-0 z-10">
+      <component :is="card.component" />
+    </div>
   </Motion>
 </template>

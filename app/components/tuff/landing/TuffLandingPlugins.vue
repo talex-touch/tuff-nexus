@@ -4,6 +4,10 @@ import { useGsapReveal } from '~/composables/useGsapReveal'
 import AppleCard from '../carousel/apple/AppleCard.vue'
 import AppleCardCarousel from '../carousel/apple/AppleCardCarousel.vue'
 import AppleCarouselItem from '../carousel/apple/AppleCarouselItem.vue'
+import PluginCardFigma from './plugins/cards/PluginCardFigma.vue'
+import PluginCardGithub from './plugins/cards/PluginCardGithub.vue'
+import PluginCardNotion from './plugins/cards/PluginCardNotion.vue'
+import PluginCardTranslate from './plugins/cards/PluginCardTranslate.vue'
 
 interface ExtensionItem {
   id: string
@@ -35,7 +39,17 @@ useGsapReveal(sectionRef, {
   },
 })
 
-const cards = computed(() => plugins.value.extensions ?? [])
+const components = [PluginCardNotion, PluginCardFigma, PluginCardGithub, PluginCardTranslate]
+
+const cards = computed(() => (plugins.value.extensions ?? []).map((item, index) => ({
+  id: item.id,
+  src: '',
+  icon: item.icon,
+  category: item.name,
+  title: item.description,
+  component: components[2],
+  // component: components[index],
+})))
 
 function toggleCapability(id: string) {
   const updated = new Set(activeSet.value)
@@ -85,7 +99,6 @@ const data = [
     src: 'https://images.unsplash.com/photo-1511984804822-e16ba72f5848?q=80&w=2048&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
 ]
-const currentCardIndex = ref<number>(0)
 </script>
 
 <template>
@@ -110,12 +123,9 @@ const currentCardIndex = ref<number>(0)
       </header>
 
       <div>
-        <AppleCardCarousel
-          :card="data[currentCardIndex]!"
-          :index="currentCardIndex"
-        >
+        <AppleCardCarousel>
           <AppleCarouselItem
-            v-for="(card, index) in data"
+            v-for="(card, index) in cards"
             :key="index"
             :index="index"
           >
