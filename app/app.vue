@@ -38,4 +38,9 @@ html.dark {
 .transition-cubic {
   transition: 0.25s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
+
+button {
+  outline: none !important;
+  border: none !important;
+}
 </style>

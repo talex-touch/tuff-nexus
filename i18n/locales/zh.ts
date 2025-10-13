@@ -94,13 +94,11 @@ export default {
           },
         },
       },
-      extensibility: {
-        eyebrow: '能力中心',
-        headline: '为你的世界，专属打造。',
-        subheadline: 'Tuff 的强大，延伸至你常用的每个工具。',
-        addLabel: '+ 添加',
-        addedLabel: '已添加',
-        capabilities: {
+      plugins: {
+        eyebrow: '插件中心',
+        headline: '扩展 Tuff 到你的工具',
+        subheadline: '将 Tuff 连接到你的工具，扩展其功能。',
+        extensions: {
           notion: {
             name: 'Notion',
             description: '一键召回文档、会议纪要和项目枢纽。',
@@ -118,14 +116,19 @@ export default {
             description: '不中断专注即可切换工作区、运行脚本与查看诊断。',
           },
           calendar: {
-            name: 'Google 日历',
-            description: '查看即将开始的仪式，快速预留专注时段并即时回复。',
+            name: 'Google Calendar',
+            description: '即刻查看 upcoming rituals、阻塞专注时间与 RSVP。',
           },
           spotify: {
             name: 'Spotify',
-            description: '用自适应音景为专注时段增添节奏。',
+            description: '根据你的专注会话，自适应播放音乐。',
           },
         },
+      },
+      extensibility: {
+        eyebrow: '能力中心',
+        headline: '自由万物，强大工具包。',
+        subheadline: '为你介绍，全新 TuffFamilyKit 百余种工具可选。',
       },
       openFoundation: {
         eyebrow: '开放基石',

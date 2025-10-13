@@ -79,18 +79,22 @@ const aiSpotlight = computed(() => ({
   })),
 }))
 
+const plugins = computed(() => ({
+  eyebrow: t('landing.os.plugins.eyebrow'),
+  headline: t('landing.os.plugins.headline'),
+  subheadline: t('landing.os.plugins.subheadline'),
+  extensions: capabilityKeys.map(key => ({
+    id: key,
+    icon: capabilityIcons[key],
+    name: t(`landing.os.plugins.extensions.${key}.name`),
+    description: t(`landing.os.plugins.extensions.${key}.description`),
+  })),
+}))
+
 const extensibility = computed(() => ({
   eyebrow: t('landing.os.extensibility.eyebrow'),
   headline: t('landing.os.extensibility.headline'),
   subheadline: t('landing.os.extensibility.subheadline'),
-  addLabel: t('landing.os.extensibility.addLabel'),
-  addedLabel: t('landing.os.extensibility.addedLabel'),
-  capabilities: capabilityKeys.map(key => ({
-    id: key,
-    icon: capabilityIcons[key],
-    name: t(`landing.os.extensibility.capabilities.${key}.name`),
-    description: t(`landing.os.extensibility.capabilities.${key}.description`),
-  })),
 }))
 
 const openFoundation = computed(() => ({
@@ -158,6 +162,10 @@ useHead({
     <TuffLandingStats
       v-if="aiSpotlight"
       :spotlight="aiSpotlight"
+    />
+    <TuffLandingPlugins
+      v-if="plugins"
+      :plugins="plugins"
     />
     <TuffLandingFeatures
       v-if="extensibility"

@@ -58,7 +58,7 @@ export default {
       aiSpotlight: {
         eyebrow: 'AI Spotlight',
         headline: 'One search. Everything, connected.',
-        subheadline: "It doesn't just find. It understands.",
+        subheadline: 'It doesn\'t just find. It understands.',
         summary: 'Tuff interprets intent, then fuses every relevant surface into one calm, living result set.',
         queryLabel: 'Natural language query',
         queryText: '“Show me the design draft Sarah shared last week.”',
@@ -95,13 +95,11 @@ export default {
           },
         },
       },
-      extensibility: {
-        eyebrow: 'Capabilities Center',
-        headline: 'Tailor-made for your world.',
-        subheadline: "The power of Tuff, extended to every tool you use.",
-        addLabel: '+ Add',
-        addedLabel: 'Added',
-        capabilities: {
+      plugins: {
+        eyebrow: 'Plugins Center',
+        headline: 'Extend Tuff to your tools.',
+        subheadline: 'Connect Tuff to your tools and extend their capabilities.',
+        extensions: {
           notion: {
             name: 'Notion',
             description: 'Capture docs, meeting notes, and project hubs in one keystroke.',
@@ -127,6 +125,11 @@ export default {
             description: 'Score your focus sessions with adaptive soundtracks.',
           },
         },
+      },
+      extensibility: {
+        eyebrow: 'Capabilities Center',
+        headline: 'Free everything, powerful tools.',
+        subheadline: 'TuffFamilyKit offers a suite of tools to extend Tuff\'s capabilities to every tool you use.',
       },
       openFoundation: {
         eyebrow: 'Open by Design',
