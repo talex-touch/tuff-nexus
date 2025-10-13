@@ -4,10 +4,13 @@ import { useGsapReveal } from '~/composables/useGsapReveal'
 import AppleCard from '../carousel/apple/AppleCard.vue'
 import AppleCardCarousel from '../carousel/apple/AppleCardCarousel.vue'
 import AppleCarouselItem from '../carousel/apple/AppleCarouselItem.vue'
+import PluginCardCalendar from './plugins/cards/PluginCardCalendar.vue'
 import PluginCardFigma from './plugins/cards/PluginCardFigma.vue'
 import PluginCardGithub from './plugins/cards/PluginCardGithub.vue'
 import PluginCardNotion from './plugins/cards/PluginCardNotion.vue'
+import PluginCardSpotify from './plugins/cards/PluginCardSpotify.vue'
 import PluginCardTranslate from './plugins/cards/PluginCardTranslate.vue'
+import PluginCardVSCode from './plugins/cards/PluginCardVSCode.vue'
 
 interface ExtensionItem {
   id: string
@@ -39,7 +42,7 @@ useGsapReveal(sectionRef, {
   },
 })
 
-const components = [PluginCardNotion, PluginCardFigma, PluginCardGithub, PluginCardTranslate]
+const components = [PluginCardNotion, PluginCardFigma, PluginCardGithub, PluginCardVSCode, PluginCardCalendar, PluginCardSpotify, PluginCardTranslate]
 
 const cards = computed(() => (plugins.value.extensions ?? []).map((item, index) => ({
   id: item.id,
@@ -47,8 +50,7 @@ const cards = computed(() => (plugins.value.extensions ?? []).map((item, index) 
   icon: item.icon,
   category: item.name,
   title: item.description,
-  component: components[2],
-  // component: components[index],
+  component: index < 5 ? components[index] : components[5],
 })))
 
 function toggleCapability(id: string) {

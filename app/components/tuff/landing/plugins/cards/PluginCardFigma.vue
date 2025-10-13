@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="PluginCardFigma inset-0 h-full w-full flex items-center justify-center bg-white/[0.06]">
+  <div class="PluginCardFigma inset-0 h-full w-full flex items-center justify-center bg-white/[0.12]">
     <div class="PluginCardFigma-Overlay absolute bottom-0 z-5 z-5 h-[40%] w-full backdrop-blur-sm" />
 
     <div class="PluginCardFigma-Gradient flex items-center justify-between">

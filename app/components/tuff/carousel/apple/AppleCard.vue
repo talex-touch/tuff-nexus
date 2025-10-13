@@ -3,6 +3,7 @@ import { onClickOutside } from '@vueuse/core'
 import { AnimatePresence, Motion } from 'motion-v'
 import { inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import Icon from '~/components/icon/Icon.vue'
+import Logo from '~/images/logo.svg'
 import AppleBlurImage from './AppleBlurImage.vue'
 import { CarouselKey } from './AppleCarouselContext'
 
@@ -133,9 +134,13 @@ function handleClose() {
     <div class="relative z-40 p-8">
       <Motion
         :layout-id="layout ? `category-${card.category}` : undefined"
-        class="text-left text-sm text-white font-medium font-sans md:text-base"
+        class="flex items-center gap-2 text-left text-sm text-white font-medium font-sans md:text-base"
       >
-        {{ card.category }}
+        <span>{{ card.category }}</span>
+        <div
+          class="i-carbon-close size-4 text-white"
+        />
+        <img class="w-6" :src="Logo" alt="">
       </Motion>
       <Motion
         :layout-id="layout ? `title-${card.title}` : undefined"

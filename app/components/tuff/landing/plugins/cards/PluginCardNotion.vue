@@ -45,7 +45,7 @@ import NotionBackground from '~/images/assets/plugin-cards/notion.png'
     opacity: 0;
   }
   100% {
-    opacity: 0.25;
+    opacity: 0.125;
   }
 }
 </style>
