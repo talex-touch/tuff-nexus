@@ -172,7 +172,7 @@ const headerRevealStyle = computed(() => {
 
 .beta-tag {
   font-weight: 700;
-  background-color: rgb(25, 25, 25);
+  background-color: rgb(15, 15, 15);
   color: rgb(242, 156, 57) !important;
   margin: 0px 0.5rem;
   padding: 4px 8px;
@@ -193,7 +193,7 @@ const headerRevealStyle = computed(() => {
 
 .landing-header--visible {
   opacity: 1;
-  filter: blur(0);
+  filter: none;
   transform: translate3d(0, 0, 0);
   pointer-events: auto;
 }

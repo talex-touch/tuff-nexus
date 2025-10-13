@@ -1,5 +1,6 @@
-import { onBeforeUnmount, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import { useState } from '#imports'
+import { onBeforeUnmount } from 'vue'
 
 interface LandingRevealTimings {
   mask: number
