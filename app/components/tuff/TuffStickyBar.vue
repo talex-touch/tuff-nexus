@@ -301,7 +301,7 @@ onBeforeUnmount(() => {
 }
 
 .TuffStickyBar__inner {
-  backdrop-filter: blur(6px);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 22px 60px rgba(5, 12, 32, 0.5);
 }
 </style>
