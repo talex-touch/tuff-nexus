@@ -125,6 +125,201 @@ export default {
           },
         },
       },
+      aiOverview: {
+        eyebrow: 'AI 专项',
+        headline: '为你的工作节奏量身打造的智能核心。',
+        subheadline: '代理、检索与自动化在 Tuff 内部自然编排。',
+        hero: {
+          title: '嵌入指令面的智能助手。',
+          copy: '唤起情境感知的 copilots，读取屏幕、规划下一步，并在你确认后执行。',
+          primaryCta: '探索 AI 蓝图',
+          secondaryCta: '查看代理 API',
+          bullets: {
+            understand: '理解屏幕上发生的一切，并关联同事、文档与数据。',
+            instant: '40ms 内给出建议动作，可立即触发执行。',
+            privacy: '默认端侧运行，邀请协作者时也仅做零知识加密同步。',
+          },
+        },
+        highlights: {
+          orchestrate: {
+            title: '编排式序列',
+            copy: '在代理、脚本与人工复核之间无缝交接，状态与意图始终保持一致。',
+          },
+          copilot: {
+            title: '每个界面都有 Copilot',
+            copy: '写作、调试与设计助手同时进入指令面板，随时呼出。',
+          },
+          memory: {
+            title: '长期记忆',
+            copy: '检索索引映射你的系统，快速生成总结、对比与后续动作。',
+          },
+        },
+      },
+      builtForYou: {
+        eyebrow: '为你而生',
+        headline: '面向设计、开发与运营团队的统一工作台。',
+        subheadline: '不同角色拥有定制界面，同时保持协作步调一致。',
+        personas: {
+          makers: {
+            title: '设计师 / 创作者',
+            copy: '在一个画布中切换探索、检查资源、发布设计令牌。',
+            quote: '“Tuff 让交接几乎没有摩擦 - 指令栏比我更熟悉日常仪式。”',
+            name: 'Jasmine Ortega',
+            role: 'Highline 首席产品设计师',
+          },
+          developers: {
+            title: '工程师',
+            copy: '在同一指令面中查看日志、重跑流水线、调整特性开关。',
+            quote: '“PR、测试与部署脚本汇集到一个入口，发版终于从容。”',
+            name: 'Nikhil Sharma',
+            role: 'Drift Labs 资深工程师',
+          },
+          operators: {
+            title: '运营与负责人',
+            copy: '创建仪表盘、同步例会、用自动化保障节奏不跑偏。',
+            quote: '“每一个 ritual 都被固化，Tuff 让远程团队依然同步。”',
+            name: 'Morgan Lee',
+            role: 'Northwind 运营负责人',
+          },
+        },
+        stats: {
+          latency: {
+            label: '自动化平均耗时',
+            value: '27 ms',
+          },
+          adoption: {
+            label: '30 天内完成落地团队',
+            value: '92%',
+          },
+          satisfaction: {
+            label: '周活满意度',
+            value: '4.8/5',
+          },
+        },
+      },
+      starSnippets: {
+        eyebrow: '星标片段',
+        headline: '一次保存，随处调用。',
+        subheadline: '精选片段让团队的最佳回复与脚本随时可用。',
+        categories: {
+          meetings: {
+            title: '会议跟进',
+            copy: '一键生成纪要、下一步与排期宏指令。',
+            action: '预览模版',
+          },
+          support: {
+            title: '客服回复',
+            copy: 'AI 结合实时产品数据在你打开工单前就草拟回应。',
+            action: '插入片段',
+          },
+          builders: {
+            title: '研发捷径',
+            copy: '不离开聊天即可部署流程、追日志、推送热修复分支。',
+            action: '执行指令',
+          },
+        },
+        footnote: '为团队固定片段，随着 playbook 更新自动同步。',
+      },
+      aggregation: {
+        eyebrow: '聚合视图',
+        headline: '所有信号，凝练为一张冷静的总览。',
+        subheadline: '文档、对话、提醒与自动化在每个工作区持续同步。',
+        panels: {
+          overview: {
+            title: '实时总览',
+            copy: '晨间简报聚合最新提交、笔记与阻塞，不再噪音轰炸。',
+          },
+          timelines: {
+            title: '节奏时间线',
+            copy: '按项目自动排布节点与依赖，异常会抬头提醒。',
+          },
+          alerts: {
+            title: '智能提醒',
+            copy: '关键变化合并为分层通知，只在需要你决策时打扰。',
+          },
+        },
+        footnote: '聚合引擎持续运行，无论何时上线都能迅速回到节奏。',
+      },
+      community: {
+        eyebrow: '社区',
+        headline: '与全球创造者一起共建。',
+        subheadline: '加入这些渠道，第一时间了解扩展、仪式与版本预览。',
+        channels: {
+          slack: {
+            title: 'Slack',
+            meta: '32k 名成员',
+            description: '深度讨论、版本预览与核心团队的开放办公时间。',
+            cta: '加入 Slack',
+            href: '#',
+          },
+          github: {
+            title: 'GitHub',
+            meta: '3k 位贡献者',
+            description: '浏览 manifest、提交 PR，并保持平台透明。',
+            cta: '访问 GitHub',
+            href: '#',
+          },
+          events: {
+            title: 'Live Sessions',
+            meta: '每周',
+            description: 'AMA、动手工作坊与社区 Showcase 轮番进行。',
+            cta: '查看日程',
+            href: '#',
+          },
+        },
+        spotlights: {
+          learning: {
+            title: '学习中心',
+            copy: '工作坊、专题课与录播演示，帮助团队快速进阶。',
+          },
+          newsletter: {
+            title: 'Dispatch 通讯',
+            copy: '每月总结发布内容、路线规划与真实使用案例。',
+          },
+        },
+      },
+      pricing: {
+        eyebrow: '定价',
+        headline: '先锋阶段全量开放，完全免费。',
+        subheadline: '在与你共同打磨体验期间，我们保持所有能力解锁。',
+        plan: {
+          name: 'Pioneer',
+          price: '0 元',
+          period: '每位成员',
+          features: {
+            unlimited: '不限席位、指令与扩展',
+            support: '直接接入产品团队的反馈通道',
+            roadmap: '付费层推出时提供平滑迁移方案',
+          },
+          footnote: '作为首批团队，你们在正式定价上线后仍保留 Pioneer 权益。',
+        },
+      },
+      faq: {
+        eyebrow: '常见问题',
+        headline: '你的疑问，我们都想好答案。',
+        items: {
+          access: {
+            question: '如何加入 Beta？',
+            answer: '预约先锋计划，我们每周批次开通，并为团队安排引导会议。',
+          },
+          privacy: {
+            question: '数据如何被处理？',
+            answer: '绝大多数逻辑在本地运行，云端同步全程加密，密钥由你掌控，可按工作区开启。',
+          },
+          build: {
+            question: '不会写代码也能搭建自动化吗？',
+            answer: '可以。FlowScript 提供可视化构建器，开发者也可随时下沉到代码层。',
+          },
+          migration: {
+            question: '现有快捷指令能迁移吗？',
+            answer: '支持从 Raycast、Alfred 与自定义脚本导入，Tuff 会转化为类型化指令。',
+          },
+          pricing: {
+            question: '免费阶段会持续多久？',
+            answer: '未来会推出付费层，但 Pioneer 团队会一直免费直至正式公开发布。',
+          },
+        },
+      },
       extensibility: {
         eyebrow: '能力中心',
         headline: '自由万物，强大工具包。',

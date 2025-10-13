@@ -126,6 +126,201 @@ export default {
           },
         },
       },
+      aiOverview: {
+        eyebrow: 'AI Specialization',
+        headline: 'Specialized intelligence crafted for your operating rhythm.',
+        subheadline: 'Agents, retrieval, and automation compose together inside Tuff.',
+        hero: {
+          title: 'AI that lives inside your command surfaces.',
+          copy: 'Summon context-aware copilots that read your screen, plan the next move, and execute when you say go.',
+          primaryCta: 'Explore AI blueprints',
+          secondaryCta: 'Review agent APIs',
+          bullets: {
+            understand: 'Understands what is on your screen and how it connects to teammates, docs, and data.',
+            instant: 'Responds in under 40 ms with recommended next steps you can trigger immediately.',
+            privacy: 'Runs primarily on-device with zero-knowledge sync when you invite collaborators.',
+          },
+        },
+        highlights: {
+          orchestrate: {
+            title: 'Orchestrated sequences',
+            copy: 'Hand off between agents, scripts, and human review without losing state or intent.',
+          },
+          copilot: {
+            title: 'Copilots for every surface',
+            copy: 'Bring writing, debugging, and design copilots into the same command palette.',
+          },
+          memory: {
+            title: 'Long-term memory',
+            copy: 'Retrieval index mirrors your systems for fast summaries, comparisons, and follow-up actions.',
+          },
+        },
+      },
+      builtForYou: {
+        eyebrow: 'Built for You',
+        headline: 'Crafted for teams who design, ship, and scale ideas.',
+        subheadline: 'Each role gets a tailored surface, while the platform keeps everyone coordinated.',
+        personas: {
+          makers: {
+            title: 'Designers & Makers',
+            copy: 'Swap between explorations, inspect assets, and publish tokens without leaving the canvas.',
+            quote: '“Tuff collapses handoff friction - the command bar already knows my rituals.”',
+            name: 'Jasmine Ortega',
+            role: 'Principal Product Designer, Highline',
+          },
+          developers: {
+            title: 'Engineers',
+            copy: 'Inspect logs, rerun pipelines, and patch feature flags from the same command surface.',
+            quote: '“Pull requests, tests, and deploy scripts now live in one place. Shipping is calmer.”',
+            name: 'Nikhil Sharma',
+            role: 'Staff Engineer, Drift Labs',
+          },
+          operators: {
+            title: 'Ops & Leads',
+            copy: 'Spin up dashboards, sync standups, and keep rituals on rails with automation scenes.',
+            quote: '“Every ritual is codified. Tuff makes the team feel present even when remote.”',
+            name: 'Morgan Lee',
+            role: 'Head of Operations, Northwind',
+          },
+        },
+        stats: {
+          latency: {
+            label: 'Average automation speed',
+            value: '27 ms',
+          },
+          adoption: {
+            label: 'Teams activated in 30 days',
+            value: '92%',
+          },
+          satisfaction: {
+            label: 'Weekly active satisfaction',
+            value: '4.8/5',
+          },
+        },
+      },
+      starSnippets: {
+        eyebrow: 'Star Snippets',
+        headline: 'Save once. Drop everywhere.',
+        subheadline: 'Curated snippets keep your team\'s best responses and scripts ready to fire.',
+        categories: {
+          meetings: {
+            title: 'Meeting follow-ups',
+            copy: 'Generate recap, next steps, and scheduling macros in one keystroke.',
+            action: 'Preview template',
+          },
+          support: {
+            title: 'Support replies',
+            copy: 'AI drafts contextual answers with live product data before you even open the ticket.',
+            action: 'Insert snippet',
+          },
+          builders: {
+            title: 'Builder shortcuts',
+            copy: 'Deploy flows, tail logs, and push hotfix branches without leaving chat.',
+            action: 'Launch command',
+          },
+        },
+        footnote: 'Pin snippets for your team and they will auto-update as playbooks evolve.',
+      },
+      aggregation: {
+        eyebrow: 'Unified Briefing',
+        headline: 'All your signals, rendered as one calm overview.',
+        subheadline: 'Docs, conversations, alerts, and automations stay synchronized across every workspace.',
+        panels: {
+          overview: {
+            title: 'Live overview',
+            copy: 'Morning digest gathers the latest commits, notes, and blockers without noise.',
+          },
+          timelines: {
+            title: 'Rhythm timelines',
+            copy: 'Auto-sequence milestones and dependencies per project, surfacing risks early.',
+          },
+          alerts: {
+            title: 'Signal-aware alerts',
+            copy: 'Layered notifications only tap you when human judgement is required.',
+          },
+        },
+        footnote: 'Aggregation runs continuously so you keep context whether you jump in at 9 AM or midnight.',
+      },
+      community: {
+        eyebrow: 'Community',
+        headline: 'Built with builders everywhere.',
+        subheadline: 'Join the channels where new extensions, rituals, and release previews drop first.',
+        channels: {
+          slack: {
+            title: 'Slack',
+            meta: '32k members',
+            description: 'Deep dives, release previews, and office hours with the core team.',
+            cta: 'Join Slack',
+            href: '#',
+          },
+          github: {
+            title: 'GitHub',
+            meta: '3k contributors',
+            description: 'Browse manifests, raise pull requests, and keep the platform honest.',
+            cta: 'Visit GitHub',
+            href: '#',
+          },
+          events: {
+            title: 'Live sessions',
+            meta: 'Weekly',
+            description: 'AMAs, hands-on workshops, and community showcases hosted by the core team.',
+            cta: 'See schedule',
+            href: '#',
+          },
+        },
+        spotlights: {
+          learning: {
+            title: 'Learning hub',
+            copy: 'Workshops, masterclasses, and recorded walkthroughs to level up your team.',
+          },
+          newsletter: {
+            title: 'Dispatch newsletter',
+            copy: 'Monthly digests covering what shipped, what is coming, and how teams use Tuff.',
+          },
+        },
+      },
+      pricing: {
+        eyebrow: 'Pricing',
+        headline: 'All access. Completely free for the Pioneer wave.',
+        subheadline: 'We are keeping everything unlocked while we refine the experience with you.',
+        plan: {
+          name: 'Pioneer',
+          price: '$0',
+          period: 'per member',
+          features: {
+            unlimited: 'Unlimited seats, commands, and extensions',
+            support: 'Direct access to the product team for feedback loops',
+            roadmap: 'Guaranteed migration path when paid tiers arrive',
+          },
+          footnote: 'Founding teams keep the Pioneer rate when pricing tiers launch.',
+        },
+      },
+      faq: {
+        eyebrow: 'FAQ',
+        headline: 'Questions, answered.',
+        items: {
+          access: {
+            question: 'How do I get access to the beta?',
+            answer: 'Join the Pioneer waitlist. We approve batches weekly and set up onboarding calls for teams.',
+          },
+          privacy: {
+            question: 'How does Tuff handle my data?',
+            answer: 'Most processing runs locally. Cloud sync is encrypted with keys you control and optional by workspace.',
+          },
+          build: {
+            question: 'Do I need to code to build automations?',
+            answer: 'Not at all. FlowScript offers visual builders, while developers can drop down to code when needed.',
+          },
+          migration: {
+            question: 'Can we migrate our existing shortcuts?',
+            answer: 'Yes. Import from Raycast, Alfred, and custom scripts. Tuff converts them into typed commands.',
+          },
+          pricing: {
+            question: 'Will pricing stay free forever?',
+            answer: 'We will introduce paid tiers later, but Pioneer teams keep everything free through general availability.',
+          },
+        },
+      },
       extensibility: {
         eyebrow: 'Capabilities Center',
         headline: 'Free everything, powerful tools.',
