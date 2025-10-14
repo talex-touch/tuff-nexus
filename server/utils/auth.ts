@@ -23,7 +23,8 @@ export async function requireAuth(event: H3Event): Promise<AuthContext> {
 export async function requireAdmin(event: H3Event) {
   const { userId } = await requireAuth(event)
 
-  const user = await clerkClient.users.getUser(userId)
+  const client = clerkClient(event)
+  const user = await client.users.getUser(userId)
   const role = user.publicMetadata?.role
 
   if (role !== 'admin')
