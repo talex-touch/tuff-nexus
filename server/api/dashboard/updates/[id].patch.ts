@@ -1,6 +1,6 @@
 import { createError, readBody } from 'h3'
-import { updateUpdate } from '~/server/utils/dashboardStore'
-import { requireAdmin } from '~/server/utils/auth'
+import { updateUpdate } from '../../../utils/dashboardStore'
+import { requireAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)

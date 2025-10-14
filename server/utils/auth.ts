@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { createError } from 'h3'
-import { clerkClient } from '#clerk/server'
+import { clerkClient } from '@clerk/nuxt/server'
 
 export interface AuthContext {
   userId: string

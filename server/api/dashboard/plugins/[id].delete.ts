@@ -1,6 +1,6 @@
 import { createError } from 'h3'
-import { deletePlugin } from '~/server/utils/dashboardStore'
-import { requireAdmin } from '~/server/utils/auth'
+import { deletePlugin } from '../../../utils/dashboardStore'
+import { requireAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
