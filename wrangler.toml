@@ -11,3 +11,9 @@ database_id = "ebdeb7fc-74a4-4963-9bca-310a9aa0e4d6"
 binding = "R2"
 bucket_name = "tuff-nexus-imgable-prod"
 preview_bucket_name = "tuff-nexus-imgable-dev"
+
+[vars]
+NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_bmVhcmJ5LW1lZXJrYXQtMS5jbGVyay5hY2NvdW50cy5kZXYk"
+NUXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
+NUXT_PUBLIC_CLERK_SIGN_UP_URL = "/sign-up"
+NUXT_PUBLIC_CLERK_PRICING_TABLE_ID = "free_user"
