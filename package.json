@@ -20,9 +20,10 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "gsap": "^3.12.5",
-    "motion-v": "^1.7.2",
-    "simplex-noise": "^4.0.3"
+    "@clerk/nuxt": "catalog:",
+    "gsap": "catalog:",
+    "motion-v": "catalog:",
+    "simplex-noise": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",

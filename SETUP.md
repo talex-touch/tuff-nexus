@@ -143,6 +143,29 @@ pnpm preview:cf
 - **本地 `wrangler pages dev` 找不到输出**：确保已执行 `pnpm build`，命令自动处理；如路径变更，更新 `pages_build_output_dir`。
 - **`better-sqlite3` 编译失败**：依赖已移除，如本地缓存仍存在，删除 `node_modules` 后重新安装。
 
+## 10. 集成 Clerk 身份认证
+1. 在 [Clerk Dashboard](https://dashboard.clerk.com/) 创建应用，获取 `Publishable key` 与 `Secret key`（如需 Webhooks/JWT/Machine Key 也一并生成）。
+2. 在项目根目录创建/更新 `.env`（或 `.env.local`）：
+   ```bash
+   NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxx
+   NUXT_PUBLIC_CLERK_DOMAIN=your-app.clerk.accounts.dev  # 使用 Clerk 提供的自定义域名时可选
+   NUXT_PUBLIC_CLERK_PROXY_URL=                           # 若通过代理访问则填写代理地址，可留空
+   NUXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NUXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+   CLERK_SECRET_KEY=sk_live_xxx
+   CLERK_WEBHOOK_SECRET=whsec_xxx                        # 仅在启用 Webhooks 时需要
+   CLERK_JWT_KEY=                                        # 如需要后端 JWT 校验可填写
+   CLERK_MACHINE_KEY=                                    # Workers 触发器或批处理使用，可选
+   ```
+3. 将 `NUXT_PUBLIC_*` 变量作为普通环境变量注入 Cloudflare Pages；将 `CLERK_*` 机密通过 `wrangler secret put` 或 Pages Dashboard 的 **Secrets** 设置。例如：
+   ```bash
+   npx wrangler secret put CLERK_SECRET_KEY
+   npx wrangler secret put CLERK_WEBHOOK_SECRET
+   ```
+   `NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY` 等非机密变量可使用 `npx wrangler pages project create-env` 或在 Dashboard 中直接填写。
+4. 部署后访问 `/sign-in` 与 `/sign-up` 可直接使用 Clerk 预置组件；其余页面将自动要求用户登录。头部导航已集成 `UserButton`，可在任何页面快速查看账户或退出登录。
+
 ---
 
 完成以上步骤后，Cloudflare Pages 部署将使用 D1 存储业务数据，R2 分发大文件，Nuxt 仅负责界面与渲染。后续可按业务需求进一步补充 API 与后台逻辑。祝顺利！

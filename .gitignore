@@ -4,7 +4,7 @@ node_modules
 dist
 .output
 .nuxt
-.env
+.env.local
 .idea/
 public/assets/fonts
 .data

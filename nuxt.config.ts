@@ -1,5 +1,14 @@
+import process from 'node:process'
+import { config as loadEnv } from 'dotenv'
 import { pwa } from './app/config/pwa'
 import { appDescription } from './app/constants/index'
+
+/* eslint-disable nuxt/nuxt-config-keys-order */
+
+loadEnv({ path: '.env' })
+loadEnv({ path: `.env.${process.env.NODE_ENV ?? 'development'}` })
+loadEnv({ path: '.env.local', override: true })
+loadEnv({ path: `.env.${process.env.NODE_ENV ?? 'development'}.local`, override: true })
 
 export default defineNuxtConfig({
   modules: [
@@ -11,6 +20,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/content',
     '@nuxtjs/i18n',
+    '@clerk/nuxt',
   ],
 
   content: {
@@ -106,5 +116,32 @@ export default defineNuxtConfig({
     },
   },
 
+  clerk: {
+    signInUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_IN_URL || '/sign-in',
+    signUpUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_UP_URL || '/sign-up',
+    domain: process.env.NUXT_PUBLIC_CLERK_DOMAIN,
+    proxyUrl: process.env.NUXT_PUBLIC_CLERK_PROXY_URL,
+  },
+
+  runtimeConfig: {
+    clerk: {
+      secretKey: process.env.CLERK_SECRET_KEY,
+      webhookSigningSecret: process.env.CLERK_WEBHOOK_SECRET,
+      jwtKey: process.env.CLERK_JWT_KEY,
+      machineSecretKey: process.env.CLERK_MACHINE_KEY,
+    },
+    public: {
+      clerk: {
+        publishableKey: process.env.NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+        signInUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_IN_URL || '/sign-in',
+        signUpUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_UP_URL || '/sign-up',
+        domain: process.env.NUXT_PUBLIC_CLERK_DOMAIN,
+        proxyUrl: process.env.NUXT_PUBLIC_CLERK_PROXY_URL,
+      },
+    },
+  },
+
   pwa,
 })
+
+/* eslint-enable nuxt/nuxt-config-keys-order */

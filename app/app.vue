@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { ClerkLoaded, ClerkLoading, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nuxt/components'
+import { computed } from 'vue'
 import { appName } from '~/constants'
+
+const route = useRoute()
+
+const PUBLIC_ROUTE_PREFIXES = ['/sign-in', '/sign-up'] // allow unauthenticated access for Clerk UI routes
+const isPublicRoute = computed(() =>
+  PUBLIC_ROUTE_PREFIXES.some(prefix => route.path.startsWith(prefix)),
+)
 
 useHead({
   title: appName,
@@ -8,9 +17,28 @@ useHead({
 
 <template>
   <VitePwaManifest />
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <ClerkLoading>
+    <div class="grid h-screen w-screen place-content-center text-sm text-gray-500">
+      Checking your session…
+    </div>
+  </ClerkLoading>
+  <ClerkLoaded>
+    <SignedIn>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </SignedIn>
+    <SignedOut>
+      <template v-if="isPublicRoute">
+        <NuxtLayout>
+          <NuxtPage />
+        </NuxtLayout>
+      </template>
+      <template v-else>
+        <RedirectToSignIn />
+      </template>
+    </SignedOut>
+  </ClerkLoaded>
 </template>
 
 <style>

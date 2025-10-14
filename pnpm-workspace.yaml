@@ -1,4 +1,14 @@
-packages: []
+catalog:
+  '@clerk/nuxt': ^1.10.0
+  fighting-design: 0.25.1
+  gsap: ^3.12.5
+  markdown-it: ^14.1.0
+  motion-v: ^1.7.2
+  ogl: ^1.0.11
+  sass: ^1.89.2
+  simplex-noise: ^4.0.3
+  typeit: ^8.8.7
+  vitepress: 2.0.0-alpha.9
 
 catalogs:
   build:
@@ -18,6 +28,10 @@ catalogs:
     unocss: ^66.3.3
     unplugin: ^2.3.5
     vite: ^7.0.4
+  conflicts_build_h7_0_6:
+    vite: ^7.0.6
+  conflicts_frontend_h3_5_18:
+    vue: ^3.5.18
   dev:
     '@antfu/eslint-config': ^4.17.0
     '@cloudflare/workers-types': ^4.20241218.0
@@ -34,10 +48,6 @@ catalogs:
   icons:
     '@iconify-json/carbon': ^1.2.10
     '@iconify-json/twemoji': ^1.2.2
-  conflicts_frontend_h3_5_18:
-    vue: ^3.5.18
-  conflicts_build_h7_0_6:
-    vite: ^7.0.6
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
@@ -45,12 +55,5 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
   - workerd
-catalog:
-  fighting-design: 0.25.1
-  gsap: ^3.12.5
-  markdown-it: ^14.1.0
-  ogl: ^1.0.11
-  sass: ^1.89.2
-  simplex-noise: ^4.0.3
-  typeit: ^8.8.7
-  vitepress: 2.0.0-alpha.9
+
+packages: []

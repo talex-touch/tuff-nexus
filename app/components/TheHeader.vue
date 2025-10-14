@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { UserButton } from '@clerk/nuxt/components'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useLandingRevealState } from '~/composables/useLandingRevealState'
 
@@ -119,23 +120,18 @@ const headerRevealStyle = computed(() => {
           :show-dark-toggle="!isHome"
         />
 
-        <div
-          class="flex items-center gap-2 border border-primary/10 rounded-full bg-primary/5 px-2 py-1 text-xs text-primary/80 font-semibold shadow-sm dark:border-light/15 dark:bg-light/10 dark:text-light/80"
-        >
-          <button
-            type="button"
-            class="rounded-full bg-primary px-3 py-1 text-xs text-light font-semibold transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:hover:bg-black"
-          >
-            Sign in
-          </button>
-          <span class="h-3 w-px bg-primary/15 dark:bg-light/20" />
-          <button
-            type="button"
-            class="rounded-full px-3 py-1 text-xs text-primary/80 font-semibold transition hover:bg-primary/10 dark:text-light/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 dark:hover:bg-light/10 dark:focus-visible:ring-light/30"
-          >
-            Sign out
-          </button>
-        </div>
+        <SignedIn>
+          <div class="flex items-center border border-primary/10 rounded-full bg-primary/5 px-3 py-1 shadow-sm dark:border-light/15 dark:bg-light/10">
+            <UserButton
+              after-sign-out-url="/sign-in"
+              :appearance="{
+                elements: {
+                  avatarBox: 'ring-2 ring-primary/20 rounded-full',
+                },
+              }"
+            />
+          </div>
+        </SignedIn>
       </nav>
     </div>
   </header>
