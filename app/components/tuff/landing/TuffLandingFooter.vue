@@ -5,13 +5,23 @@ const { t } = useI18n()
 
 const year = new Date().getFullYear()
 
-const navLinks = computed(() => [
-  { to: '/#market', label: t('nav.market') },
-  { to: '/docs', label: t('nav.doc') },
-  { to: '/#developer', label: t('nav.developer') },
-  { to: '/#download', label: t('nav.download') },
-  { to: '/#blog', label: t('nav.blog') },
-  { to: '/pricing', label: t('nav.pricing') },
+const footerSections = computed(() => [
+  {
+    title: t('landing.footer.sections.product'),
+    links: [
+      { to: '/#market', label: t('nav.market') },
+      { to: '/#developer', label: t('nav.developer') },
+      { to: '/#download', label: t('nav.download') },
+      { to: '/pricing', label: t('nav.pricing') },
+    ],
+  },
+  {
+    title: t('landing.footer.sections.resources'),
+    links: [
+      { to: '/docs', label: t('nav.doc') },
+      { to: '/#blog', label: t('nav.blog') },
+    ],
+  },
 ])
 
 const socialLinks = computed(() => [
@@ -24,79 +34,79 @@ const socialLinks = computed(() => [
 </script>
 
 <template>
-  <footer class="relative isolate overflow-hidden border-t border-white/10 bg-[#05060d] py-16 text-white">
-    <div class="pointer-events-none absolute inset-0">
-      <div class="absolute inset-x-0 top-[-40%] h-[420px] bg-[radial-gradient(circle_at_center,_rgba(79,70,229,0.28),_transparent_70%)] blur-3xl" />
-      <div class="absolute bottom-[-45%] left-1/2 h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(14,165,233,0.22),_transparent_70%)] blur-3xl" />
-    </div>
-
-    <div class="relative mx-auto w-full max-w-6xl px-6">
-      <div class="grid gap-12 lg:grid-cols-[1.4fr_1fr]">
-        <section class="space-y-6">
+  <footer class="bg-black text-white">
+    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+      <!-- Main Content -->
+      <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">
+        <!-- Brand Section -->
+        <div class="space-y-6">
           <NuxtLink
             to="/"
-            class="inline-flex items-center gap-2 text-2xl font-semibold tracking-tight text-white no-underline"
+            class="inline-flex items-center gap-2.5 text-2xl font-bold text-white no-underline"
           >
             <span>Tuff</span>
-            <span class="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.22em] text-white/70">
+            <span class="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/60">
               Beta
             </span>
           </NuxtLink>
 
-          <p class="max-w-md text-sm text-white/70 leading-relaxed">
+          <p class="max-w-md text-sm leading-relaxed text-white/50">
             {{ t('landing.footer.tagline') }}
           </p>
 
-          <div class="flex flex-wrap gap-3">
-            <NuxtLink
-              to="/#download"
-              class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_18px_40px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          <div class="flex gap-2">
+            <a
+              v-for="social in socialLinks"
+              :key="social.href"
+              :href="social.href"
+              :aria-label="social.label"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex size-9 items-center justify-center rounded-lg border border-white/10 text-white/60 transition-colors hover:border-white/20 hover:text-white"
             >
-              <span class="i-carbon-download text-base" aria-hidden="true" />
-              {{ t('landing.footer.primaryCta') }}
-            </NuxtLink>
-
-            <NuxtLink
-              to="/docs"
-              class="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <span class="i-carbon-book text-base" aria-hidden="true" />
-              {{ t('landing.footer.secondaryCta') }}
-            </NuxtLink>
+              <span :class="social.icon" class="text-lg" aria-hidden="true" />
+            </a>
           </div>
-        </section>
+        </div>
 
-        <nav aria-label="Footer navigation">
-          <ul class="grid grid-cols-2 gap-3 text-sm text-white/70 sm:grid-cols-3">
-            <li v-for="link in navLinks" :key="link.to">
-              <NuxtLink
-                :to="link.to"
-                class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-white/70 transition hover:-translate-y-0.5 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-              >
-                <span>{{ link.label }}</span>
-                <span class="i-carbon-arrow-right text-xs" aria-hidden="true" />
-              </NuxtLink>
-            </li>
-          </ul>
+        <!-- Navigation -->
+        <nav aria-label="Footer navigation" class="grid gap-10 sm:grid-cols-2">
+          <div
+            v-for="section in footerSections"
+            :key="section.title"
+            class="space-y-4"
+          >
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-white/90">
+              {{ section.title }}
+            </h3>
+            <ul class="space-y-3">
+              <li v-for="link in section.links" :key="link.to">
+                <NuxtLink
+                  :to="link.to"
+                  class="text-sm text-white/50 transition-colors hover:text-white"
+                >
+                  {{ link.label }}
+                </NuxtLink>
+              </li>
+            </ul>
+          </div>
         </nav>
       </div>
 
-      <div class="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          © {{ year }} Tuff Labs. {{ t('landing.footer.rights') }}
-        </p>
-        <div class="flex items-center gap-4">
-          <a
-            v-for="social in socialLinks"
-            :key="social.href"
-            :href="social.href"
-            :aria-label="social.label"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex size-9 items-center justify-center rounded-full border border-white/15 text-white transition hover:-translate-y-0.5 hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-          >
-            <span :class="social.icon" class="text-base" aria-hidden="true" />
-          </a>
+      <!-- Bottom -->
+      <div class="mt-12 border-t border-white/5 pt-8">
+        <div class="flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {{ year }} Tuff Labs. {{ t('landing.footer.rights') }}
+          </p>
+          <div class="flex items-center gap-6">
+            <NuxtLink to="/privacy" class="transition-colors hover:text-white/60">
+              {{ t('landing.footer.privacy') }}
+            </NuxtLink>
+            <NuxtLink to="/terms" class="transition-colors hover:text-white/60">
+              {{ t('landing.footer.terms') }}
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
