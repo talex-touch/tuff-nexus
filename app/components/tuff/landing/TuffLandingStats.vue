@@ -34,24 +34,30 @@ const { spotlight } = defineProps<{
 const sectionRef = ref<HTMLElement | null>(null)
 
 useGsapReveal(sectionRef, {
+  targetSelector: ':scope [data-reveal]',
   from: {
     opacity: 0,
     y: 48,
     duration: 1.05,
+    ease: 'power3.out',
   },
+  stagger: 0.16,
 })
 </script>
 
 <template>
   <section
+    id="landing-stats"
     ref="sectionRef"
     class="min-h-screen flex flex-col gap-12 overflow-hidden bg-black py-24"
   >
-    <TuffStickyBar>
-      {{ spotlight.eyebrow }}
-    </TuffStickyBar>
+    <div data-reveal>
+      <TuffStickyBar>
+        {{ spotlight.eyebrow }}
+      </TuffStickyBar>
+    </div>
 
-    <header class="text-center text-white">
+    <header data-reveal class="text-center text-white">
       <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
         {{ spotlight.headline }}
       </h2>
@@ -64,13 +70,15 @@ useGsapReveal(sectionRef, {
     </header>
 
     <div class="flex flex-col items-center gap-8 text-center">
-      <TuffLandingShowcaseTuffShowcaseContainer>
-        <TuffVortexBackground>
-          <TuffShowcase />
-        </TuffVortexBackground>
-      </TuffLandingShowcaseTuffShowcaseContainer>
+      <div data-reveal>
+        <TuffLandingShowcaseTuffShowcaseContainer>
+          <TuffVortexBackground>
+            <TuffShowcase />
+          </TuffVortexBackground>
+        </TuffLandingShowcaseTuffShowcaseContainer>
+      </div>
 
-      <p>
+      <p data-reveal>
         <span class="block text-sm text-neutral-500/80 font-medium tracking-wide dark:text-neutral-300/70">
           {{ spotlight.highlights[0]?.copy ?? 'Precision insights orchestrated for your next launch.' }}
         </span>

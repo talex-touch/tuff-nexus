@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useLandingRevealState } from '~/composables/useLandingRevealState'
 import TuffBanner from '../TuffBanner.vue'
+
+type GsapContext = import('gsap').Context
+type GsapTween = import('gsap').gsap.core.Tween
 
 interface HeroCta {
   label?: string
@@ -22,6 +25,12 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const heroSectionRef = ref<HTMLElement | null>(null)
+
+let heroScrollContext: GsapContext | undefined
+let autoScrollTriggered = false
+let autoScrollTween: GsapTween | null = null
+let heroScrollPluginsRegistered = false
 
 const {
   beginSequence,
@@ -81,17 +90,84 @@ function introDelay(delayInSeconds: number) {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   beginSequence()
+
+  if (typeof window === 'undefined')
+    return
+
+  const heroEl = heroSectionRef.value
+  if (!heroEl)
+    return
+
+  const statsSection = document.querySelector<HTMLElement>('#landing-stats')
+  if (!statsSection)
+    return
+
+  const [{ gsap }, { ScrollTrigger }, { ScrollToPlugin }] = await Promise.all([
+    import('gsap'),
+    import('gsap/ScrollTrigger'),
+    import('gsap/ScrollToPlugin'),
+  ])
+
+  if (!heroScrollPluginsRegistered) {
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+    heroScrollPluginsRegistered = true
+  }
+
+  autoScrollTriggered = false
+  autoScrollTween?.kill()
+  autoScrollTween = null
+
+  heroScrollContext = gsap.context(() => {
+    ScrollTrigger.create({
+      trigger: heroEl,
+      start: 'top top',
+      end: '+=260',
+      onLeave: (self) => {
+        if (autoScrollTriggered)
+          return
+
+        autoScrollTriggered = true
+
+        const trigger = self
+        autoScrollTween?.kill()
+
+        const releaseTrigger = () => {
+          autoScrollTween = null
+          trigger.kill()
+        }
+
+        autoScrollTween = gsap.to(window, {
+          scrollTo: {
+            y: statsSection,
+            offsetY: -60,
+          },
+          duration: 1.35,
+          ease: 'power3.out',
+          autoKill: false,
+          overwrite: 'auto',
+          onComplete: releaseTrigger,
+          onInterrupt: releaseTrigger,
+        })
+      },
+    })
+  }, heroEl)
 })
 
 onBeforeUnmount(() => {
+  heroScrollContext?.revert()
+  heroScrollContext = undefined
+  autoScrollTween?.kill()
+  autoScrollTween = null
+  autoScrollTriggered = false
   resetSequence({ preserveHeader: true })
 })
 </script>
 
 <template>
   <section
+    ref="heroSectionRef"
     class="TuffHome-HeroSection relative min-h-screen overflow-hidden"
   >
     <div class="TuffHome-HeroSection-BannerCore absolute left-0 top-0 h-full w-full">

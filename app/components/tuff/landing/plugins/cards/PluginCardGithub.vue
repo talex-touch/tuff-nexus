@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="PluginCardGithub inset-0 h-full w-full flex items-center justify-center bg-[#a0a8a650]">
+  <div class="PluginCardGithub inset-0 h-full w-full flex items-center justify-center bg-[#10181650]">
     <div class="PluginCardGithub-Main absolute bottom-0 z-5 h-[40%] w-full flex justify-center">
       <div class="loader-wrapper">
         <span class="loader-letter">C</span>
