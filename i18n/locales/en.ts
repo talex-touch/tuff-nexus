@@ -13,7 +13,7 @@ export default {
     market: 'Market',
     doc: 'Doc',
     developer: 'Developer',
-    download: 'Download',
+    download: 'Updates',
     blog: 'Blog',
   },
   ui: {
@@ -35,6 +35,104 @@ export default {
     subtitle: 'Upgrade directly inside Clerk. Once subscribed, you can unlock premium automations and surfaces instantly.',
     missingTable: 'Pricing table is not configured yet. Set NUXT_PUBLIC_CLERK_PRICING_TABLE_ID to display your plans.',
     loading: 'Loading pricing…',
+  },
+  updates: {
+    badge: 'Release cadence',
+    title: 'Updates & downloads',
+    subtitle: 'Pick the channel that matches your risk tolerance and explore the latest builds.',
+    channelSelector: {
+      label: 'Release channels',
+    },
+    channels: {
+      release: {
+        badge: 'Stable',
+        label: 'Release channel',
+        description: 'Signed, fully verified builds recommended for production workspaces.',
+        meta: 'Updated monthly',
+      },
+      snapshot: {
+        badge: 'Preview',
+        label: 'Snapshot channel',
+        description: 'Early access builds shipping weekly. Expect experimental features and rapid iteration.',
+        meta: 'Refreshed weekly',
+      },
+    },
+    latest: {
+      heading: 'Latest build',
+      releaseDate: 'Released {date}',
+      releaseDateFallback: 'Pending release',
+      highlightsHeading: 'Highlights',
+      notesCta: 'View release notes',
+    },
+    channelSummary: {
+      title: 'Channel expectations',
+      description: 'You are viewing the {channel} track. Everything here matches the guardrails listed above.',
+      refreshHint: 'We publish channel updates after smoke, regression, and sync checks pass across supported platforms.',
+      feedback: 'Notice something odd? Let us know through the dashboard feedback panel.',
+    },
+    empty: 'We have not shipped builds for this channel yet. Check back soon.',
+    table: {
+      title: 'Release history',
+      description: 'Every build published to the {channel} track.',
+      toggleLabel: 'View history',
+      hideLabel: 'Hide history',
+      latestBadge: 'Latest',
+      viewNotes: 'Notes',
+      columns: {
+        version: 'Version',
+        date: 'Released',
+        summary: 'Key changes',
+        actions: 'Links',
+      },
+    },
+    downloads: {
+      previewPortal: 'Preview portal',
+      previewPortalDescription: 'Includes experimental builds, validation notes, and rollback steps.',
+      releasePortal: 'Release portal',
+      releasePortalDescription: 'Official installers and signature fingerprints for production teams.',
+    },
+    entries: {
+      v2_0_0_preview: {
+        summary: 'Prepares the workspace redesign and FlowScript runtime ahead of the 2.0 rollout.',
+        highlights: [
+          'Ships a unified workspace canvas with adaptive glassmorphism surfaces.',
+          'Adds a FlowScript realtime debugger with timeline playback support.',
+          'Introduces a handbook sidebar that syncs with command palette context.',
+        ],
+      },
+      v2_0_0_dev5: {
+        summary: 'Extends preview builds with tighter automation feedback loops.',
+        highlights: [
+          'Improves FlowScript hot reload speed for large orchestrations.',
+          'Expands extension sandbox logging with streaming traces.',
+          'Refines multi-device session handoff reliability during live demos.',
+        ],
+      },
+      v1_2_0: {
+        summary: 'Brings the curated plugin market and modernizes navigation.',
+        highlights: [
+          'Launches a signed plugin marketplace with verified badges.',
+          'Refactors PluginManager, PluginList, and FileTree for stability gains.',
+          'Fixes upgrade prompts, navigation layout, and TTabs regressions.',
+        ],
+      },
+      v1_1_0: {
+        summary: 'Lays the groundwork for the marketplace and upgrade flows.',
+        highlights: [
+          'Introduces plugin store foundations, including install and upgrade modules.',
+          'Adds upgrade reminders, richer input components, and export progress UI.',
+          'Resolves layout inconsistencies, double prompts, and mention errors.',
+        ],
+      },
+      v1_0_0: {
+        summary: 'First public release that unifies automation, plugins, and analytics.',
+        highlights: [
+          'Delivers plugin marketplace integration with a signed publishing pipeline.',
+          'Adds account onboarding, statistics dashboard, and layout refinements.',
+          'Stabilizes plugin parsing, upgrade notifications, and preview tooling.',
+        ],
+      },
+    },
   },
   plugins: {
     categories: {

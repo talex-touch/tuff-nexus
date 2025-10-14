@@ -15,6 +15,7 @@ let schemaInitialized = false
 
 interface D1PluginRow {
   id: string
+  user_id: string | null
   name: string
   summary: string
   category: string
@@ -55,6 +56,7 @@ async function ensureDashboardSchema(db: D1Database) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS ${PLUGINS_TABLE} (
       id TEXT PRIMARY KEY,
+      user_id TEXT,
       name TEXT NOT NULL,
       summary TEXT NOT NULL,
       category TEXT NOT NULL,
@@ -115,6 +117,7 @@ function parseJsonObject<T>(value: string | null): T | null {
 function mapPluginRow(row: D1PluginRow): DashboardPlugin {
   return {
     id: row.id,
+    userId: row.user_id ?? undefined,
     name: row.name,
     summary: row.summary,
     category: row.category,
@@ -150,6 +153,7 @@ export interface DashboardPluginAuthor {
 
 export interface DashboardPlugin {
   id: string
+  userId?: string
   name: string
   summary: string
   category: string
@@ -337,15 +341,16 @@ function normalizeUpdateInput(input: Partial<UpdateInput>, forUpdate = false): U
   }
 }
 
-export async function listPlugins(event?: H3Event): Promise<DashboardPlugin[]> {
+export async function listPlugins(event?: H3Event, userId?: string): Promise<DashboardPlugin[]> {
   const db = getD1Database(event)
 
   if (db) {
     await ensureDashboardSchema(db)
 
-    const { results } = await db.prepare(`
+    let query = `
       SELECT
         id,
+        user_id,
         name,
         summary,
         category,
@@ -358,9 +363,18 @@ export async function listPlugins(event?: H3Event): Promise<DashboardPlugin[]> {
         author,
         created_at,
         updated_at
-      FROM ${PLUGINS_TABLE}
-      ORDER BY datetime(created_at) DESC;
-    `).all<D1PluginRow>()
+      FROM ${PLUGINS_TABLE}`
+
+    if (userId) {
+      query += ` WHERE user_id = ?1`
+    }
+
+    query += ` ORDER BY datetime(created_at) DESC;`
+
+    const stmt = db.prepare(query)
+    const { results } = userId
+      ? await stmt.bind(userId).all<D1PluginRow>()
+      : await stmt.all<D1PluginRow>()
 
     return (results ?? []).map(mapPluginRow)
   }
@@ -371,7 +385,13 @@ export async function listPlugins(event?: H3Event): Promise<DashboardPlugin[]> {
     badges: Array.isArray(plugin.badges) ? plugin.badges : [],
     author: plugin.author ?? null,
   }))
-  return normalized.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  let filtered = normalized
+  if (userId) {
+    filtered = normalized.filter(plugin => plugin.userId === userId)
+  }
+
+  return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
 export async function getPluginById(event: H3Event | undefined, id: string) {
@@ -383,6 +403,7 @@ export async function getPluginById(event: H3Event | undefined, id: string) {
     const row = await db.prepare(`
       SELECT
         id,
+        user_id,
         name,
         summary,
         category,
@@ -406,12 +427,13 @@ export async function getPluginById(event: H3Event | undefined, id: string) {
   return plugins.find(plugin => plugin.id === id) || null
 }
 
-export async function createPlugin(event: H3Event, rawInput: Partial<PluginInput>) {
+export async function createPlugin(event: H3Event, rawInput: Partial<PluginInput>, userId?: string) {
   const input = normalizePluginInput(rawInput)
   const now = new Date().toISOString()
 
   const newPlugin: DashboardPlugin = {
     id: randomUUID(),
+    userId,
     ...input,
     createdAt: now,
     updatedAt: now,
@@ -425,6 +447,7 @@ export async function createPlugin(event: H3Event, rawInput: Partial<PluginInput
     await db.prepare(`
       INSERT INTO ${PLUGINS_TABLE} (
         id,
+        user_id,
         name,
         summary,
         category,
@@ -437,9 +460,10 @@ export async function createPlugin(event: H3Event, rawInput: Partial<PluginInput
         author,
         created_at,
         updated_at
-      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13);
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14);
     `).bind(
       newPlugin.id,
+      newPlugin.userId ?? null,
       newPlugin.name,
       newPlugin.summary,
       newPlugin.category,

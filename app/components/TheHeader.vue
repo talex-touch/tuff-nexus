@@ -15,9 +15,9 @@ function handleScroll() {
 const links = computed(() => [
   { to: '/market', label: t('nav.market') },
   { to: '/docs', label: t('nav.doc') },
-  { to: '/#developer', label: t('nav.developer') },
-  { to: '/#download', label: t('nav.download') },
-  { to: '/#blog', label: t('nav.blog') },
+  // { to: '/#developer', label: t('nav.developer') },
+  { to: '/updates', label: t('nav.download') },
+  // { to: '/#blog', label: t('nav.blog') },
   { to: '/pricing', label: t('nav.pricing') },
 ])
 
@@ -138,7 +138,7 @@ const headerRevealStyle = computed(() => {
           <SignedOut>
             <NuxtLink
               :to="signInRoute"
-              class="rounded-full border border-primary/20 bg-transparent px-3 py-1 text-sm font-medium text-primary transition hover:border-primary/40 hover:bg-primary/5 dark:border-light/15 dark:text-light dark:hover:bg-light/10"
+              class="border border-primary/20 rounded-full bg-transparent px-3 py-1 text-sm text-primary font-medium transition dark:border-light/15 hover:border-primary/40 hover:bg-primary/5 dark:text-light dark:hover:bg-light/10"
             >
               {{ t('nav.login') }}
             </NuxtLink>
@@ -146,7 +146,7 @@ const headerRevealStyle = computed(() => {
           <SignedIn>
             <NuxtLink
               to="/dashboard"
-              class="rounded-full border border-primary/20 bg-primary px-3 py-1 text-sm font-semibold text-white shadow-sm shadow-primary/30 transition hover:bg-primary/90 dark:border-transparent dark:bg-light dark:text-primary dark:shadow-light/40 dark:hover:bg-light/90"
+              class="border border-primary/20 rounded-full bg-primary px-3 py-1 text-sm text-white font-semibold shadow-primary/30 shadow-sm transition dark:border-transparent dark:bg-light hover:bg-primary/90 dark:text-primary dark:shadow-light/40 dark:hover:bg-light/90"
             >
               {{ t('nav.dashboard') }}
             </NuxtLink>

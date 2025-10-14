@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const router = useRouter()
 
 const pioneerBenefitKeys = ['early', 'shape', 'community'] as const
 
@@ -20,6 +21,13 @@ const pioneer = computed(() => ({
 }))
 
 const emailPlaceholder = 'tuff@tagzxia.com'
+const emailInput = ref('')
+
+function handleSubmit(event: Event) {
+  event.preventDefault()
+  const langTag = locale.value === 'zh' ? 'zh-CN' : 'en-US'
+  router.push(`/sign-up?lang=${langTag}`)
+}
 </script>
 
 <template>
@@ -55,12 +63,12 @@ const emailPlaceholder = 'tuff@tagzxia.com'
           </p>
           <form
             class="mx-auto max-w-lg w-full flex flex-col gap-4 border border-white/10 rounded-[28px] bg-white/10 p-6 text-left shadow-[0_28px_90px_rgba(8,15,41,0.4)] backdrop-blur-xl"
-            action="/pioneer"
-            method="post"
+            @submit="handleSubmit"
           >
             <label class="text-[11px] text-white/60 font-semibold tracking-[0.28em] uppercase space-y-2">
               <span>{{ pioneer.formTitle }}</span>
               <input
+                v-model="emailInput"
                 type="email"
                 name="email"
                 required

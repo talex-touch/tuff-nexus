@@ -67,6 +67,7 @@ interface DashboardTeamMember {
   name: string
   role: string
   status: string
+  email?: string
 }
 
 interface DashboardTeam {
@@ -83,6 +84,12 @@ interface DashboardTeam {
     date: string
   }
   notes?: string
+  organization?: {
+    id: string
+    name: string
+    role: string
+    membersCount?: number
+  } | null
 }
 
 interface PluginFormState {
@@ -1000,6 +1007,35 @@ async function deleteUpdateItem(update: DashboardUpdate) {
             </div>
 
             <div v-else>
+              <div
+                v-if="team?.organization"
+                class="mb-4 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/5 to-primary/10 p-5 dark:border-light/15 dark:from-light/5 dark:to-light/10"
+              >
+                <div class="flex items-start justify-between gap-4">
+                  <div class="flex items-center gap-3">
+                    <span class="i-carbon-enterprise inline-flex rounded-xl bg-primary/10 p-3 text-2xl text-primary dark:bg-light/15 dark:text-light" />
+                    <div>
+                      <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
+                        {{ t('dashboard.sections.team.organizationLabel', 'Clerk Organization') }}
+                      </p>
+                      <h3 class="mt-1 text-lg font-semibold text-primary dark:text-light">
+                        {{ team.organization.name }}
+                      </h3>
+                      <p class="mt-1 text-sm text-primary/70 dark:text-light/80">
+                        {{ team.organization.role }}
+                        <span v-if="team.organization.membersCount !== undefined">
+                          · {{ team.organization.membersCount }} {{ team.organization.membersCount === 1 ? 'member' : 'members' }}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary dark:bg-light/10 dark:text-light/80">
+                    <span class="i-carbon-checkmark text-sm" />
+                    {{ t('dashboard.sections.team.activeStatus', 'Active') }}
+                  </span>
+                </div>
+              </div>
+
               <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
                 <div class="rounded-2xl border border-primary/10 bg-white/70 p-4 dark:border-light/10 dark:bg-primary/60">
                   <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
@@ -1011,12 +1047,12 @@ async function deleteUpdateItem(update: DashboardUpdate) {
                       :key="member.id"
                       class="flex items-center justify-between gap-3 rounded-xl border border-primary/10 bg-white/80 px-3 py-3 text-sm dark:border-light/10 dark:bg-primary/50"
                     >
-                      <div>
+                      <div class="flex-1">
                         <p class="font-medium text-primary dark:text-light">
                           {{ member.name }}
                         </p>
-                        <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
-                          {{ member.role }}
+                        <p class="text-xs text-primary/60 dark:text-light/60">
+                          {{ member.email || member.role }}
                         </p>
                       </div>
                       <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary dark:bg-light/10 dark:text-light/80">
@@ -1036,21 +1072,10 @@ async function deleteUpdateItem(update: DashboardUpdate) {
                   <div class="space-y-2">
                     <div>
                       <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
-                        {{ t('dashboard.sections.team.statusLabel') }}
+                        {{ t('dashboard.sections.team.planLabel', 'Plan') }}
                       </p>
                       <p class="mt-1 font-medium text-primary dark:text-light">
-                        {{ t('dashboard.sections.team.previewStatus') }}
-                      </p>
-                    </div>
-                    <div
-                      v-if="team?.upcoming"
-                      class="pt-2"
-                    >
-                      <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
-                        {{ t('dashboard.sections.team.upcomingLabel') }}
-                      </p>
-                      <p class="mt-1 font-medium text-primary dark:text-light">
-                        {{ team?.upcoming?.label }} · {{ formatDate(team?.upcoming?.date) }}
+                        {{ team?.plan || 'Free' }}
                       </p>
                     </div>
                     <div class="pt-2">

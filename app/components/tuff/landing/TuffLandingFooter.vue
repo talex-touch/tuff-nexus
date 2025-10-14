@@ -11,7 +11,7 @@ const footerSections = computed(() => [
     links: [
       { to: '/market', label: t('nav.market') },
       { to: '/#developer', label: t('nav.developer') },
-      { to: '/#download', label: t('nav.download') },
+      { to: '/updates', label: t('nav.download') },
       { to: '/pricing', label: t('nav.pricing') },
     ],
   },

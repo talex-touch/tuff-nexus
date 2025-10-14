@@ -39,8 +39,14 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  // 避免在初始化时立即重定向，等待路由完全加载
+  if (!route.path)
+    return
+
   const trimmed = route.path.replace(/^\/(en|zh)(?=\/|$)/i, '') || '/'
-  if (trimmed !== route.path) {
+
+  // 只在路径实际不同时才重定向，并且确保不会导致无限循环
+  if (trimmed !== route.path && route.path !== '/') {
     router.replace({
       path: trimmed,
       query: route.query,

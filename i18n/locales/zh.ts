@@ -13,7 +13,7 @@ export default {
     market: '市场',
     doc: '文档',
     developer: '开发者',
-    download: '下载',
+    download: '更新',
     blog: '博客',
   },
   ui: {
@@ -35,6 +35,104 @@ export default {
     subtitle: '直接通过 Clerk 完成升级，订阅后即可即时解锁高级自动化与指挥面板。',
     missingTable: '暂未配置 Pricing Table，请设置环境变量 NUXT_PUBLIC_CLERK_PRICING_TABLE_ID 后再试。',
     loading: '正在加载订阅信息…',
+  },
+  updates: {
+    badge: '版本通道',
+    title: '更新与下载',
+    subtitle: '选择最适合你团队节奏的通道，获取最新构建与历史版本。',
+    channelSelector: {
+      label: '发布通道',
+    },
+    channels: {
+      release: {
+        badge: '稳定',
+        label: '正式通道',
+        description: '签名认证的稳定构建，适合生产环境与大规模部署。',
+        meta: '每月更新',
+      },
+      snapshot: {
+        badge: '预览',
+        label: '快照通道',
+        description: '包含实验特性的预览构建，每周更新，可能出现细节问题。',
+        meta: '每周刷新',
+      },
+    },
+    latest: {
+      heading: '最新版本',
+      releaseDate: '{date} 发布',
+      releaseDateFallback: '暂未发布',
+      highlightsHeading: '亮点',
+      notesCta: '查看更新说明',
+    },
+    channelSummary: {
+      title: '通道说明',
+      description: '当前正在查看 {channel} 轨道，我们会确保其表现符合上述说明。',
+      refreshHint: '通过冒烟、回归与同步校验后，我们会第一时间更新该通道。',
+      feedback: '若发现异常，请在控制台反馈面板告诉我们。',
+    },
+    empty: '该通道暂未提供版本，请稍后再试。',
+    table: {
+      title: '历史版本',
+      description: '{channel} 轨道已发布的全部版本。',
+      toggleLabel: '展开历史版本',
+      hideLabel: '收起历史版本',
+      latestBadge: '最新',
+      viewNotes: '说明',
+      columns: {
+        version: '版本',
+        date: '发布时间',
+        summary: '关键更新',
+        actions: '链接',
+      },
+    },
+    downloads: {
+      previewPortal: '预览入口',
+      previewPortalDescription: '包含实验构建、验证说明与回滚指引。',
+      releasePortal: '正式入口',
+      releasePortalDescription: '面向生产环境的安装包与签名指纹。',
+    },
+    entries: {
+      v2_0_0_preview: {
+        summary: '为 2.0 推出的工作区重塑与 FlowScript 运行时做好准备。',
+        highlights: [
+          '推出统一的工作区画布，采用自适应玻璃拟态视觉。',
+          '新增 FlowScript 实时调试器，支持时间轴回放。',
+          '加入手册侧栏，可与命令面板上下文实时同步。',
+        ],
+      },
+      v2_0_0_dev5: {
+        summary: '持续强化预览构建，让自动化调试反馈更紧凑。',
+        highlights: [
+          '优化 FlowScript 热重载速度，在大型编排下依旧快速响应。',
+          '扩展扩展沙箱的日志能力，支持流式追踪。',
+          '提升多设备会话接力的稳定性，适合现场演示。',
+        ],
+      },
+      v1_2_0: {
+        summary: '上线精选插件市场，并全面升级导航体验。',
+        highlights: [
+          '发布带签名与认证标记的插件市场。',
+          '重构 PluginManager、PluginList 与 FileTree，显著提升稳定性。',
+          '修复升级提示、导航布局与 TTabs 定位问题。',
+        ],
+      },
+      v1_1_0: {
+        summary: '为插件市场与升级流程打下基础。',
+        highlights: [
+          '引入插件商店雏形，包含安装与升级模块。',
+          '新增升级提醒、更丰富的输入组件与导出进度界面。',
+          '解决多处布局错位、重复提示与 @ 提醒相关问题。',
+        ],
+      },
+      v1_0_0: {
+        summary: '首个公开版本，统一自动化、插件与统计能力。',
+        highlights: [
+          '提供带签名流程的插件发布通道，正式接入市场。',
+          '加入账户引导、统计面板与多处布局优化。',
+          '稳定插件解析、升级提醒与预览工具链。',
+        ],
+      },
+    },
   },
   plugins: {
     categories: {
