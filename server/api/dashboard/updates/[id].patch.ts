@@ -1,6 +1,6 @@
 import { createError, readBody } from 'h3'
-import { updateUpdate } from '../../../utils/dashboardStore'
 import { requireAdmin } from '../../../utils/auth'
+import { updateUpdate } from '../../../utils/dashboardStore'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Update id is required.' })
 
   const body = await readBody(event)
-  const update = await updateUpdate(id, body)
+  const update = await updateUpdate(event, id, body)
 
   return {
     update,

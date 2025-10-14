@@ -1,6 +1,6 @@
 import { createError } from 'h3'
-import { deleteUpdate } from '../../../utils/dashboardStore'
 import { requireAdmin } from '../../../utils/auth'
+import { deleteUpdate } from '../../../utils/dashboardStore'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (!id)
     throw createError({ statusCode: 400, statusMessage: 'Update id is required.' })
 
-  await deleteUpdate(id)
+  await deleteUpdate(event, id)
 
   return {
     ok: true,

@@ -1,6 +1,6 @@
 import { createError, readBody } from 'h3'
-import { updatePlugin } from '../../../utils/dashboardStore'
 import { requireAdmin } from '../../../utils/auth'
+import { updatePlugin } from '../../../utils/dashboardStore'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!id)
     throw createError({ statusCode: 400, statusMessage: 'Plugin id is required.' })
 
-  const plugin = await updatePlugin(id, body)
+  const plugin = await updatePlugin(event, id, body)
 
   return {
     plugin,

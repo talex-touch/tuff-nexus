@@ -1,6 +1,6 @@
 import { createError } from 'h3'
-import { deletePlugin } from '../../../utils/dashboardStore'
 import { requireAdmin } from '../../../utils/auth'
+import { deletePlugin } from '../../../utils/dashboardStore'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!id)
     throw createError({ statusCode: 400, statusMessage: 'Plugin id is required.' })
 
-  await deletePlugin(id)
+  await deletePlugin(event, id)
 
   return {
     ok: true,

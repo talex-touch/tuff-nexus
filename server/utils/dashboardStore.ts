@@ -1,9 +1,146 @@
+import type { D1Database } from '@cloudflare/workers-types'
+import type { H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
-import { createError } from 'h3'
 import { useStorage } from '#imports'
+import { createError } from 'h3'
+import { readCloudflareBindings } from './cloudflare'
 
 const PLUGINS_KEY = 'dashboard:plugins'
 const UPDATES_KEY = 'dashboard:updates'
+const PLUGINS_TABLE = 'dashboard_plugins'
+const UPDATES_TABLE = 'dashboard_updates'
+
+let schemaInitialized = false
+
+interface D1PluginRow {
+  id: string
+  name: string
+  summary: string
+  category: string
+  installs: number
+  icon: string
+  last_updated: string
+  version: string
+  is_official: number
+  badges: string | null
+  author: string | null
+  created_at: string
+  updated_at: string
+}
+
+interface D1UpdateRow {
+  id: string
+  title: string
+  timestamp: string
+  summary: string
+  tags: string | null
+  link: string
+  created_at: string
+  updated_at: string
+}
+
+function getD1Database(event?: H3Event | null): D1Database | null {
+  if (!event)
+    return null
+
+  const bindings = readCloudflareBindings(event)
+  return bindings?.DB ?? null
+}
+
+async function ensureDashboardSchema(db: D1Database) {
+  if (schemaInitialized)
+    return
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS ${PLUGINS_TABLE} (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      category TEXT NOT NULL,
+      installs INTEGER NOT NULL,
+      icon TEXT NOT NULL,
+      last_updated TEXT NOT NULL,
+      version TEXT NOT NULL,
+      is_official INTEGER NOT NULL,
+      badges TEXT NOT NULL,
+      author TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `).run()
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS ${UPDATES_TABLE} (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      timestamp TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      tags TEXT NOT NULL,
+      link TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `).run()
+
+  schemaInitialized = true
+}
+
+function parseJsonArray(value: string | null): string[] {
+  if (!value)
+    return []
+
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.map(item => String(item)) : []
+  }
+  catch {
+    return []
+  }
+}
+
+function parseJsonObject<T>(value: string | null): T | null {
+  if (!value)
+    return null
+
+  try {
+    const parsed = JSON.parse(value)
+    return parsed && typeof parsed === 'object' ? (parsed as T) : null
+  }
+  catch {
+    return null
+  }
+}
+
+function mapPluginRow(row: D1PluginRow): DashboardPlugin {
+  return {
+    id: row.id,
+    name: row.name,
+    summary: row.summary,
+    category: row.category,
+    installs: Number(row.installs ?? 0),
+    icon: row.icon,
+    lastUpdated: row.last_updated,
+    version: row.version,
+    isOfficial: Boolean(row.is_official),
+    badges: parseJsonArray(row.badges),
+    author: parseJsonObject<DashboardPluginAuthor>(row.author),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function mapUpdateRow(row: D1UpdateRow): DashboardUpdate {
+  return {
+    id: row.id,
+    title: row.title,
+    timestamp: row.timestamp,
+    summary: row.summary,
+    tags: parseJsonArray(row.tags),
+    link: row.link,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
 
 export interface DashboardPluginAuthor {
   name: string
@@ -189,7 +326,34 @@ function normalizeUpdateInput(input: Partial<UpdateInput>, forUpdate = false): U
   }
 }
 
-export async function listPlugins(): Promise<DashboardPlugin[]> {
+export async function listPlugins(event?: H3Event): Promise<DashboardPlugin[]> {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const { results } = await db.prepare(`
+      SELECT
+        id,
+        name,
+        summary,
+        category,
+        installs,
+        icon,
+        last_updated,
+        version,
+        is_official,
+        badges,
+        author,
+        created_at,
+        updated_at
+      FROM ${PLUGINS_TABLE}
+      ORDER BY datetime(created_at) DESC;
+    `).all<D1PluginRow>()
+
+    return (results ?? []).map(mapPluginRow)
+  }
+
   const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
   const normalized = plugins.map(plugin => ({
     ...plugin,
@@ -199,12 +363,39 @@ export async function listPlugins(): Promise<DashboardPlugin[]> {
   return normalized.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
-export async function getPluginById(id: string) {
-  const plugins = await listPlugins()
+export async function getPluginById(event: H3Event | undefined, id: string) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const row = await db.prepare(`
+      SELECT
+        id,
+        name,
+        summary,
+        category,
+        installs,
+        icon,
+        last_updated,
+        version,
+        is_official,
+        badges,
+        author,
+        created_at,
+        updated_at
+      FROM ${PLUGINS_TABLE}
+      WHERE id = ?1;
+    `).bind(id).first<D1PluginRow>()
+
+    return row ? mapPluginRow(row) : null
+  }
+
+  const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
   return plugins.find(plugin => plugin.id === id) || null
 }
 
-export async function createPlugin(rawInput: Partial<PluginInput>) {
+export async function createPlugin(event: H3Event, rawInput: Partial<PluginInput>) {
   const input = normalizePluginInput(rawInput)
   const now = new Date().toISOString()
 
@@ -215,13 +406,110 @@ export async function createPlugin(rawInput: Partial<PluginInput>) {
     updatedAt: now,
   }
 
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    await db.prepare(`
+      INSERT INTO ${PLUGINS_TABLE} (
+        id,
+        name,
+        summary,
+        category,
+        installs,
+        icon,
+        last_updated,
+        version,
+        is_official,
+        badges,
+        author,
+        created_at,
+        updated_at
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13);
+    `).bind(
+      newPlugin.id,
+      newPlugin.name,
+      newPlugin.summary,
+      newPlugin.category,
+      newPlugin.installs,
+      newPlugin.icon,
+      newPlugin.lastUpdated,
+      newPlugin.version,
+      newPlugin.isOfficial ? 1 : 0,
+      JSON.stringify(newPlugin.badges),
+      newPlugin.author ? JSON.stringify(newPlugin.author) : null,
+      newPlugin.createdAt,
+      newPlugin.updatedAt,
+    ).run()
+
+    return newPlugin
+  }
+
   const plugins = await listPlugins()
   plugins.unshift(newPlugin)
   await writeCollection(PLUGINS_KEY, plugins)
   return newPlugin
 }
 
-export async function updatePlugin(id: string, rawInput: Partial<PluginInput>) {
+export async function updatePlugin(event: H3Event, id: string, rawInput: Partial<PluginInput>) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const existing = await getPluginById(event, id)
+
+    if (!existing)
+      throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
+
+    const mergedInput: PluginInput = normalizePluginInput(
+      {
+        ...existing,
+        ...rawInput,
+      },
+      true,
+    )
+
+    const updatedPlugin: DashboardPlugin = {
+      ...existing,
+      ...mergedInput,
+      updatedAt: new Date().toISOString(),
+    }
+
+    await db.prepare(`
+      UPDATE ${PLUGINS_TABLE}
+      SET
+        name = ?1,
+        summary = ?2,
+        category = ?3,
+        installs = ?4,
+        icon = ?5,
+        last_updated = ?6,
+        version = ?7,
+        is_official = ?8,
+        badges = ?9,
+        author = ?10,
+        updated_at = ?11
+      WHERE id = ?12;
+    `).bind(
+      updatedPlugin.name,
+      updatedPlugin.summary,
+      updatedPlugin.category,
+      updatedPlugin.installs,
+      updatedPlugin.icon,
+      updatedPlugin.lastUpdated,
+      updatedPlugin.version,
+      updatedPlugin.isOfficial ? 1 : 0,
+      JSON.stringify(updatedPlugin.badges),
+      updatedPlugin.author ? JSON.stringify(updatedPlugin.author) : null,
+      updatedPlugin.updatedAt,
+      updatedPlugin.id,
+    ).run()
+
+    return updatedPlugin
+  }
+
   const plugins = await listPlugins()
   const index = plugins.findIndex(plugin => plugin.id === id)
 
@@ -250,7 +538,25 @@ export async function updatePlugin(id: string, rawInput: Partial<PluginInput>) {
   return updatedPlugin
 }
 
-export async function deletePlugin(id: string) {
+export async function deletePlugin(event: H3Event, id: string) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const result = await db.prepare(`
+      DELETE FROM ${PLUGINS_TABLE}
+      WHERE id = ?1;
+    `).bind(id).run()
+
+    const changes = (result.meta as { changes?: number } | undefined)?.changes ?? 0
+
+    if (changes === 0)
+      throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
+
+    return
+  }
+
   const plugins = await listPlugins()
   const nextPlugins = plugins.filter(plugin => plugin.id !== id)
 
@@ -260,7 +566,29 @@ export async function deletePlugin(id: string) {
   await writeCollection(PLUGINS_KEY, nextPlugins)
 }
 
-export async function listUpdates(): Promise<DashboardUpdate[]> {
+export async function listUpdates(event?: H3Event): Promise<DashboardUpdate[]> {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const { results } = await db.prepare(`
+      SELECT
+        id,
+        title,
+        timestamp,
+        summary,
+        tags,
+        link,
+        created_at,
+        updated_at
+      FROM ${UPDATES_TABLE}
+      ORDER BY datetime(timestamp) DESC;
+    `).all<D1UpdateRow>()
+
+    return (results ?? []).map(mapUpdateRow)
+  }
+
   const updates = await readCollection<DashboardUpdate>(UPDATES_KEY)
   const normalized = updates.map(update => ({
     ...update,
@@ -270,12 +598,34 @@ export async function listUpdates(): Promise<DashboardUpdate[]> {
   return normalized.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 }
 
-export async function getUpdateById(id: string) {
-  const updates = await listUpdates()
+export async function getUpdateById(event: H3Event | undefined, id: string) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const row = await db.prepare(`
+      SELECT
+        id,
+        title,
+        timestamp,
+        summary,
+        tags,
+        link,
+        created_at,
+        updated_at
+      FROM ${UPDATES_TABLE}
+      WHERE id = ?1;
+    `).bind(id).first<D1UpdateRow>()
+
+    return row ? mapUpdateRow(row) : null
+  }
+
+  const updates = await readCollection<DashboardUpdate>(UPDATES_KEY)
   return updates.find(update => update.id === id) || null
 }
 
-export async function createUpdate(rawInput: Partial<UpdateInput>) {
+export async function createUpdate(event: H3Event, rawInput: Partial<UpdateInput>) {
   const input = normalizeUpdateInput(rawInput)
   const now = new Date().toISOString()
 
@@ -286,13 +636,90 @@ export async function createUpdate(rawInput: Partial<UpdateInput>) {
     updatedAt: now,
   }
 
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    await db.prepare(`
+      INSERT INTO ${UPDATES_TABLE} (
+        id,
+        title,
+        timestamp,
+        summary,
+        tags,
+        link,
+        created_at,
+        updated_at
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8);
+    `).bind(
+      update.id,
+      update.title,
+      update.timestamp,
+      update.summary,
+      JSON.stringify(update.tags),
+      update.link,
+      update.createdAt,
+      update.updatedAt,
+    ).run()
+
+    return update
+  }
+
   const updates = await listUpdates()
   updates.unshift(update)
   await writeCollection(UPDATES_KEY, updates)
   return update
 }
 
-export async function updateUpdate(id: string, rawInput: Partial<UpdateInput>) {
+export async function updateUpdate(event: H3Event, id: string, rawInput: Partial<UpdateInput>) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const existing = await getUpdateById(event, id)
+
+    if (!existing)
+      throw createError({ statusCode: 404, statusMessage: 'Update not found.' })
+
+    const mergedInput: UpdateInput = normalizeUpdateInput(
+      {
+        ...existing,
+        ...rawInput,
+      },
+      true,
+    )
+
+    const updated: DashboardUpdate = {
+      ...existing,
+      ...mergedInput,
+      updatedAt: new Date().toISOString(),
+    }
+
+    await db.prepare(`
+      UPDATE ${UPDATES_TABLE}
+      SET
+        title = ?1,
+        timestamp = ?2,
+        summary = ?3,
+        tags = ?4,
+        link = ?5,
+        updated_at = ?6
+      WHERE id = ?7;
+    `).bind(
+      updated.title,
+      updated.timestamp,
+      updated.summary,
+      JSON.stringify(updated.tags),
+      updated.link,
+      updated.updatedAt,
+      updated.id,
+    ).run()
+
+    return updated
+  }
+
   const updates = await listUpdates()
   const index = updates.findIndex(update => update.id === id)
 
@@ -321,7 +748,25 @@ export async function updateUpdate(id: string, rawInput: Partial<UpdateInput>) {
   return updated
 }
 
-export async function deleteUpdate(id: string) {
+export async function deleteUpdate(event: H3Event, id: string) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensureDashboardSchema(db)
+
+    const result = await db.prepare(`
+      DELETE FROM ${UPDATES_TABLE}
+      WHERE id = ?1;
+    `).bind(id).run()
+
+    const changes = (result.meta as { changes?: number } | undefined)?.changes ?? 0
+
+    if (changes === 0)
+      throw createError({ statusCode: 404, statusMessage: 'Update not found.' })
+
+    return
+  }
+
   const updates = await listUpdates()
   const nextUpdates = updates.filter(update => update.id !== id)
 
