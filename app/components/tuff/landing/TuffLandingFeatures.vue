@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useGsapReveal } from '~/composables/useGsapReveal'
+import { computed } from 'vue'
 import ChromaGrid from '../ChromaGrid.vue'
 
 interface ExtensibilityContent {
@@ -19,12 +18,7 @@ interface ShowcaseProfile {
   url: string
 }
 
-const props = defineProps<{
-  capabilities: ExtensibilityContent
-}>()
-
-const sectionRef = ref<HTMLElement | null>(null)
-const capabilities = computed(() => props.capabilities)
+const { t } = useI18n()
 
 function toDomId(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
@@ -225,46 +219,39 @@ const showcaseItems: ShowcaseProfile[] = [
   },
 ]
 
-useGsapReveal(sectionRef, {
-  from: {
-    opacity: 0,
-    y: 42,
-    duration: 1.05,
-  },
-})
+const extensibility = computed<ExtensibilityContent>(() => ({
+  eyebrow: t('landing.os.extensibility.eyebrow'),
+  headline: t('landing.os.extensibility.headline'),
+  subheadline: t('landing.os.extensibility.subheadline'),
+}))
 </script>
 
 <template>
-  <section
-    ref="sectionRef"
-    class="min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
+  <TuffLandingSection
+    :sticky="extensibility.eyebrow"
+    :title="extensibility.headline"
+    :subtitle="extensibility.subheadline"
+    section-class="min-h-screen flex flex-col justify-center"
+    container-class="max-w-6xl w-full space-y-16"
+    title-class="text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight"
+    subtitle-class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70"
+    :reveal-options="{
+      from: {
+        opacity: 0,
+        y: 42,
+        duration: 1.05,
+      },
+    }"
   >
-    <div class="mx-auto max-w-6xl w-full px-6 space-y-16">
-      <TuffStickyBar>
-        {{ capabilities.eyebrow }}
-      </TuffStickyBar>
-
-      <header
-        class="text-center text-white"
-      >
-        <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
-          {{ capabilities.headline }}
-        </h2>
-        <p class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70">
-          {{ capabilities.subheadline }}
-        </p>
-      </header>
-
-      <div class="flex flex-col items-center gap-10 rounded-3xl bg-black py-36 shadow-[0_12px_20px_rgba(8,10,35,0.32)]">
-        <ChromaGrid
-          :items="showcaseItems"
-          :radius="300"
-          :damping="0.45"
-          :fade-out="0.6"
-          ease="power3.out"
-        />
-        <div class="pointer-events-none absolute from-transparent via-white/12 to-transparent bg-gradient-to-r blur-[120px] -inset-10 -z-10" />
-      </div>
+    <div class="flex flex-col items-center gap-10 rounded-3xl bg-black py-36 shadow-[0_12px_20px_rgba(8,10,35,0.32)]">
+      <ChromaGrid
+        :items="showcaseItems"
+        :radius="300"
+        :damping="0.45"
+        :fade-out="0.6"
+        ease="power3.out"
+      />
+      <div class="pointer-events-none absolute from-transparent via-white/12 to-transparent bg-gradient-to-r blur-[120px] -inset-10 -z-10" />
     </div>
-  </section>
+  </TuffLandingSection>
 </template>

@@ -1,72 +1,55 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useGsapReveal } from '~/composables/useGsapReveal'
+import { computed } from 'vue'
 
-interface FaqItem {
-  id: string
-  question: string
-  answer: string
-}
+const { t } = useI18n()
 
-interface FaqContent {
-  eyebrow: string
-  headline: string
-  items: FaqItem[]
-}
+const faqItemKeys = ['access', 'privacy', 'build', 'migration', 'pricing'] as const
 
-const props = defineProps<{
-  faq: FaqContent
-}>()
-
-const sectionRef = ref<HTMLElement | null>(null)
-const faq = computed(() => props.faq)
-const items = computed(() => faq.value.items ?? [])
-
-useGsapReveal(sectionRef, {
-  from: {
-    opacity: 0,
-    y: 28,
-    duration: 0.9,
-  },
-})
+const faq = computed(() => ({
+  eyebrow: t('landing.os.faq.eyebrow'),
+  headline: t('landing.os.faq.headline'),
+  items: faqItemKeys.map(key => ({
+    id: key,
+    question: t(`landing.os.faq.items.${key}.question`),
+    answer: t(`landing.os.faq.items.${key}.answer`),
+  })),
+}))
 </script>
 
 <template>
-  <section
-    ref="sectionRef"
-    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
+  <TuffLandingSection
+    :sticky="faq.eyebrow"
+    :title="faq.headline"
+    title-class="text-[clamp(2rem,1vw+2.3rem,3rem)]"
+    section-class="min-h-screen flex flex-col justify-center"
+    container-class="max-w-5xl w-full space-y-10"
+    :reveal-options="{
+      from: {
+        opacity: 0,
+        y: 28,
+        duration: 0.9,
+      },
+    }"
   >
-    <div class="pointer-events-none absolute inset-0 -z-10">
+    <template #decoration>
       <div class="absolute left-[-220px] top-[30%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(236,72,153,0.16),_transparent_70%)] blur-3xl" />
       <div class="absolute bottom-[-120px] right-[-240px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.18),_transparent_70%)] blur-3xl" />
+    </template>
+
+    <div class="space-y-4" data-reveal>
+      <details
+        v-for="item in faq.items"
+        :key="item.id"
+        class="group overflow-hidden border border-white/10 rounded-[24px] bg-white/4 px-6 py-5 text-left text-white shadow-[0_20px_70px_rgba(6,16,48,0.32)] transition"
+      >
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold leading-tight">
+          <span>{{ item.question }}</span>
+          <span class="i-carbon-add text-xl transition group-open:rotate-45" aria-hidden="true" />
+        </summary>
+        <p class="mt-3 text-sm text-white/70 leading-relaxed">
+          {{ item.answer }}
+        </p>
+      </details>
     </div>
-
-    <div class="relative mx-auto max-w-5xl w-full px-6 space-y-10">
-      <TuffStickyBar>
-        {{ faq.eyebrow }}
-      </TuffStickyBar>
-
-      <header class="text-center space-y-4">
-        <h2 class="my-0 text-[clamp(2rem,1vw+2.3rem,3rem)] font-semibold leading-tight">
-          {{ faq.headline }}
-        </h2>
-      </header>
-
-      <div class="space-y-4" data-reveal>
-        <details
-          v-for="item in items"
-          :key="item.id"
-          class="group overflow-hidden border border-white/10 rounded-[24px] bg-white/4 px-6 py-5 text-left text-white shadow-[0_20px_70px_rgba(6,16,48,0.32)] transition"
-        >
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold leading-tight">
-            <span>{{ item.question }}</span>
-            <span class="i-carbon-add text-xl transition group-open:rotate-45" aria-hidden="true" />
-          </summary>
-          <p class="mt-3 text-sm text-white/70 leading-relaxed">
-            {{ item.answer }}
-          </p>
-        </details>
-      </div>
-    </div>
-  </section>
+  </TuffLandingSection>
 </template>

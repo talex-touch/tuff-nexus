@@ -1,88 +1,80 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useGsapReveal } from '~/composables/useGsapReveal'
+import { computed } from 'vue'
 import TuffShowcase from './showcase/TuffShowcase.vue'
 
-interface SpotlightResult {
-  icon: string
-  title: string
-  meta: string
-}
+const { t } = useI18n()
 
-interface SpotlightHighlight {
-  title: string
-  copy: string
-}
+const aiResultKeys = ['figma', 'files', 'gmail', 'slack'] as const
+const aiResultIcons = {
+  figma: 'i-carbon-logo-figma',
+  files: 'i-carbon-document',
+  gmail: 'i-carbon-email',
+  slack: 'i-carbon-logo-slack',
+} as const
 
-interface AiSpotlightContent {
-  eyebrow: string
-  headline: string
-  subheadline: string
+const aiHighlightKeys = ['context', 'silo', 'breathe'] as const
+
+const aiSpotlight = computed(() => ({
+  eyebrow: t('landing.os.aiSpotlight.eyebrow'),
+  headline: t('landing.os.aiSpotlight.headline'),
+  subheadline: t('landing.os.aiSpotlight.subheadline'),
   demo: {
-    queryLabel: string
-    queryText: string
-    summary: string
-    results: SpotlightResult[]
-  }
-  highlights: SpotlightHighlight[]
-}
-
-const { spotlight } = defineProps<{
-  spotlight: AiSpotlightContent
-}>()
-
-const sectionRef = ref<HTMLElement | null>(null)
-
-useGsapReveal(sectionRef, {
-  targetSelector: ':scope [data-reveal]',
-  from: {
-    opacity: 0,
-    y: 48,
-    duration: 1.05,
-    ease: 'power3.out',
+    summary: t('landing.os.aiSpotlight.summary'),
+    queryLabel: t('landing.os.aiSpotlight.queryLabel'),
+    queryText: t('landing.os.aiSpotlight.queryText'),
+    results: aiResultKeys.map(key => ({
+      icon: aiResultIcons[key],
+      title: t(`landing.os.aiSpotlight.results.${key}.title`),
+      meta: t(`landing.os.aiSpotlight.results.${key}.meta`),
+    })),
   },
-  stagger: 0.16,
-})
+  highlights: aiHighlightKeys.map(key => ({
+    title: t(`landing.os.aiSpotlight.highlights.${key}.title`),
+    copy: t(`landing.os.aiSpotlight.highlights.${key}.copy`),
+  })),
+}))
 </script>
 
 <template>
-  <section
+  <TuffLandingSection
     id="landing-stats"
-    ref="sectionRef"
-    class="min-h-screen flex flex-col gap-12 overflow-hidden bg-black py-24"
+    :sticky="aiSpotlight.eyebrow"
+    :title="aiSpotlight.headline"
+    :subtitle="aiSpotlight.subheadline"
+    section-class="min-h-screen flex flex-col justify-center"
+    container-class="max-w-6xl w-full flex flex-col gap-12"
+    title-class="text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight"
+    subtitle-class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70"
+    :reveal-options="{
+      targetSelector: ':scope [data-reveal]',
+      from: {
+        opacity: 0,
+        y: 48,
+        duration: 1.05,
+        ease: 'power3.out',
+      },
+      stagger: 0.16,
+    }"
   >
-    <div data-reveal>
-      <TuffStickyBar>
-        {{ spotlight.eyebrow }}
-      </TuffStickyBar>
-    </div>
+    <p data-reveal class="mx-auto my-0 max-w-3xl text-sm text-neutral-500 font-medium tracking-wide dark:text-neutral-300/80">
+      {{ aiSpotlight.demo.summary }}
+    </p>
 
-    <header data-reveal class="text-center text-white">
-      <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
-        {{ spotlight.headline }}
-      </h2>
-      <p class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70">
-        {{ spotlight.subheadline }}
-        <span class="mt-3 block text-sm text-neutral-500 font-medium tracking-wide dark:text-neutral-300/80">
-          {{ spotlight.demo.summary }}
-        </span>
-      </p>
-    </header>
+    <div
+      data-reveal
+      class="flex flex-col items-center gap-8 text-center"
+    >
+      <TuffLandingShowcaseTuffShowcaseContainer>
+        <TuffVortexBackground>
+          <TuffShowcase />
+        </TuffVortexBackground>
+      </TuffLandingShowcaseTuffShowcaseContainer>
 
-    <div class="flex flex-col items-center gap-8 text-center">
-      <div data-reveal>
-        <TuffLandingShowcaseTuffShowcaseContainer>
-          <TuffVortexBackground>
-            <TuffShowcase />
-          </TuffVortexBackground>
-        </TuffLandingShowcaseTuffShowcaseContainer>
-      </div>
-
-      <p data-reveal>
+      <p>
         <span class="block text-sm text-neutral-500/80 font-medium tracking-wide dark:text-neutral-300/70">
-          {{ spotlight.highlights[0]?.copy ?? 'Precision insights orchestrated for your next launch.' }}
+          {{ aiSpotlight.highlights[0]?.copy ?? 'Precision insights orchestrated for your next launch.' }}
         </span>
       </p>
     </div>
-  </section>
+  </TuffLandingSection>
 </template>
