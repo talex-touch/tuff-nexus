@@ -117,6 +117,7 @@ export default defineNuxtConfig({
   },
 
   clerk: {
+    publishableKey: process.env.NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     signInUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_IN_URL || '/sign-in',
     signUpUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_UP_URL || '/sign-up',
     domain: process.env.NUXT_PUBLIC_CLERK_DOMAIN,
