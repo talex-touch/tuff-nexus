@@ -25,9 +25,6 @@ const craftsmanship = computed(() => ({
     :subtitle="craftsmanship.subheadline"
     section-class="min-h-screen flex flex-col justify-center"
     container-class="max-w-6xl w-full"
-    header-class="py-6 text-white space-y-5"
-    title-class="text-[clamp(2.1rem,1vw+2.4rem,3.1rem)]"
-    subtitle-class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] text-white/70 font-semibold leading-relaxed"
     :reveal-options="{
       from: {
         opacity: 0,

@@ -48,20 +48,25 @@ export function useGsapReveal(
 
     const fallbackFrom: TweenVars = {
       opacity: 0,
-      y: 40,
-      duration: 1.1,
+      autoAlpha: 0,
+      y: 56,
+      duration: 1.15,
       ease: 'power3.out',
+      filter: 'blur(16px)',
     }
 
     ctx = gsap.context(() => {
       const targetSelector = options.targetSelector ?? '[data-reveal]'
       const elements = gsap.utils.toArray<HTMLElement>(targetSelector)
+      const fromOptions = options.from ?? {}
+      const clearProps = (fromOptions as { clearProps?: TweenVars['clearProps'] }).clearProps ?? 'filter'
 
       if (!elements.length) return
 
       gsap.from(elements, {
         ...fallbackFrom,
-        ...options.from,
+        ...fromOptions,
+        clearProps,
         stagger: options.stagger ?? 0.12,
         scrollTrigger: {
           trigger: container.value,

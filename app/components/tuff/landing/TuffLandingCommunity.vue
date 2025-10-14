@@ -46,8 +46,6 @@ const community = computed(() => ({
     :subtitle="community.subheadline"
     section-class="min-h-screen flex flex-col justify-center"
     container-class="max-w-6xl w-full space-y-10"
-    title-class="text-[clamp(2.1rem,1vw+2.4rem,3.1rem)]"
-    subtitle-class="text-[clamp(.7rem,1vw+1.2rem,1.1rem)] text-white/70 font-semibold leading-relaxed"
     :reveal-options="{
       from: {
         opacity: 0,

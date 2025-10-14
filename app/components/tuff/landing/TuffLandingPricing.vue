@@ -33,8 +33,6 @@ const features = computed(() => plan.value.features ?? [])
     :subtitle="pricing.subheadline"
     section-class="flex flex-col justify-center"
     container-class="max-w-4xl w-full space-y-10"
-    title-class="text-[clamp(2rem,1vw+2.3rem,3rem)]"
-    subtitle-class="mx-auto my-0 max-w-3xl text-[clamp(.7rem,1vw+1.2rem,1.1rem)] text-white/70 font-semibold leading-relaxed"
     :reveal-options="{
       from: {
         opacity: 0,
@@ -45,7 +43,7 @@ const features = computed(() => plan.value.features ?? [])
   >
     <template #decoration>
       <div class="absolute left-[-260px] top-[30%] h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(244,114,182,0.2),_transparent_70%)] blur-3xl" />
-      <div class="absolute right-[-260px] bottom-[-140px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.18),_transparent_70%)] blur-3xl" />
+      <div class="absolute bottom-[-140px] right-[-260px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.18),_transparent_70%)] blur-3xl" />
     </template>
 
     <article
@@ -54,11 +52,11 @@ const features = computed(() => plan.value.features ?? [])
     >
       <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_70%)] opacity-80" />
       <div class="relative space-y-8">
-        <header class="space-y-3 text-center">
+        <header class="text-center space-y-3">
           <h3 class="text-3xl font-semibold">
             {{ plan.name }}
           </h3>
-          <p class="text-sm text-white/70 uppercase tracking-[0.28em] font-semibold">
+          <p class="text-sm text-white/70 font-semibold tracking-[0.28em] uppercase">
             {{ plan.period }}
           </p>
           <p class="text-5xl font-semibold tracking-tight">
@@ -66,13 +64,13 @@ const features = computed(() => plan.value.features ?? [])
           </p>
         </header>
 
-        <ul class="space-y-3 text-left">
+        <ul class="text-left space-y-3">
           <li
             v-for="feature in features"
             :key="feature.id"
             class="flex items-start gap-3 text-sm text-white/75 leading-relaxed"
           >
-            <span class="mt-1 inline-flex size-2.5 flex-shrink-0 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.6)]" />
+            <span class="mt-1 size-2.5 inline-flex flex-shrink-0 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.6)]" />
             <span>{{ feature.copy }}</span>
           </li>
         </ul>

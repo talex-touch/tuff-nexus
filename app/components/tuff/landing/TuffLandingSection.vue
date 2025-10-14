@@ -16,13 +16,13 @@ const props = withDefaults(defineProps<{
   subtitleClass?: string
   revealOptions?: Parameters<typeof useGsapReveal>[1]
 }>(), {
-  sectionClass: '',
-  containerClass: '',
+  sectionClass: 'min-h-screen flex flex-col justify-center',
+  containerClass: 'max-w-6xl w-full flex flex-col gap-12',
   stickyClass: '',
   titleTag: 'h2',
   headerClass: '',
-  titleClass: '',
-  subtitleClass: '',
+  titleClass: 'text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight',
+  subtitleClass: 'mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70',
 })
 
 const slots = useSlots()
@@ -35,8 +35,7 @@ useGsapReveal(sectionRef, props.revealOptions ?? {})
   <section
     :id="props.id"
     ref="sectionRef"
-    :class="[
-      'relative isolate overflow-hidden bg-black py-24 text-white',
+    class="relative isolate overflow-hidden bg-black py-24 text-white" :class="[
       props.sectionClass,
     ]"
   >
@@ -57,6 +56,7 @@ useGsapReveal(sectionRef, props.revealOptions ?? {})
       <TuffStickyBar
         v-else-if="props.sticky"
         :class="props.stickyClass"
+        data-reveal
       >
         {{ props.sticky }}
       </TuffStickyBar>
@@ -66,27 +66,26 @@ useGsapReveal(sectionRef, props.revealOptions ?? {})
       </template>
       <header
         v-else-if="props.title || props.subtitle"
-        :class="[
-          'space-y-4 text-center',
+        class="text-center" :class="[
           props.headerClass,
         ]"
       >
         <component
           :is="props.titleTag"
           v-if="props.title"
-          :class="[
-            'my-0 font-semibold leading-tight',
+          class="my-0 font-semibold leading-tight" :class="[
             props.titleClass,
           ]"
+          data-reveal
         >
           {{ props.title }}
         </component>
         <p
           v-if="props.subtitle"
-          :class="[
-            'mx-auto my-0 text-base leading-relaxed text-white/70',
+          class="mx-auto my-0 text-base text-white/70 leading-relaxed" :class="[
             props.subtitleClass,
           ]"
+          data-reveal
         >
           {{ props.subtitle }}
         </p>
