@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import TuffLandingAiOverview from './landing/TuffLandingAiOverview.vue'
 import TuffLandingAggregation from './landing/TuffLandingAggregation.vue'
+import TuffLandingAiOverview from './landing/TuffLandingAiOverview.vue'
 import TuffLandingBuiltForYou from './landing/TuffLandingBuiltForYou.vue'
 import TuffLandingCommunity from './landing/TuffLandingCommunity.vue'
 import TuffLandingEcosystem from './landing/TuffLandingEcosystem.vue'
 import TuffLandingExperience from './landing/TuffLandingExperience.vue'
 import TuffLandingFaq from './landing/TuffLandingFaq.vue'
 import TuffLandingFeatures from './landing/TuffLandingFeatures.vue'
+import TuffLandingFooter from './landing/TuffLandingFooter.vue'
 import TuffLandingHero from './landing/TuffLandingHero.vue'
 import TuffLandingIntegrations from './landing/TuffLandingIntegrations.vue'
 import TuffLandingPricing from './landing/TuffLandingPricing.vue'
 import TuffLandingStarSnippets from './landing/TuffLandingStarSnippets.vue'
 import TuffLandingStats from './landing/TuffLandingStats.vue'
 import TuffLandingWaitlist from './landing/TuffLandingWaitlist.vue'
-import TuffLandingFooter from './landing/TuffLandingFooter.vue'
 
 const hero = {
   title: 'Profoundly Powerful. Deceptively Simple.',
