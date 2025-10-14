@@ -3,20 +3,59 @@ const { data: navigationTree, pending, error } = await useAsyncData(
   'docs-navigation',
   () => queryCollectionNavigation('docs'),
 )
-const items = computed(() => navigationTree.value ?? [])
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
+const SUPPORTED_LOCALES = ['en', 'zh']
 
 const docLabels = computed<Record<string, string>>(() => ({
   '/docs/documents/start': t('docsNav.start'),
   '/docs/documents/start.zh': t('docsNav.start'),
 }))
 
-function isLinkActive(path: string) {
+function stripLocalePrefix(path: string | null | undefined) {
   if (!path)
+    return '/'
+  for (const code of SUPPORTED_LOCALES) {
+    const exact = `/${code}`
+    if (path === exact)
+      return '/'
+    const prefixed = `${exact}/`
+    if (path.startsWith(prefixed))
+      return path.slice(exact.length) || '/'
+  }
+  return path
+}
+
+function normalizeContentPath(path: string | null | undefined) {
+  if (!path)
+    return null
+  const fullPath = path.startsWith('/') ? path : `/${path}`
+  return stripLocalePrefix(fullPath).replace(/\.(en|zh)$/, '')
+}
+
+const items = computed(() => navigationTree.value ?? [])
+
+const sections = computed(() => {
+  if (!items.value.length)
+    return []
+  const [first] = items.value
+  if (first?.path === '/docs' && Array.isArray(first.children))
+    return first.children
+  return items.value
+})
+
+const expandedSections = ref<Record<string, boolean>>({})
+const normalizedRoutePath = computed(() => stripLocalePrefix(route.path))
+
+function isLinkActive(path: string) {
+  const normalizedTarget = normalizeContentPath(path)
+  if (!normalizedTarget)
     return false
 
-  return route.path === path || route.path.startsWith(`${path}/`)
+  if (normalizedRoutePath.value === normalizedTarget)
+    return true
+  return normalizedRoutePath.value.startsWith(`${normalizedTarget}/`)
 }
 
 function itemTitle(title?: string, path?: string) {
@@ -32,7 +71,13 @@ function itemTitle(title?: string, path?: string) {
   if (!path)
     return 'Untitled'
 
-  return path.split('/').filter(Boolean).pop()?.replace(/[-_]/g, ' ')?.replace(/\b\w/g, c => c.toUpperCase()) ?? 'Untitled'
+  return path
+    .split('/')
+    .filter(Boolean)
+    .pop()
+    ?.replace(/\.(en|zh)$/, '')
+    ?.replace(/[-_]/g, ' ')
+    ?.replace(/\b\w/g, c => c.toUpperCase()) ?? 'Untitled'
 }
 
 function linkTarget(item: any) {
@@ -40,70 +85,129 @@ function linkTarget(item: any) {
     return null
 
   if (item.page === false && Array.isArray(item.children) && item.children.length > 0)
-    return item.children[0].path
+    return normalizeContentPath(item.children[0].path)
 
-  return item.path
+  return normalizeContentPath(item.path)
 }
+
+function sectionKey(item: any) {
+  return normalizeContentPath(item.path) ?? item.title ?? JSON.stringify(item)
+}
+
+function sectionContainsActive(item: any): boolean {
+  const target = linkTarget(item)
+  if (target && isLinkActive(target))
+    return true
+  if (Array.isArray(item.children))
+    return item.children.some(child => sectionContainsActive(child))
+  return false
+}
+
+function toggleSection(item: any) {
+  const key = sectionKey(item)
+  expandedSections.value = {
+    ...expandedSections.value,
+    [key]: !expandedSections.value[key],
+  }
+}
+
+function isSectionExpanded(item: any) {
+  const key = sectionKey(item)
+  return expandedSections.value[key] ?? sectionContainsActive(item)
+}
+
+watch(
+  () => [sections.value, normalizedRoutePath.value, locale.value],
+  () => {
+    const next: Record<string, boolean> = {}
+    for (const section of sections.value) {
+      const key = sectionKey(section)
+      const shouldOpen = sectionContainsActive(section)
+      if (shouldOpen)
+        next[key] = true
+      else if (expandedSections.value[key])
+        next[key] = true
+    }
+    expandedSections.value = next
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <nav class="space-y-2">
+  <nav class="flex flex-col gap-3">
     <template v-if="pending">
       <div v-for="index in 6" :key="index" class="h-8 animate-pulse rounded-md bg-gray-100 dark:bg-gray-800" />
     </template>
     <template v-else-if="error">
-      <div class="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-500 dark:border-gray-800 dark:bg-primary/80 dark:text-gray-300">
+      <div class="border border-gray-200 rounded-md bg-white p-3 text-sm text-gray-500 dark:border-gray-800 dark:bg-primary/80 dark:text-gray-300">
         {{ t('docsSidebar.error') }}
       </div>
     </template>
     <template v-else>
-      <div v-for="item in items" :key="item.path ?? item.title" class="space-y-1">
-        <template v-if="linkTarget(item)">
-          <NuxtLink
-            :to="linkTarget(item)!"
-            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
-            :class="isLinkActive(linkTarget(item) || item.path || '')
-              ? 'bg-gray-200 dark:bg-gray-800 text-primary dark:text-light'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700'"
-          >
-            {{ itemTitle(item.title, item.path ?? linkTarget(item) ?? undefined) }}
-          </NuxtLink>
-        </template>
-        <div
-          v-else
-          class="px-3 py-2 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+      <div
+        v-for="section in sections"
+        :key="sectionKey(section)"
+        class="overflow-hidden border border-primary/5 rounded-2xl bg-white/60 shadow-sm backdrop-blur transition dark:border-light/10 dark:bg-primary/70"
+      >
+        <button
+          v-if="section.children && section.children.length"
+          type="button"
+          class="group w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm text-primary/80 font-semibold transition hover:bg-primary/5 dark:text-light/80 dark:hover:bg-light/10"
+          @click="toggleSection(section)"
         >
-          {{ itemTitle(item.title, item.path ?? linkTarget(item) ?? undefined) }}
-        </div>
-        <ul v-if="item.children" class="pl-4 space-y-1">
-          <li v-for="child in item.children" :key="child.path ?? child.title">
-            <NuxtLink
-              v-if="linkTarget(child)"
-              :to="linkTarget(child)!"
-              class="flex items-center px-3 py-2 text-sm rounded-md transition-colors"
-              :class="isLinkActive(linkTarget(child) || child.path || '')
-                ? 'bg-gray-200 dark:bg-gray-800 text-primary dark:text-light'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'"
+          <span class="flex-1 truncate">{{ itemTitle(section.title, section.path ?? undefined) }}</span>
+          <span
+            class="i-heroicons-chevron-down-20-solid text-base transition-transform duration-200"
+            :class="isSectionExpanded(section) ? 'rotate-180 text-primary dark:text-light' : 'text-primary/40 dark:text-light/40'"
+          />
+        </button>
+        <NuxtLink
+          v-else-if="linkTarget(section)"
+          :to="localePath(linkTarget(section)!)"
+          class="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-primary/5 dark:hover:bg-light/10"
+          :class="isLinkActive(linkTarget(section) || section.path || '')
+            ? 'text-primary dark:text-light'
+            : 'text-primary/70 dark:text-light/70'"
+        >
+          <span class="truncate">
+            {{ itemTitle(section.title, section.path ?? linkTarget(section) ?? undefined) }}
+          </span>
+          <span
+            class="i-heroicons-arrow-up-right-20-solid text-base"
+            :class="isLinkActive(linkTarget(section) || section.path || '') ? 'text-primary dark:text-light' : 'text-primary/40 dark:text-light/40'"
+          />
+        </NuxtLink>
+        <transition
+          enter-active-class="overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
+          enter-from-class="max-h-0 opacity-0"
+          enter-to-class="max-h-[480px] opacity-100"
+          leave-active-class="overflow-hidden transition-[max-height,opacity] duration-150 ease-in"
+          leave-from-class="max-h-[480px] opacity-100"
+          leave-to-class="max-h-0 opacity-0"
+        >
+          <ul
+            v-if="section.children && section.children.length && isSectionExpanded(section)"
+            class="flex flex-col gap-1 border-t border-primary/5 bg-white/80 px-3 py-3 dark:border-light/10 dark:bg-primary/60"
+          >
+            <li
+              v-for="child in section.children"
+              :key="child.path ?? child.title"
             >
-              {{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}
-            </NuxtLink>
-            <!-- Note: This is still not fully recursive. A recursive component would be better for deeper levels. -->
-            <ul v-if="child.children" class="pl-4 space-y-1 mt-1">
-              <li v-for="grandchild in child.children" :key="grandchild.path ?? grandchild.title">
-                <NuxtLink
-                  v-if="linkTarget(grandchild)"
-                  :to="linkTarget(grandchild)!"
-                  class="flex items-center px-3 py-2 text-xs rounded-md transition-colors"
-                  :class="isLinkActive(linkTarget(grandchild) || grandchild.path || '')
-                    ? 'bg-gray-200 dark:bg-gray-800 text-primary dark:text-light'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-500'"
-                >
-                  {{ itemTitle(grandchild.title, grandchild.path ?? linkTarget(grandchild) ?? undefined) }}
-                </NuxtLink>
-              </li>
-            </ul>
-          </li>
-        </ul>
+              <NuxtLink
+                v-if="linkTarget(child)"
+                :to="localePath(linkTarget(child)!)"
+                class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition"
+                :class="isLinkActive(linkTarget(child) || child.path || '')
+                  ? 'bg-primary/5 text-primary font-semibold dark:bg-light/10 dark:text-light'
+                  : 'text-primary/70 hover:bg-primary/5 dark:text-light/70 dark:hover:bg-light/10'"
+              >
+                <span class="i-heroicons-minus-small-20-solid text-base opacity-40" />
+                <span class="truncate">{{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}</span>
+              </NuxtLink>
+            </li>
+          </ul>
+        </transition>
       </div>
     </template>
   </nav>

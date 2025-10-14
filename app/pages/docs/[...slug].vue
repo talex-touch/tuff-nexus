@@ -1,18 +1,33 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'docs'
+  layout: 'docs',
 })
-
-import { computed } from 'vue'
 
 const route = useRoute()
 const { locale, t } = useI18n()
+
+const SUPPORTED_LOCALES = ['en', 'zh']
+
+function stripLocalePrefix(path: string) {
+  if (!path)
+    return '/'
+  for (const code of SUPPORTED_LOCALES) {
+    const exact = `/${code}`
+    if (path === exact || path === `${exact}/`)
+      return '/'
+    const prefixed = `${exact}/`
+    if (path.startsWith(prefixed))
+      return path.slice(exact.length) || '/'
+  }
+  return path
+}
 
 const docPath = computed(() => {
   const rawPath = route.path.endsWith('/') && route.path.length > 1
     ? route.path.slice(0, -1)
     : route.path
-  return rawPath || '/docs'
+  const normalized = stripLocalePrefix(rawPath)
+  return normalized || '/docs'
 })
 
 const localizedPath = computed(() => {
@@ -32,13 +47,35 @@ const { data: doc, status } = await useAsyncData(
   },
   { watch: [docPath, locale] },
 )
+
+const outlineState = useState<any[]>('docs-toc', () => [])
+const docTitleState = useState<string>('docs-title', () => '')
+const docLocaleState = useState<string>('docs-locale', () => locale.value)
+
+watchEffect(() => {
+  if (doc.value) {
+    outlineState.value = doc.value.body?.toc?.links ?? []
+    docTitleState.value = doc.value.title ?? doc.value.head?.title ?? ''
+    docLocaleState.value = locale.value
+  }
+  else {
+    outlineState.value = []
+    docTitleState.value = ''
+    docLocaleState.value = locale.value
+  }
+})
+
+onBeforeUnmount(() => {
+  outlineState.value = []
+  docTitleState.value = ''
+})
 </script>
 
 <template>
   <div class="relative">
     <div
       v-if="status === 'pending'"
-      class="flex items-center justify-center rounded-3xl border border-primary/10 bg-white/70 px-6 py-20 text-sm text-gray-500 dark:border-light/10 dark:bg-primary/70 dark:text-gray-300"
+      class="flex items-center justify-center border border-primary/10 rounded-3xl bg-white/70 px-6 py-20 text-sm text-gray-500 dark:border-light/10 dark:bg-primary/70 dark:text-gray-300"
     >
       <span class="i-carbon-circle-dash text-lg" />
       <span class="ml-3">{{ t('docs.loading') }}</span>
@@ -46,22 +83,22 @@ const { data: doc, status } = await useAsyncData(
 
     <div
       v-else-if="doc"
-      class="docs-surface rounded-3xl border border-primary/5 bg-white/80 px-8 py-10 shadow-sm dark:border-light/10 dark:bg-primary/70"
+      class="docs-surface border border-primary/5 rounded-3xl bg-white/80 px-8 py-10 shadow-sm dark:border-light/10 dark:bg-primary/70"
     >
       <ContentRenderer
         :value="doc"
-        class="docs-prose prose prose-neutral max-w-none dark:prose-invert"
+        class="docs-prose max-w-none prose prose-neutral dark:prose-invert"
       />
     </div>
 
     <div
       v-else
-      class="space-y-4 rounded-3xl border border-primary/10 bg-white/80 p-10 text-center shadow-sm dark:border-light/10 dark:bg-primary/70"
+      class="border border-primary/10 rounded-3xl bg-white/80 p-10 text-center shadow-sm space-y-4 dark:border-light/10 dark:bg-primary/70"
     >
-      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-3xl text-primary dark:bg-light/10 dark:text-light">
+      <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-primary/5 text-3xl text-primary dark:bg-light/10 dark:text-light">
         <span class="i-carbon-warning" />
       </div>
-      <div class="text-lg font-semibold text-primary dark:text-light">
+      <div class="text-lg text-primary font-semibold dark:text-light">
         {{ t('docs.notFoundTitle') }}
       </div>
       <p class="text-sm text-gray-500 dark:text-gray-300">
@@ -69,7 +106,7 @@ const { data: doc, status } = await useAsyncData(
       </p>
       <NuxtLink
         to="/docs"
-        class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-light transition hover:bg-black dark:bg-light dark:text-primary dark:hover:bg-light/90"
+        class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-sm text-light font-medium transition dark:bg-light hover:bg-black dark:text-primary dark:hover:bg-light/90"
       >
         <span class="i-carbon-arrow-left text-base" />
         {{ t('docs.backHome') }}

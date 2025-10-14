@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { ClerkLoaded, ClerkLoading } from '@clerk/nuxt/components'
+import { computed, watchEffect } from 'vue'
 import { appName } from '~/constants'
 
 useHead({
@@ -8,7 +8,46 @@ useHead({
 })
 
 const route = useRoute()
+const router = useRouter()
 const isProtectedRoute = computed(() => route.meta.requiresAuth === true)
+
+const { locale, setLocale } = useI18n()
+
+const langParam = computed(() => {
+  const raw = route.query.lang
+  if (!raw)
+    return null
+  return Array.isArray(raw) ? raw[0] : raw
+})
+
+const localeFromQuery = computed(() => {
+  const param = langParam.value
+  if (!param)
+    return null
+  const normalized = param.toLowerCase()
+  if (normalized.startsWith('zh'))
+    return 'zh'
+  if (normalized.startsWith('en'))
+    return 'en'
+  return null
+})
+
+watchEffect(() => {
+  const next = localeFromQuery.value
+  if (next && next !== locale.value)
+    setLocale(next)
+})
+
+watchEffect(() => {
+  const trimmed = route.path.replace(/^\/(en|zh)(?=\/|$)/i, '') || '/'
+  if (trimmed !== route.path) {
+    router.replace({
+      path: trimmed,
+      query: route.query,
+      hash: route.hash,
+    })
+  }
+})
 </script>
 
 <template>
@@ -73,5 +112,9 @@ button {
 
 * {
   box-sizing: border-box;
+}
+
+.cl-drawerRoot {
+  z-index: 1000;
 }
 </style>

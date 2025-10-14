@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { PricingTable } from '@clerk/nuxt/components'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'home',
@@ -19,12 +19,12 @@ const hasPricingConfig = computed(() => Boolean(pricingTableId.value && publisha
 </script>
 
 <template>
-  <section class="relative mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-24 sm:px-8 lg:px-12">
-    <header class="space-y-4 text-center">
-      <p class="mx-auto inline-flex rounded-full border border-primary/15 bg-primary/5 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-primary/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
+  <section class="relative mx-auto w-full flex flex-col gap-12 px-24 py-24 lg:px-12 sm:px-8">
+    <header class="text-center space-y-4">
+      <p class="mx-auto inline-flex border border-primary/15 rounded-full bg-primary/5 px-4 py-1 text-xs text-primary/80 font-semibold tracking-widest uppercase dark:border-light/20 dark:bg-light/10 dark:text-light/80">
         {{ t('nav.pricing') }}
       </p>
-      <h1 class="text-3xl font-semibold tracking-tight text-primary dark:text-light sm:text-4xl">
+      <h1 class="text-3xl text-primary font-semibold tracking-tight sm:text-4xl dark:text-light">
         {{ t('pricing.title') }}
       </h1>
       <p class="mx-auto max-w-2xl text-base text-primary/70 dark:text-light/80">
@@ -32,7 +32,7 @@ const hasPricingConfig = computed(() => Boolean(pricingTableId.value && publisha
       </p>
     </header>
 
-    <div class="mx-auto w-full max-w-3xl rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-lg backdrop-blur-sm dark:border-light/10 dark:bg-primary/70">
+    <div class="mx-auto max-w-[70%] w-full">
       <ClientOnly>
         <template #fallback>
           <div class="text-center text-sm text-primary/70 dark:text-light/80">
