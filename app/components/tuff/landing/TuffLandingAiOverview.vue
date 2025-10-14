@@ -93,7 +93,7 @@ useGsapReveal(sectionRef, {
 <template>
   <section
     ref="sectionRef"
-    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-[#04040d] py-24 text-white"
+    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
   >
     <div class="pointer-events-none absolute inset-0 -z-10">
       <div class="absolute left-[-320px] top-1/4 h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(244,114,182,0.22),_transparent_68%)] blur-[180px]" />

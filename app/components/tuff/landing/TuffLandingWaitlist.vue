@@ -38,7 +38,7 @@ useGsapReveal(sectionRef, {
   <section
     id="download"
     ref="sectionRef"
-    class="relative isolate flex flex-col justify-center overflow-hidden px-6 pb-32 pt-24 text-white"
+    class="relative isolate flex flex-col justify-center overflow-hidden bg-black px-6 pb-32 pt-24 text-white"
   >
     <div class="pointer-events-none absolute inset-x-0 top-[-40%] h-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(90,125,255,0.28),_transparent_70%)] blur-3xl" />
     <div class="pointer-events-none absolute bottom-[-45%] left-[-10%] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(31,211,182,0.22),_transparent_70%)] blur-3xl" />

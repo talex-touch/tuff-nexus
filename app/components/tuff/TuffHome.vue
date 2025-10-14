@@ -20,7 +20,7 @@ const { t } = useI18n()
 
 const showStarSnippets = false
 const showAggregation = false
-const showPricing = true
+const showPricing = false
 
 const heroBulletKeys = ['cinematic', 'policy', 'realtime'] as const
 

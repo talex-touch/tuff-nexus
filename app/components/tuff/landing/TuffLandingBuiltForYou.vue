@@ -61,11 +61,11 @@ useGsapReveal(sectionRef, {
         {{ builtForYou.eyebrow }}
       </TuffStickyBar>
 
-      <header class="text-center space-y-5">
-        <h2 class="my-0 text-[clamp(2.1rem,1vw+2.4rem,3.2rem)] font-semibold leading-tight">
+      <header class="text-center">
+        <h2 class="my-0 text-[clamp(.7rem,1vw+1.4rem,1.2rem)] font-bold leading-tight">
           {{ builtForYou.headline }}
         </h2>
-        <p class="mx-auto my-0 max-w-3xl text-[clamp(.68rem,1vw+1.2rem,1.1rem)] text-white/70 font-semibold leading-relaxed">
+        <p class="mx-auto my-0 max-w-3xl text-[clamp(.6rem,1vw+1.3rem,1.1rem)] font-semibold leading-relaxed op-70">
           {{ builtForYou.subheadline }}
         </p>
       </header>

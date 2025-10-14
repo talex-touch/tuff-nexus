@@ -40,7 +40,7 @@ useGsapReveal(sectionRef, {
   <section
     id="developer"
     ref="sectionRef"
-    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
+    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
   >
     <div class="pointer-events-none absolute left-0 top-1/3 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(44,96,200,0.28),_transparent_65%)] blur-3xl -translate-x-1/2" />
     <div class="pointer-events-none absolute inset-y-0 right-[-240px] h-[640px] w-[640px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(30,120,110,0.24),_transparent_70%)] blur-3xl" />

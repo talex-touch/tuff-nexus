@@ -51,7 +51,7 @@ function selectScenario(id: string) {
 <template>
   <section
     ref="sectionRef"
-    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
+    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
   >
     <div class="pointer-events-none absolute inset-x-0 top-[-45%] h-[520px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(94,122,255,0.25),_transparent_70%)] blur-3xl" />
     <div class="pointer-events-none absolute bottom-[-30%] left-[10%] h-[480px] w-[480px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(15,208,186,0.22),_transparent_75%)] blur-3xl" />

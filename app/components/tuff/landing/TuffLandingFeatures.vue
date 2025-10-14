@@ -237,7 +237,7 @@ useGsapReveal(sectionRef, {
 <template>
   <section
     ref="sectionRef"
-    class="min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
+    class="min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
   >
     <div class="mx-auto max-w-6xl w-full px-6 space-y-16">
       <TuffStickyBar>
