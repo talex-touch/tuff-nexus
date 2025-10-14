@@ -4,6 +4,7 @@ import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nuxt/components'
 
 definePageMeta({
   layout: 'dashboard',
+  requiresAuth: true,
   pageTransition: {
     name: 'fade',
     mode: 'out-in',
