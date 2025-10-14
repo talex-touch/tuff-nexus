@@ -16,22 +16,21 @@ import TuffLandingStarSnippets from './landing/TuffLandingStarSnippets.vue'
 import TuffLandingStats from './landing/TuffLandingStats.vue'
 import TuffLandingWaitlist from './landing/TuffLandingWaitlist.vue'
 
-const hero = {
-  title: 'Profoundly Powerful. Deceptively Simple.',
-  bullets: [
-    'Cinematic command surfaces with synchronized transitions on desktop, web, and mobile.',
-    'Policy-aware rollout controls with signed extensions and regional manifests.',
-    'Realtime collaboration that mirrors the intent of your FlowScript and docs playbooks.',
-  ],
-  primaryCta: { label: 'Join waitlist', to: '#download', icon: 'i-carbon-play-filled' },
-  secondaryCta: { label: 'Preview docs', to: '/docs', icon: 'i-carbon-book' },
-}
-
 const { t } = useI18n()
 
 const showStarSnippets = false
 const showAggregation = false
 const showPricing = true
+
+const heroBulletKeys = ['cinematic', 'policy', 'realtime'] as const
+
+const hero = computed(() => ({
+  title: t('landing.hero.heading'),
+  description: t('landing.hero.description'),
+  bullets: heroBulletKeys.map(key => t(`landing.hero.bullets.${key}`)),
+  primaryCta: { label: t('landing.hero.primaryCta'), to: '#download', icon: 'i-carbon-play-filled' },
+  secondaryCta: { label: t('landing.hero.secondaryCta'), to: '/docs', icon: 'i-carbon-book' },
+}))
 
 const aiResultKeys = ['figma', 'files', 'gmail', 'slack'] as const
 const aiResultIcons = {

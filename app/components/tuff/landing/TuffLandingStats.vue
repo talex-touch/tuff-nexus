@@ -45,7 +45,7 @@ useGsapReveal(sectionRef, {
 <template>
   <section
     ref="sectionRef"
-    class="min-h-screen flex flex-col gap-12 overflow-hidden py-24"
+    class="min-h-screen flex flex-col gap-12 overflow-hidden bg-black py-24"
   >
     <TuffStickyBar>
       {{ spotlight.eyebrow }}

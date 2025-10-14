@@ -76,8 +76,14 @@ export default {
     hero: {
       badge: 'Beta 预览',
       description: '一套强大的多平台工具计划，让你的桌面化身为响应迅速的智能控制中心。',
-      primaryCta: '下载 Beta',
-      secondaryCta: '浏览文档',
+      heading: '深厚实力，简洁呈现。',
+      bullets: {
+        cinematic: '电影感的指挥界面，在桌面、网页与移动端保持同步过渡。',
+        policy: '策略感知的发布控制，结合签名扩展与区域化清单。',
+        realtime: '实时协作，忠实呈现你的 FlowScript 与文档手册意图。',
+      },
+      primaryCta: '加入候补名单',
+      secondaryCta: '开发者文档',
       offlineNotice: '当前处于离线状态，搜索与即时预览将在网络恢复后自动启用。',
       stats: {
         commands: {

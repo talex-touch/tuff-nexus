@@ -2,24 +2,26 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { useLandingRevealState } from '~/composables/useLandingRevealState'
 import TuffBanner from '../TuffBanner.vue'
-import TuffLandingWebglBackground from './TuffLandingWebglBackground.vue'
 
 interface HeroCta {
-  label: string
-  to: string
-  icon: string
+  label?: string
+  to?: string
+  icon?: string
 }
 
 interface HeroConfig {
-  title: string
-  bullets: string[]
-  primaryCta: HeroCta
-  secondaryCta: HeroCta
+  title?: string
+  description?: string
+  bullets?: string[]
+  primaryCta?: HeroCta
+  secondaryCta?: HeroCta
 }
 
-const { hero } = defineProps<{
-  hero: HeroConfig
+const props = defineProps<{
+  hero?: HeroConfig
 }>()
+
+const { t } = useI18n()
 
 const {
   beginSequence,
@@ -45,9 +47,39 @@ const heroCtaClass = computed(() => ({
   'is-interactive': interactiveReady.value,
 }))
 
-const introDelay = (delayInSeconds: number) => ({
-  '--intro-delay': `${delayInSeconds}s`,
+const heroBulletFallbackKeys = ['cinematic', 'policy', 'realtime'] as const
+
+const heroContent = computed(() => {
+  const hero = props.hero ?? {}
+  const primary = hero.primaryCta ?? {}
+  const secondary = hero.secondaryCta ?? {}
+  const bullets
+    = hero.bullets && hero.bullets.length > 0
+      ? hero.bullets
+      : heroBulletFallbackKeys.map(key => t(`landing.hero.bullets.${key}`))
+
+  return {
+    title: hero.title ?? t('landing.hero.heading'),
+    description: hero.description ?? t('landing.hero.description'),
+    bullets,
+    primaryCta: {
+      to: primary.to ?? '#download',
+      label: primary.label ?? t('landing.hero.primaryCta'),
+      icon: primary.icon ?? 'i-carbon-play-filled',
+    },
+    secondaryCta: {
+      to: secondary.to ?? '/docs',
+      label: secondary.label ?? t('landing.hero.secondaryCta'),
+      icon: secondary.icon ?? 'i-carbon-book',
+    },
+  }
 })
+
+function introDelay(delayInSeconds: number) {
+  return {
+    '--intro-delay': `${delayInSeconds}s`,
+  }
+}
 
 onMounted(() => {
   beginSequence()
@@ -62,7 +94,7 @@ onBeforeUnmount(() => {
   <section
     class="TuffHome-HeroSection relative min-h-screen overflow-hidden"
   >
-    <div class="TuffHome-HeroSection-BannerCore absolute left-0 top-0 h-full w-full -z-10">
+    <div class="TuffHome-HeroSection-BannerCore absolute left-0 top-0 h-full w-full">
       <TuffBanner>
         <template #center>
           <div
@@ -79,30 +111,53 @@ onBeforeUnmount(() => {
             </div>
 
             <h1
-              class="max-w-3xl text-[clamp(1rem,1vw+1.5rem,1rem)] text-white font-semibold leading-tight hero-heading"
+              class="hero-heading max-w-3xl text-[clamp(1rem,1vw+1.5rem,1rem)] text-white font-semibold leading-tight"
               :class="heroStageClass"
               :style="introDelay(0.2)"
             >
-              {{ hero.title }}
+              {{ heroContent.title }}
             </h1>
+
+            <!-- <p
+              v-if="heroContent.description"
+              class="hero-description max-w-3xl text-white/80"
+              :class="heroStageClass"
+              :style="introDelay(0.28)"
+            >
+              {{ heroContent.description }}
+            </p> -->
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
               <NuxtLink
-                :to="hero.primaryCta.to"
+                :to="heroContent.primaryCta.to"
                 class="hero-cta inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm text-black font-semibold shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 hover:-translate-y-0.5"
                 :class="heroCtaClass"
                 :style="introDelay(0.36)"
+                :aria-label="heroContent.primaryCta.label"
               >
-                Join waitlist
+                <span
+                  v-if="heroContent.primaryCta.icon"
+                  :class="heroContent.primaryCta.icon"
+                  class="text-base"
+                  aria-hidden="true"
+                />
+                <span>{{ heroContent.primaryCta.label }}</span>
               </NuxtLink>
 
               <NuxtLink
-                :to="hero.secondaryCta.to"
+                :to="heroContent.secondaryCta.to"
                 class="hero-cta inline-flex items-center justify-center gap-2 border border-white/20 rounded-full px-6 py-3 text-sm text-white font-semibold transition hover:border-white/40 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 hover:-translate-y-0.5"
                 :class="heroCtaClass"
                 :style="introDelay(0.48)"
+                :aria-label="heroContent.secondaryCta.label"
               >
-                Developer docs
+                <span
+                  v-if="heroContent.secondaryCta.icon"
+                  :class="heroContent.secondaryCta.icon"
+                  class="text-base"
+                  aria-hidden="true"
+                />
+                <span>{{ heroContent.secondaryCta.label }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -188,6 +243,42 @@ onBeforeUnmount(() => {
   opacity: 1;
   filter: blur(0);
   transform: translate3d(0, 0, 0);
+}
+
+.hero-description {
+  margin: 0;
+  font-size: clamp(0.85rem, 0.6vw + 0.95rem, 1.2rem);
+  font-weight: 500;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.hero-bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  max-width: 46rem;
+}
+
+.hero-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.hero-bullet-dot {
+  margin-top: 0.4rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: rgba(190, 242, 100, 1);
+  box-shadow: 0 0 12px rgba(190, 242, 100, 0.6);
+  flex-shrink: 0;
 }
 
 .hero-cta {

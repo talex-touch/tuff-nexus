@@ -78,8 +78,14 @@ export default {
       badge: 'Beta Preview',
       description:
         'A strong adaptation more platform all-tool program that elevates your desktop into a responsive, intelligent control center.',
-      primaryCta: 'Download Beta',
-      secondaryCta: 'Explore Docs',
+      heading: 'Profoundly Powerful. Deceptively Simple.',
+      bullets: {
+        cinematic: 'Cinematic command surfaces with synchronized transitions on desktop, web, and mobile.',
+        policy: 'Policy-aware rollout controls with signed extensions and regional manifests.',
+        realtime: 'Realtime collaboration that mirrors the intent of your FlowScript and docs playbooks.',
+      },
+      primaryCta: 'Join waitlist',
+      secondaryCta: 'Developer docs',
       offlineNotice: 'You are offline. Search and live previews will resume when the network is back.',
       stats: {
         commands: {
