@@ -9,7 +9,7 @@ const footerSections = computed(() => [
   {
     title: t('landing.footer.sections.product'),
     links: [
-      { to: '/#market', label: t('nav.market') },
+      { to: '/market', label: t('nav.market') },
       { to: '/#developer', label: t('nav.developer') },
       { to: '/#download', label: t('nav.download') },
       { to: '/pricing', label: t('nav.pricing') },

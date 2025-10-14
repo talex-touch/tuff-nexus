@@ -36,6 +36,46 @@ export default {
     missingTable: '暂未配置 Pricing Table，请设置环境变量 NUXT_PUBLIC_CLERK_PRICING_TABLE_ID 后再试。',
     loading: '正在加载订阅信息…',
   },
+  plugins: {
+    categories: {
+      productivity: '效率',
+      utilities: '工具',
+      development: '开发',
+      writing: '写作',
+      creativity: '创意',
+      ai: 'AI / 模型',
+      automation: '自动化',
+      communication: '沟通',
+      analytics: '分析',
+      design: '设计',
+      education: '教育',
+      finance: '金融',
+    },
+  },
+  market: {
+    hero: {
+      badge: '官方市场',
+      title: '发现精选扩展',
+      subtitle: '从精细整理的分类中检索，找到适合你工作流的插件。',
+    },
+    search: {
+      label: '搜索',
+      placeholder: '搜索官方插件',
+    },
+    filters: {
+      heading: '按分类浏览',
+      all: '全部分类',
+    },
+    results: {
+      count: '共 {count} 个官方插件',
+      filtered: '已筛选 {count}/{total} 个官方插件',
+      empty: '没有符合条件的官方插件。',
+      none: '目前还没有官方插件。',
+    },
+    badges: {
+      official: '官方',
+    },
+  },
   dashboard: {
     header: {
       badge: 'Tuff Nexus',
@@ -120,6 +160,7 @@ export default {
         },
         errors: {
           invalidInstalls: '安装数必须为不小于 0 的数字。',
+          invalidCategory: '请选择一个插件分类。',
           unknown: '保存插件时发生错误。',
         },
       },

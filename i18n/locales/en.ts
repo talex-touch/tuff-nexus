@@ -36,6 +36,46 @@ export default {
     missingTable: 'Pricing table is not configured yet. Set NUXT_PUBLIC_CLERK_PRICING_TABLE_ID to display your plans.',
     loading: 'Loading pricing…',
   },
+  plugins: {
+    categories: {
+      productivity: 'Productivity',
+      utilities: 'Utilities',
+      development: 'Development',
+      writing: 'Writing',
+      creativity: 'Creativity',
+      ai: 'AI & Models',
+      automation: 'Automation',
+      communication: 'Communication',
+      analytics: 'Analytics',
+      design: 'Design',
+      education: 'Education',
+      finance: 'Finance',
+    },
+  },
+  market: {
+    hero: {
+      badge: 'Official marketplace',
+      title: 'Discover verified extensions',
+      subtitle: 'Browse curated categories and install trusted plugins for your workspace.',
+    },
+    search: {
+      label: 'Search',
+      placeholder: 'Search official plugins',
+    },
+    filters: {
+      heading: 'Browse by category',
+      all: 'All categories',
+    },
+    results: {
+      count: '{count} official plugins',
+      filtered: '{count} of {total} official plugins',
+      empty: 'No official plugins match your filters.',
+      none: 'No official plugins are available yet.',
+    },
+    badges: {
+      official: 'Official',
+    },
+  },
   dashboard: {
     header: {
       badge: 'Tuff Nexus',
@@ -122,6 +162,7 @@ export default {
         },
         errors: {
           invalidInstalls: 'Install count must be a non-negative number.',
+          invalidCategory: 'Please choose a category from the list.',
           unknown: 'Something went wrong while saving the plugin.',
         },
       },

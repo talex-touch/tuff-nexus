@@ -13,7 +13,7 @@ function handleScroll() {
 }
 
 const links = computed(() => [
-  { to: '/#market', label: t('nav.market') },
+  { to: '/market', label: t('nav.market') },
   { to: '/docs', label: t('nav.doc') },
   { to: '/#developer', label: t('nav.developer') },
   { to: '/#download', label: t('nav.download') },

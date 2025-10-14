@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nuxt/components'
+import { PLUGIN_CATEGORIES, isPluginCategoryId } from '~/utils/plugin-categories'
 
 definePageMeta({
   layout: 'dashboard',
@@ -153,6 +154,21 @@ function formatDate(value?: string) {
   return dateFormatter.value.format(parsed)
 }
 
+const pluginCategoryOptions = computed(() =>
+  PLUGIN_CATEGORIES.map(category => ({
+    ...category,
+    label: t(category.i18nKey),
+  })),
+)
+
+const pluginCategoryLabels = computed<Record<string, string>>(() =>
+  Object.fromEntries(pluginCategoryOptions.value.map(category => [category.id, category.label])),
+)
+
+function resolvePluginCategory(category: string) {
+  return pluginCategoryLabels.value[category] ?? category
+}
+
 const overviewItems = computed(() => [
   {
     icon: 'i-carbon-rocket',
@@ -255,12 +271,13 @@ function isActivePanel(panel: PanelId) {
 }
 
 const todayInput = () => new Date().toISOString().slice(0, 10)
+const defaultPluginCategoryId = PLUGIN_CATEGORIES[0]?.id ?? ''
 
 function createPluginFormState(): PluginFormState {
   return {
     name: '',
     summary: '',
-    category: '',
+    category: defaultPluginCategoryId,
     installs: '0',
     icon: 'i-carbon-cube',
     lastUpdated: todayInput(),
@@ -294,10 +311,11 @@ function openCreatePluginForm() {
 function openEditPluginForm(plugin: DashboardPlugin) {
   pluginFormMode.value = 'edit'
   editingPluginId.value = plugin.id
+  const categoryValue = isPluginCategoryId(plugin.category) ? plugin.category : defaultPluginCategoryId
   Object.assign(pluginForm, {
     name: plugin.name,
     summary: plugin.summary,
-    category: plugin.category,
+    category: categoryValue,
     installs: plugin.installs.toString(),
     icon: plugin.icon,
     lastUpdated: plugin.lastUpdated ? plugin.lastUpdated.slice(0, 10) : todayInput(),
@@ -321,6 +339,9 @@ async function submitPluginForm() {
     const installsNumber = Number(pluginForm.installs)
     if (Number.isNaN(installsNumber) || installsNumber < 0)
       throw new Error(t('dashboard.sections.plugins.errors.invalidInstalls'))
+
+    if (!isPluginCategoryId(pluginForm.category))
+      throw new Error(t('dashboard.sections.plugins.errors.invalidCategory'))
 
     const lastUpdatedIso = pluginForm.lastUpdated
       ? new Date(`${pluginForm.lastUpdated}T00:00:00Z`).toISOString()
@@ -717,12 +738,19 @@ async function deleteUpdateItem(update: DashboardUpdate) {
                   </label>
                   <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
                     {{ t('dashboard.sections.plugins.form.category') }}
-                    <input
+                    <select
                       v-model="pluginForm.category"
-                      type="text"
                       required
                       class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
                     >
+                      <option
+                        v-for="category in pluginCategoryOptions"
+                        :key="category.id"
+                        :value="category.id"
+                      >
+                        {{ category.label }}
+                      </option>
+                    </select>
                   </label>
                   <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60 md:col-span-2">
                     {{ t('dashboard.sections.plugins.form.summary') }}
@@ -880,7 +908,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
                     <span :class="[plugin.icon, 'rounded-xl bg-primary/10 p-2 text-xl text-primary dark:bg-light/10 dark:text-light']" />
                     <div>
                       <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
-                        {{ plugin.category }}
+                        {{ resolvePluginCategory(plugin.category) }}
                       </p>
                       <h3 class="mt-1 text-base font-semibold text-primary dark:text-light">
                         {{ plugin.name }}

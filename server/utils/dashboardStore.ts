@@ -3,6 +3,7 @@ import type { H3Event } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { useStorage } from '#imports'
 import { createError } from 'h3'
+import { isPluginCategoryId } from '~/utils/plugin-categories'
 import { readCloudflareBindings } from './cloudflare'
 
 const PLUGINS_KEY = 'dashboard:plugins'
@@ -237,9 +238,19 @@ function normalizePluginInput(input: Partial<PluginInput>, forUpdate = false): P
       throw createError({ statusCode: 400, statusMessage: 'Plugin summary is required.' })
   }
 
-  if (!forUpdate || category !== undefined) {
-    if (!category || typeof category !== 'string')
+  let normalizedCategory = ''
+
+  if (category !== undefined) {
+    if (typeof category !== 'string')
       throw createError({ statusCode: 400, statusMessage: 'Plugin category is required.' })
+    normalizedCategory = category.trim()
+  }
+
+  if (!forUpdate || category !== undefined) {
+    if (!normalizedCategory)
+      throw createError({ statusCode: 400, statusMessage: 'Plugin category is required.' })
+    if (!forUpdate && !isPluginCategoryId(normalizedCategory))
+      throw createError({ statusCode: 400, statusMessage: 'Plugin category is not supported.' })
   }
 
   const installsValue = installs ?? (forUpdate ? undefined : 0)
@@ -281,7 +292,7 @@ function normalizePluginInput(input: Partial<PluginInput>, forUpdate = false): P
   return {
     name: name ?? '',
     summary: summary ?? '',
-    category: category ?? '',
+    category: normalizedCategory || '',
     installs: Number(installsValue),
     icon: icon ?? '',
     lastUpdated: lastUpdated ? normalizeDate(lastUpdated) : normalizeDate(new Date().toISOString()),
