@@ -14,6 +14,7 @@ import TuffLandingPricing from './landing/TuffLandingPricing.vue'
 import TuffLandingStarSnippets from './landing/TuffLandingStarSnippets.vue'
 import TuffLandingStats from './landing/TuffLandingStats.vue'
 import TuffLandingWaitlist from './landing/TuffLandingWaitlist.vue'
+import TuffLandingFooter from './landing/TuffLandingFooter.vue'
 
 const hero = {
   title: 'Profoundly Powerful. Deceptively Simple.',
@@ -22,7 +23,7 @@ const hero = {
     'Policy-aware rollout controls with signed extensions and regional manifests.',
     'Realtime collaboration that mirrors the intent of your FlowScript and docs playbooks.',
   ],
-  primaryCta: { label: 'Join waitlist', to: '#waitlist', icon: 'i-carbon-play-filled' },
+  primaryCta: { label: 'Join waitlist', to: '#download', icon: 'i-carbon-play-filled' },
   secondaryCta: { label: 'Preview docs', to: '/docs', icon: 'i-carbon-book' },
 }
 
@@ -30,7 +31,7 @@ const { t } = useI18n()
 
 const showStarSnippets = false
 const showAggregation = false
-const showPricing = false
+const showPricing = true
 
 const aiResultKeys = ['figma', 'files', 'gmail', 'slack'] as const
 const aiResultIcons = {
@@ -401,5 +402,6 @@ useHead({
       v-if="pioneer"
       :pioneer="pioneer"
     />
+    <TuffLandingFooter />
   </div>
 </template>

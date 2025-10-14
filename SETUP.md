@@ -152,6 +152,7 @@ pnpm preview:cf
    NUXT_PUBLIC_CLERK_PROXY_URL=                           # 若通过代理访问则填写代理地址，可留空
    NUXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
    NUXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NUXT_PUBLIC_CLERK_PRICING_TABLE_ID=                 # Clerk 仪表订阅表 ID，用于 PricingTable 组件
 
    CLERK_SECRET_KEY=sk_live_xxx
    CLERK_WEBHOOK_SECRET=whsec_xxx                        # 仅在启用 Webhooks 时需要
@@ -164,7 +165,7 @@ pnpm preview:cf
    npx wrangler secret put CLERK_WEBHOOK_SECRET
    ```
    `NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY` 等非机密变量可使用 `npx wrangler pages project create-env` 或在 Dashboard 中直接填写。
-4. 部署后访问 `/sign-in` 与 `/sign-up` 可直接使用 Clerk 预置组件；其余页面将自动要求用户登录。头部导航已集成 `UserButton`，可在任何页面快速查看账户或退出登录。
+4. 部署后访问 `/sign-in` 与 `/sign-up` 可直接使用 Clerk 预置组件。普通访客可自由浏览产品与文档，已登录用户可通过头部导航进入强制登录的 `Dashboard` 页面，亦可快速查看账户或退出登录。
 
 ---
 

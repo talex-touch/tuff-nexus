@@ -42,6 +42,7 @@ useGsapReveal(sectionRef, {
 
 <template>
   <section
+    id="pricing"
     ref="sectionRef"
     class="relative isolate flex flex-col justify-center overflow-hidden py-24 text-white"
   >

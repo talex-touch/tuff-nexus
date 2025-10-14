@@ -36,7 +36,7 @@ useGsapReveal(sectionRef, {
 
 <template>
   <section
-    id="waitlist"
+    id="download"
     ref="sectionRef"
     class="relative isolate flex flex-col justify-center overflow-hidden px-6 pb-32 pt-24 text-white"
   >

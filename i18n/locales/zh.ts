@@ -7,6 +7,14 @@ export default {
     about: '关于',
     qa: '问答',
     developers: '开发者',
+    login: '登录',
+    dashboard: '控制台',
+    pricing: '订阅方案',
+    market: '市场',
+    doc: '文档',
+    developer: '开发者',
+    download: '下载',
+    blog: '博客',
   },
   ui: {
     languageToggle: {
@@ -14,6 +22,54 @@ export default {
       enLabel: 'English',
       switchToZh: '切换语言到中文',
       switchToEn: '切换语言到英文',
+    },
+  },
+  auth: {
+    callbackProcessing: '正在处理登录回调，请稍候…',
+    linuxdoWaitlistNotice:
+      'LinuxDo 2、3 级用户可直接加入 Waitlist，无需排队等待。请使用与 LinuxDo 相同的邮箱登录，以便我们快速核验资格。',
+    backToHome: '返回首页',
+  },
+  pricing: {
+    title: '选择与你节奏匹配的订阅方案',
+    subtitle: '直接通过 Clerk 完成升级，订阅后即可即时解锁高级自动化与指挥面板。',
+    missingTable: '暂未配置 Pricing Table，请设置环境变量 NUXT_PUBLIC_CLERK_PRICING_TABLE_ID 后再试。',
+    loading: '正在加载订阅信息…',
+  },
+  dashboard: {
+    header: {
+      badge: 'Tuff Nexus',
+      defaultName: '伙伴',
+      greeting: '欢迎回来，{name}',
+      intro: '这里汇总了你的环境、发布与扩展状态。未来我们会在此提供自动化洞察与任务提醒。',
+      docsCta: '查看文档',
+      marketplaceCta: '浏览扩展',
+    },
+    sections: {
+      overview: {
+        title: '快速概览',
+        items: {
+          betaAccess: 'Beta 等级访问正在生效，后续将解锁更多模块。',
+          releaseNotify: '订阅 Release 通知以在第一时间获得版本更新。',
+          insights: '数据洞察与团队协作将在正式版开放。',
+        },
+      },
+      nextSteps: {
+        title: '下一步行动',
+        items: {
+          connectWorkspace: '连接你的首个工作区来解锁自动同步。',
+          scheduleOnboarding: '与团队成员预约一次 Onboarding Session。',
+          inviteTeammates: '邀请伙伴加入，协作即将开放多人协同。',
+        },
+      },
+      shortcuts: {
+        title: '快捷入口',
+        links: {
+          gettingStarted: '入门指南',
+          marketplace: '扩展市场',
+          developers: '开发者中心',
+        },
+      },
     },
   },
   landing: {
@@ -499,6 +555,15 @@ export default {
       description: '用一个放大创作者、运营者与高效团队的平台，打造沉浸式桌面体验。',
       primary: '浏览文档',
       secondary: '与团队交流',
+    },
+    footer: {
+      tagline: '为高速团队打造的沉静操作系统。',
+      primaryCta: '下载 Beta',
+      secondaryCta: '查看文档',
+      rights: '保留所有权利。',
+      socials: {
+        github: 'GitHub',
+      },
     },
   },
   docs: {

@@ -7,6 +7,14 @@ export default {
     about: 'About',
     qa: 'Q & A',
     developers: 'Developers',
+    login: 'Log in',
+    dashboard: 'Dashboard',
+    pricing: 'Pricing',
+    market: 'Market',
+    doc: 'Doc',
+    developer: 'Developer',
+    download: 'Download',
+    blog: 'Blog',
   },
   ui: {
     languageToggle: {
@@ -14,6 +22,55 @@ export default {
       enLabel: 'English',
       switchToZh: 'Switch language to Chinese',
       switchToEn: 'Switch language to English',
+    },
+  },
+  auth: {
+    callbackProcessing: 'Processing your sign-in callback…',
+    linuxdoWaitlistNotice:
+      'LinuxDo level 2 and 3 members can join the waitlist immediately without waiting. Sign in with the same email you use on LinuxDo so we can verify your status quickly.',
+    backToHome: 'Back to homepage',
+  },
+  pricing: {
+    title: 'Choose the plan that matches your momentum.',
+    subtitle: 'Upgrade directly inside Clerk. Once subscribed, you can unlock premium automations and surfaces instantly.',
+    missingTable: 'Pricing table is not configured yet. Set NUXT_PUBLIC_CLERK_PRICING_TABLE_ID to display your plans.',
+    loading: 'Loading pricing…',
+  },
+  dashboard: {
+    header: {
+      badge: 'Tuff Nexus',
+      defaultName: 'friend',
+      greeting: 'Welcome back, {name}',
+      intro:
+        'This space gathers your environments, releases, and extension status. Automated insights and reminders will appear here soon.',
+      docsCta: 'View docs',
+      marketplaceCta: 'Explore marketplace',
+    },
+    sections: {
+      overview: {
+        title: 'Quick overview',
+        items: {
+          betaAccess: 'Beta access is active; more modules will unlock soon.',
+          releaseNotify: 'Subscribe to release notifications to hear about updates first.',
+          insights: 'Data insights and team collaboration will arrive for the general release.',
+        },
+      },
+      nextSteps: {
+        title: 'Next steps',
+        items: {
+          connectWorkspace: 'Connect your first workspace to unlock automatic sync.',
+          scheduleOnboarding: 'Schedule an onboarding session with your teammates.',
+          inviteTeammates: 'Invite teammates; collaborative mode is arriving shortly.',
+        },
+      },
+      shortcuts: {
+        title: 'Shortcuts',
+        links: {
+          gettingStarted: 'Getting started',
+          marketplace: 'Extensions marketplace',
+          developers: 'Developer hub',
+        },
+      },
     },
   },
   landing: {
@@ -517,6 +574,15 @@ export default {
         'Build immersive desktop experiences with a platform that amplifies creators, operators, and teams who ship fast.',
       primary: 'Browse Documentation',
       secondary: 'Talk with the team',
+    },
+    footer: {
+      tagline: 'A calmer operating system for builders who move fast.',
+      primaryCta: 'Download Beta',
+      secondaryCta: 'View Docs',
+      rights: 'All rights reserved.',
+      socials: {
+        github: 'GitHub',
+      },
     },
   },
   docs: {

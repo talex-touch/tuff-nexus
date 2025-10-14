@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TuffBanner from './TuffBanner.vue'
+import TuffLandingFooter from './landing/TuffLandingFooter.vue'
 
 const heroPoints = [
   '统一指挥所有工作区的启动、自动化与上下文。',
@@ -88,7 +89,7 @@ useHead({
           </ul>
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <NuxtLink
-              to="#waitlist"
+              to="#download"
               class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-md transition hover:-translate-y-0.5 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             >
               <span class="i-carbon-play-filled text-base" />
@@ -194,7 +195,7 @@ useHead({
       </div>
     </section>
 
-    <section id="waitlist" class="px-6">
+    <section id="download" class="px-6">
       <div class="mx-auto max-w-5xl overflow-hidden rounded-[32px] border border-white/10 bg-[#06070c]/95 px-8 py-16 text-center shadow-[0_28px_110px_rgba(0,0,0,0.5)] sm:px-12">
         <div class="mx-auto flex max-w-2xl flex-col items-center gap-6">
           <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
@@ -240,5 +241,6 @@ useHead({
         </div>
       </div>
     </section>
+    <TuffLandingFooter />
   </div>
 </template>

@@ -38,6 +38,7 @@ useGsapReveal(sectionRef, {
 
 <template>
   <section
+    id="developer"
     ref="sectionRef"
     class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
   >

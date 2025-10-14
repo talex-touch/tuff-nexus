@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import { ClerkLoaded, ClerkLoading, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nuxt/components'
-import { computed } from 'vue'
+import { ClerkLoaded, ClerkLoading } from '@clerk/nuxt/components'
 import { appName } from '~/constants'
-
-const route = useRoute()
-
-const PUBLIC_ROUTE_PREFIXES = ['/sign-in', '/sign-up'] // allow unauthenticated access for Clerk UI routes
-const isPublicRoute = computed(() =>
-  PUBLIC_ROUTE_PREFIXES.some(prefix => route.path.startsWith(prefix)),
-)
 
 useHead({
   title: appName,
@@ -23,21 +15,9 @@ useHead({
     </div>
   </ClerkLoading>
   <ClerkLoaded>
-    <SignedIn>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </SignedIn>
-    <SignedOut>
-      <template v-if="isPublicRoute">
-        <NuxtLayout>
-          <NuxtPage />
-        </NuxtLayout>
-      </template>
-      <template v-else>
-        <RedirectToSignIn />
-      </template>
-    </SignedOut>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </ClerkLoaded>
 </template>
 
@@ -70,5 +50,9 @@ html.dark {
 button {
   outline: none !important;
   border: none !important;
+}
+
+* {
+  box-sizing: border-box;
 }
 </style>

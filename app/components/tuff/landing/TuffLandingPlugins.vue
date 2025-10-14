@@ -105,6 +105,7 @@ const data = [
 
 <template>
   <section
+    id="market"
     ref="sectionRef"
     class="min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
   >

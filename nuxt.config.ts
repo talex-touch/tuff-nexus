@@ -137,6 +137,7 @@ export default defineNuxtConfig({
         signUpUrl: process.env.NUXT_PUBLIC_CLERK_SIGN_UP_URL || '/sign-up',
         domain: process.env.NUXT_PUBLIC_CLERK_DOMAIN,
         proxyUrl: process.env.NUXT_PUBLIC_CLERK_PROXY_URL,
+        pricingTableId: process.env.NUXT_PUBLIC_CLERK_PRICING_TABLE_ID,
       },
     },
   },
