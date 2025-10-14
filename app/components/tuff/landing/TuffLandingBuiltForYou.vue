@@ -49,7 +49,7 @@ useGsapReveal(sectionRef, {
 <template>
   <section
     ref="sectionRef"
-    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden py-24 text-white"
+    class="relative isolate min-h-screen flex flex-col justify-center overflow-hidden bg-black py-24 text-white"
   >
     <div class="pointer-events-none absolute inset-0 -z-10">
       <div class="absolute inset-y-0 left-[-240px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(79,70,229,0.24),_transparent_70%)] blur-3xl" />
@@ -75,11 +75,11 @@ useGsapReveal(sectionRef, {
           v-for="persona in personas"
           :key="persona.id"
           data-reveal
-          class="group relative flex h-full flex-col gap-6 overflow-hidden border border-white/12 rounded-[30px] bg-white/5 p-8 text-left text-white shadow-[0_28px_110px_rgba(10,18,52,0.36)] transition duration-300 hover:border-white/25 hover:bg-white/9 hover:-translate-y-1"
+          class="group relative h-full flex flex-col gap-6 overflow-hidden border border-white/12 rounded-[30px] bg-white/5 p-8 text-left text-white shadow-[0_28px_110px_rgba(10,18,52,0.36)] transition duration-300 hover:border-white/25 hover:bg-white/9 hover:-translate-y-1"
         >
           <div class="pointer-events-none absolute inset-0 opacity-80 transition duration-300 group-hover:opacity-100" :class="persona.accent" />
           <div class="relative space-y-5">
-            <span class="inline-flex size-12 items-center justify-center rounded-2xl bg-white/15 text-white shadow-[0_18px_45px_rgba(5,16,48,0.4)]">
+            <span class="size-12 inline-flex items-center justify-center rounded-2xl bg-white/15 text-white shadow-[0_18px_45px_rgba(5,16,48,0.4)]">
               <span :class="persona.icon" class="text-xl" aria-hidden="true" />
             </span>
             <div class="space-y-2">
@@ -90,40 +90,17 @@ useGsapReveal(sectionRef, {
                 {{ persona.copy }}
               </p>
             </div>
-            <blockquote class="border-l-2 border-white/20 pl-4 text-sm text-white/70 italic leading-relaxed">
+            <blockquote class="border-l-2 border-white/20 pl-4 text-sm text-white/70 leading-relaxed italic">
               {{ persona.quote }}
             </blockquote>
-            <footer class="space-y-1 text-sm text-white/60">
-              <p class="font-semibold text-white">
+            <footer class="text-sm text-white/60 space-y-1">
+              <p class="text-white font-semibold">
                 {{ persona.name }}
               </p>
               <p>
                 {{ persona.role }}
               </p>
             </footer>
-          </div>
-        </article>
-      </div>
-
-      <div class="grid gap-4 md:grid-cols-3" data-reveal>
-        <article
-          v-for="stat in stats"
-          :key="stat.id"
-          class="relative overflow-hidden border border-white/10 rounded-[26px] bg-white/4 px-6 py-5 text-left text-white shadow-[0_24px_90px_rgba(8,18,52,0.28)]"
-        >
-          <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_70%)] opacity-70" />
-          <div class="relative flex items-center gap-4">
-            <span class="inline-flex size-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white/12 text-white shadow-[0_16px_36px_rgba(6,16,48,0.32)]">
-              <span :class="stat.icon" class="text-lg" aria-hidden="true" />
-            </span>
-            <div class="space-y-1">
-              <p class="text-xs uppercase tracking-[0.32em] text-white/60 font-semibold">
-                {{ stat.label }}
-              </p>
-              <p class="text-xl font-semibold">
-                {{ stat.value }}
-              </p>
-            </div>
           </div>
         </article>
       </div>
