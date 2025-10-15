@@ -116,7 +116,7 @@ const headerRevealStyle = computed(() => {
         </span>
       </NuxtLink>
 
-      <nav class="flex flex-1 items-center justify-between gap-4 overflow-hidden text-sm sm:gap-5">
+      <nav class="flex flex-1 items-center justify-between gap-2 overflow-hidden text-sm">
         <div class="ml-auto flex items-center gap-2 sm:gap-3">
           <NuxtLink
             v-for="link in links"

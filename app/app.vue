@@ -123,4 +123,27 @@ button {
 .cl-drawerRoot {
   z-index: 1000;
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* 进入dark模式和退出dark模式时，两个图像的位置顺序正好相反 */
+.dark::view-transition-old(root) {
+  z-index: 9999999;
+}
+
+.dark::view-transition-new(root) {
+  z-index: 10000000;
+}
+
+::view-transition-old(root) {
+  z-index: 1000;
+}
+
+::view-transition-new(root) {
+  z-index: 99999;
+}
 </style>

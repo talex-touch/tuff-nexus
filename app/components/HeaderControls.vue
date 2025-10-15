@@ -134,21 +134,24 @@ onBeforeUnmount(() => {
       </transition>
     </div> -->
 
-    <div class="flex items-center gap-1.5 sm:ml-auto">
+    <div class="relative flex items-center gap-[1.5] sm:ml-auto">
+      <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
+      <LanguageToggle />
+      <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
       <DarkToggle
         v-if="props.showDarkToggle"
       />
-      <LanguageToggle />
+      <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
+      <a
+        :href="props.githubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full text-sm text-black font-semibold transition dark:text-white focus-visible:outline-none"
+      >
+        <span class="i-carbon-logo-github text-lg" />
+      </a>
+      <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
     </div>
-
-    <a
-      :href="props.githubUrl"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-flex items-center gap-2 rounded-full text-sm text-black font-semibold transition dark:text-white focus-visible:outline-none"
-    >
-      <span class="i-carbon-logo-github text-lg" />
-    </a>
   </div>
 </template>
 

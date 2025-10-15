@@ -2,6 +2,7 @@ packages: []
 
 catalog:
   '@clerk/nuxt': ^1.10.0
+  '@floating-ui/vue': ^1.1.9
   fighting-design: 0.25.1
   gsap: ^3.12.5
   jszip: ^3.10.1

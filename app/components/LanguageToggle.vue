@@ -41,9 +41,9 @@ const { floatingStyles } = useFloating(reference, floating, {
 
 <template>
   <div class="LanguageToggle relative" @mouseenter="_hover = true" @mouseleave="_hover = false">
-    <div ref="reference" :title="tooltipLabel" :aria-pressed="locale === 'zh'" :aria-label="ariaLabel" class="LanguageToggle-Content flex cursor-pointer items-center gap-2 rounded-[12px] px-3 py-2 active:bg-black/8 hover:bg-black/5 dark:active:bg-white/8 dark:hover:bg-white/10">
+    <div ref="reference" :title="tooltipLabel" :aria-pressed="locale === 'zh'" :aria-label="ariaLabel" class="LanguageToggle-Content flex cursor-pointer items-center gap-2 rounded-[12px] px-3 py-[6px] active:bg-black/8 hover:bg-black/5 dark:active:bg-white/8 dark:hover:bg-white/10">
       <Icon name="i-carbon-language" />
-      <Icon name="i-carbon-chevron-down" :class="{'rotate-180': hover}" class="transition-transform duration-200" />
+      <Icon name="i-carbon-chevron-down" :class="{ 'rotate-180': hover }" class="transition-transform duration-200" />
     </div>
     <teleport to="body">
       <div ref="floating" :class="{ display: hover }" :style="floatingStyles" class="LanguageToggle-Floating absolute z-10" @mouseenter="_hover = true" @mouseleave="_hover = false">
@@ -68,8 +68,9 @@ const { floatingStyles } = useFloating(reference, floating, {
 .LanguageToggle-Floating .LanguageToggle-List {
   opacity: 0;
 
+  filter: blur(18px);
   transform: scale(0.8) translateY(-10%);
-  transition: all 0.2s cubic-bezier(0.77, 0, 0.175, 1);
+  transition: all 0.5s cubic-bezier(0.86, 0, 0.07, 1);
 }
 
 .LanguageToggle-Floating.display {
@@ -78,6 +79,7 @@ const { floatingStyles } = useFloating(reference, floating, {
 
 .LanguageToggle-Floating.display .LanguageToggle-List {
   opacity: 1;
+  filter: blur(0);
   transform: scale(1) translateY(0);
 }
 </style>
