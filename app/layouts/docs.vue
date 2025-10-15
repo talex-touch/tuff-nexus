@@ -7,9 +7,7 @@
       <div class="pointer-events-none absolute inset-0 overflow-hidden -z-10">
         <div class="docs-background absolute left-1/2 h-[420px] w-[820px] rounded-[200px] from-primary/6 via-primary/3 to-transparent bg-gradient-to-br blur-3xl -top-32 -translate-x-1/2 dark:from-light/10 dark:via-light/5 dark:to-transparent" />
       </div>
-      <div class="sticky top-0 z-30 border-b border-primary/10 bg-white/80 backdrop-blur-md dark:border-light/10 dark:bg-[#101322]/80">
-        <TheHeader title="Tuff Docs" />
-      </div>
+      <TheHeader title="Tuff Docs" class="z-30" />
       <div class="relative flex flex-1 justify-center px-4 pb-24 pt-24 lg:px-10 sm:px-6">
         <div class="max-w-7xl w-full flex gap-6 lg:gap-10">
           <aside class="hidden w-[240px] shrink-0 xl:block">

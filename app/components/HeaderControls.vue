@@ -156,7 +156,4 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.HeaderControls {
-  backdrop-filter: blur(20px) saturate(160%);
-}
 </style>

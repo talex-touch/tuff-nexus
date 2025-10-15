@@ -3,6 +3,12 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/nuxt/components'
 import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useLandingRevealState } from '~/composables/useLandingRevealState'
 
+withDefaults(defineProps<{
+  title?: string
+}>(), {
+  title: 'Tuff',
+})
+
 const route = useRoute()
 
 const scrolled = ref(false)
@@ -108,7 +114,7 @@ const headerRevealStyle = computed(() => {
         to="/"
         class="flex items-center gap-1 text-black font-semibold tracking-tight no-underline dark:text-light"
       >
-        <span class="text-lg sm:text-xl">Tuff</span>
+        <span class="text-lg sm:text-xl">{{ title }}</span>
         <BetaIcon />
       </NuxtLink>
 
