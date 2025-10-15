@@ -64,21 +64,19 @@ const shortcutLinks = computed(() => [
 </script>
 
 <template>
-  <div class="space-y-8">
-    <header class="border border-primary/10 rounded-3xl bg-white/80 p-10 shadow-lg backdrop-blur-sm dark:border-light/10 dark:bg-primary/70">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-sm text-primary/70 tracking-widest uppercase dark:text-light/80">
-            {{ t('dashboard.header.badge') }}
-          </p>
-          <h1 class="mt-2 text-3xl text-primary font-semibold tracking-tight dark:text-light">
-            {{ greetingLine }}
-          </h1>
-          <p class="mt-3 max-w-2xl text-base text-primary/70 dark:text-light/80">
-            {{ t('dashboard.header.intro') }}
-          </p>
-        </div>
-        <div class="flex items-center gap-3">
+  <div class="space-y-4">
+    <header>
+      <div>
+        <p class="text-sm text-primary/70 tracking-widest uppercase dark:text-light/80">
+          {{ t('dashboard.header.badge') }}
+        </p>
+        <h1 class="mt-2 text-2xl text-primary font-semibold tracking-tight sm:text-3xl dark:text-light">
+          {{ greetingLine }}
+        </h1>
+        <p class="mt-3 max-w-2xl text-base text-primary/70 dark:text-light/80">
+          {{ t('dashboard.header.intro') }}
+        </p>
+        <div class="mt-6 flex flex-shrink-0 flex-wrap items-center justify-start gap-3">
           <NuxtLink
             to="/docs"
             class="border border-primary/20 rounded-full bg-primary/5 px-4 py-2 text-sm text-primary font-medium transition dark:border-light/20 hover:border-primary/40 dark:bg-light/10 hover:bg-primary/10 dark:text-light"
@@ -136,7 +134,7 @@ const shortcutLinks = computed(() => [
           v-for="shortcut in shortcutLinks"
           :key="shortcut.to"
           :to="shortcut.to"
-          class="flex items-center justify-between border border-primary/15 rounded-2xl bg-primary/5 px-4 py-3 text-primary font-medium transition dark:border-light/15 hover:border-primary/30 dark:bg-light/10 hover:bg-primary/10 dark:text-light"
+          class="flex items-center justify-between border border-primary/15 rounded-2xl bg-primary/5 px-4 py-3 text-primary font-medium no-underline transition dark:border-light/15 hover:border-primary/30 dark:bg-light/10 hover:bg-light/5 dark:text-light"
         >
           {{ shortcut.label }}
           <span class="i-carbon-arrow-right text-base" />
