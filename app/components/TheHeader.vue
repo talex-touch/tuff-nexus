@@ -150,22 +150,19 @@ const headerRevealStyle = computed(() => {
           <SignedIn>
             <NuxtLink
               to="/dashboard"
-              class="border border-primary/20 rounded-full bg-dark px-3 py-1 text-sm text-white font-semibold shadow-primary/30 shadow-sm transition dark:border-transparent dark:bg-light hover:bg-dark/90 dark:text-black dark:shadow-light/40 dark:hover:bg-light/90"
+              class="border border-primary/20 rounded-full bg-dark px-3 py-1 text-sm text-white font-semibold no-underline shadow-primary/30 shadow-sm transition dark:border-transparent dark:bg-light hover:bg-dark/90 dark:text-black dark:shadow-light/40 dark:hover:bg-light/90"
             >
               {{ t('nav.dashboard') }}
             </NuxtLink>
-          </SignedIn>
-          <SignedIn>
-            <div class="flex items-center border border-primary/10 rounded-full bg-dark/5 px-3 py-1 shadow-sm dark:border-light/15 dark:bg-light/10">
-              <UserButton
-                :after-sign-out-url="afterSignOutUrl"
-                :appearance="{
-                  elements: {
-                    avatarBox: 'ring-2 ring-primary/20 rounded-full',
-                  },
-                }"
-              />
-            </div>
+
+            <UserButton
+              :after-sign-out-url="afterSignOutUrl"
+              :appearance="{
+                elements: {
+                  avatarBox: 'ring-2 ring-primary/20 rounded-full',
+                },
+              }"
+            />
           </SignedIn>
         </div>
       </nav>

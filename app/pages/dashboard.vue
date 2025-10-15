@@ -75,12 +75,12 @@ const activeSection = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="relative min-h-screen">
     <SignedIn>
       <section class="grid gap-8 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
-        <aside class="space-y-6">
+        <aside class="sticky top-24 space-y-6">
           <nav
-            class="border border-primary/10 rounded-3xl bg-white/80 dark:border-light/10 dark:bg-dark/70"
+            class="relative border border-primary/10 rounded-3xl bg-white/80 dark:border-light/10 dark:bg-dark/70"
             aria-label="Dashboard sections"
           >
             <p class="text-sm text-black/70 font-semibold tracking-wide uppercase dark:text-light/80">
