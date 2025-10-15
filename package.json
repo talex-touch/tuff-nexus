@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxt dev",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --port 3200",
     "generate": "nuxt generate",
     "prepare": "nuxt prepare",
     "preview": "nuxt preview",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@clerk/nuxt": "catalog:",
     "gsap": "catalog:",
-    "jszip": "^3.10.1",
+    "jszip": "catalog:",
     "motion-v": "catalog:",
     "simplex-noise": "catalog:"
   },
