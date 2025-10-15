@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import Logo from "../base/Logo.vue";
+import Logo from "../../../icon/Logo.vue";
 import TypeIt from 'typeit'
 
 onMounted(() => {

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import BetaIcon from './BetaIcon.vue'
+import Logo from './icon/Logo.vue'
+import TouchAurora from './theme/components/base/TouchAurora.vue'
 
 const { t } = useI18n()
 
@@ -35,80 +37,125 @@ const socialLinks = computed(() => [
 </script>
 
 <template>
-  <footer class="bg-black text-white">
-    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-      <!-- Main Content -->
-      <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">
-        <!-- Brand Section -->
-        <div class="space-y-6">
-          <NuxtLink
-            to="/"
-            class="inline-flex items-center gap-2.5 text-2xl text-white font-bold no-underline"
-          >
-            <span>Tuff</span>
-            <BetaIcon />
-          </NuxtLink>
+  <footer class="TuffFooter relative border-t border-black/5 border-solid text-black dark:border-white/5 dark:text-white">
+    <div class="TuffFooter-Background z-1">
+      <Logo />
 
-          <p class="max-w-md text-sm text-white/50 leading-relaxed">
-            {{ t('landing.footer.tagline') }}
-          </p>
+      <TouchAurora
+        :color-stops="['#574BDD', '#8727CE', '#057CCF']"
+        :amplitude="1.0"
+        :blend="0.5"
+        :speed="1.0"
+        :intensity="1.0"
+        class="op-50 -scale-100"
+      />
+    </div>
 
-          <div class="flex gap-2">
-            <a
-              v-for="social in socialLinks"
-              :key="social.href"
-              :href="social.href"
-              :aria-label="social.label"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="size-9 inline-flex items-center justify-center border border-white/10 rounded-lg text-white/60 transition-colors hover:border-white/20 hover:text-white"
+    <div class="TuffFooter-Main relative left-0 top-0 z-10 h-full w-full bg-white/10 dark:bg-black/10">
+      <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        <!-- Main Content -->
+        <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">
+          <!-- Brand Section -->
+          <div class="space-y-6">
+            <NuxtLink
+              to="/"
+              class="inline-flex items-center gap-2.5 text-2xl font-bold no-underline"
             >
-              <span :class="social.icon" class="text-lg" aria-hidden="true" />
-            </a>
+              <Logo />
+              <span>Tuff</span>
+              <BetaIcon />
+            </NuxtLink>
+
+            <p class="max-w-md text-sm text-white/50 leading-relaxed">
+              {{ t('landing.footer.tagline') }}
+            </p>
+
+            <div class="flex gap-2">
+              <a
+                v-for="social in socialLinks"
+                :key="social.href"
+                :href="social.href"
+                :aria-label="social.label"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="size-9 inline-flex items-center justify-center border border-white/10 rounded-lg text-white/60 transition-colors hover:border-white/20 hover:text-white"
+              >
+                <span :class="social.icon" class="text-lg" aria-hidden="true" />
+              </a>
+            </div>
           </div>
+
+          <!-- Navigation -->
+          <nav aria-label="Footer navigation" class="grid gap-10 sm:grid-cols-2">
+            <div
+              v-for="section in footerSections"
+              :key="section.title"
+              class="space-y-4"
+            >
+              <h3 class="text-xs text-white/90 font-semibold tracking-wider uppercase">
+                {{ section.title }}
+              </h3>
+              <ul class="space-y-3">
+                <li v-for="link in section.links" :key="link.to">
+                  <NuxtLink
+                    :to="link.to"
+                    class="text-sm text-white/50 transition-colors hover:text-white"
+                  >
+                    {{ link.label }}
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
+          </nav>
         </div>
 
-        <!-- Navigation -->
-        <nav aria-label="Footer navigation" class="grid gap-10 sm:grid-cols-2">
-          <div
-            v-for="section in footerSections"
-            :key="section.title"
-            class="space-y-4"
-          >
-            <h3 class="text-xs text-white/90 font-semibold tracking-wider uppercase">
-              {{ section.title }}
-            </h3>
-            <ul class="space-y-3">
-              <li v-for="link in section.links" :key="link.to">
-                <NuxtLink
-                  :to="link.to"
-                  class="text-sm text-white/50 transition-colors hover:text-white"
-                >
-                  {{ link.label }}
-                </NuxtLink>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </div>
-
-      <!-- Bottom -->
-      <div class="mt-12 border-t border-white/5 pt-8">
-        <div class="flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {{ year }} Tuff Labs. {{ t('landing.footer.rights') }}
-          </p>
-          <div class="flex items-center gap-6">
-            <NuxtLink to="/privacy" class="transition-colors hover:text-white/60">
-              {{ t('landing.footer.privacy') }}
-            </NuxtLink>
-            <NuxtLink to="/terms" class="transition-colors hover:text-white/60">
-              {{ t('landing.footer.terms') }}
-            </NuxtLink>
-            <DarkToggle />
+        <!-- Bottom -->
+        <div class="mt-12 border-t border-white/5 pt-8">
+          <div class="flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              © {{ year }} Tuff Labs. {{ t('landing.footer.rights') }}
+            </p>
+            <div class="flex items-center gap-6">
+              <NuxtLink to="/privacy" class="transition-colors hover:text-white/60">
+                {{ t('landing.footer.privacy') }}
+              </NuxtLink>
+              <NuxtLink to="/terms" class="transition-colors hover:text-white/60">
+                {{ t('landing.footer.terms') }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </footer>
 </template>
+
+<style scoped>
+.TuffFooter-Background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  font-size: 20rem;
+}
+
+.TuffFooter-Background .TuffLogo {
+  z-index: 1;
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.TuffFooter-Main {
+  backdrop-filter: blur(18px) saturate(180%);
+}
+
+.TuffFooter {
+  /* overflow: hidden; */
+}
+</style>

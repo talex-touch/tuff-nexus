@@ -25,6 +25,7 @@
     "gsap": "catalog:",
     "jszip": "catalog:",
     "motion-v": "catalog:",
+    "ogl": "catalog:",
     "simplex-noise": "catalog:"
   },
   "devDependencies": {

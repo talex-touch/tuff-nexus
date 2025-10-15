@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="relative min-h-screen flex flex-col bg-[#f8f9fb] text-black dark:bg-[#090b12] dark:text-light">
+  <div class="relative min-h-screen flex flex-col bg-white text-black dark:bg-black dark:text-light">
     <div>
       <div class="pointer-events-none absolute inset-0 overflow-hidden -z-10">
         <div class="docs-background absolute left-1/2 h-[420px] w-[820px] rounded-[200px] from-primary/6 via-primary/3 to-transparent bg-gradient-to-br blur-3xl -top-32 -translate-x-1/2 dark:from-light/10 dark:via-light/5 dark:to-transparent" />
