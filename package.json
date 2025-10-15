@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@clerk/nuxt": "catalog:",
+    "@floating-ui/vue": "^1.1.9",
     "gsap": "catalog:",
     "jszip": "catalog:",
     "motion-v": "catalog:",

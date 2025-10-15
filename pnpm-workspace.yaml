@@ -1,3 +1,5 @@
+packages: []
+
 catalog:
   '@clerk/nuxt': ^1.10.0
   fighting-design: 0.25.1
@@ -55,6 +57,5 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+  - vue-demi
   - workerd
-
-packages: []
