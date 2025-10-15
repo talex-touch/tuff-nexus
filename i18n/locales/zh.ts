@@ -847,7 +847,7 @@ export default {
       secondary: '与团队交流',
     },
     footer: {
-      tagline: '为高速团队打造的沉静操作系统。',
+      tagline: '属于你的大脑，更聪明、可无限扩展',
       primaryCta: '下载 Beta',
       secondaryCta: '查看文档',
       rights: '保留所有权利。',

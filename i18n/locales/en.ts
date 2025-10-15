@@ -867,7 +867,7 @@ export default {
       secondary: 'Talk with the team',
     },
     footer: {
-      tagline: 'A calmer operating system for builders who move fast.',
+      tagline: 'Your brain, smarter and infinitely extensible.',
       primaryCta: 'Download Beta',
       secondaryCta: 'View Docs',
       rights: 'All rights reserved.',

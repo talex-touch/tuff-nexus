@@ -13,7 +13,7 @@ const footerSections = computed(() => [
     title: t('landing.footer.sections.product'),
     links: [
       { to: '/market', label: t('nav.market') },
-      { to: '/#developer', label: t('nav.developer') },
+      { to: '/developer', label: t('nav.developer') },
       { to: '/updates', label: t('nav.download') },
       { to: '/pricing', label: t('nav.pricing') },
     ],
@@ -22,7 +22,7 @@ const footerSections = computed(() => [
     title: t('landing.footer.sections.resources'),
     links: [
       { to: '/docs', label: t('nav.doc') },
-      { to: '/#blog', label: t('nav.blog') },
+      { to: '/blog', label: t('nav.blog') },
     ],
   },
 ])
@@ -66,7 +66,7 @@ const socialLinks = computed(() => [
               <BetaIcon />
             </NuxtLink>
 
-            <p class="max-w-md text-sm text-white/50 leading-relaxed">
+            <p class="max-w-md text-sm text-black/50 leading-relaxed dark:text-white/50">
               {{ t('landing.footer.tagline') }}
             </p>
 
@@ -78,7 +78,7 @@ const socialLinks = computed(() => [
                 :aria-label="social.label"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="size-9 inline-flex items-center justify-center border border-white/10 rounded-lg text-white/60 transition-colors hover:border-white/20 hover:text-white"
+                class="size-9 inline-flex items-center justify-center border border-white/10 rounded-lg text-black/60 transition-colors hover:border-black/20 dark:text-white/60 hover:text-black dark:hover:border-white/20 dark:hover:text-white"
               >
                 <span :class="social.icon" class="text-lg" aria-hidden="true" />
               </a>
@@ -92,14 +92,14 @@ const socialLinks = computed(() => [
               :key="section.title"
               class="space-y-4"
             >
-              <h3 class="text-xs text-white/90 font-semibold tracking-wider uppercase">
+              <h3 class="text-xs text-black/90 font-semibold tracking-wider uppercase dark:text-white/90">
                 {{ section.title }}
               </h3>
-              <ul class="space-y-3">
+              <ul class="list-none p-0 space-y-3">
                 <li v-for="link in section.links" :key="link.to">
                   <NuxtLink
                     :to="link.to"
-                    class="text-sm text-white/50 transition-colors hover:text-white"
+                    class="text-sm text-black/50 no-underline transition-colors dark:text-white/50 hover:text-black dark:hover:text-white"
                   >
                     {{ link.label }}
                   </NuxtLink>
@@ -111,15 +111,15 @@ const socialLinks = computed(() => [
 
         <!-- Bottom -->
         <div class="mt-12 border-t border-white/5 pt-8">
-          <div class="flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-4 text-xs text-black/40 sm:flex-row sm:items-center sm:justify-between dark:text-white/40">
             <p>
               © {{ year }} Tuff Labs. {{ t('landing.footer.rights') }}
             </p>
             <div class="flex items-center gap-6">
-              <NuxtLink to="/privacy" class="transition-colors hover:text-white/60">
+              <NuxtLink to="/privacy" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
                 {{ t('landing.footer.privacy') }}
               </NuxtLink>
-              <NuxtLink to="/terms" class="transition-colors hover:text-white/60">
+              <NuxtLink to="/terms" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
                 {{ t('landing.footer.terms') }}
               </NuxtLink>
             </div>
