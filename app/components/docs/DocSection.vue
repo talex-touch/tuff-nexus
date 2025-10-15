@@ -46,7 +46,7 @@ const linkable = computed(() => props.list <= 0)
       >
         <ul
           v-if="active && list > 0"
-          class="m-0 flex flex-col list-none gap-1 border-t border-primary/5 bg-white/80 px-2 py-0 dark:border-light/10 dark:bg-dark/60"
+          class="m-0 flex flex-col list-none gap-1 px-2 py-0"
         >
           <slot />
         </ul>

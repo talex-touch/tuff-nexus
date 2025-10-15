@@ -8,11 +8,10 @@ interface TocLink {
   children?: TocLink[]
 }
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const tocState = useState<TocLink[]>('docs-toc', () => [])
 const docTitleState = useState<string>('docs-title', () => '')
-const docLocaleState = useState<string>('docs-locale', () => locale.value)
 
 const activeHash = ref('')
 
@@ -55,8 +54,6 @@ const outlineEntries = computed(() => {
 })
 
 const hasOutline = computed(() => outlineEntries.value.length > 0)
-
-const localeLabel = computed(() => (docLocaleState.value === 'zh' ? '中文' : docLocaleState.value?.toUpperCase?.() ?? 'EN'))
 </script>
 
 <template>
