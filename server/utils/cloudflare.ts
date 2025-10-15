@@ -15,11 +15,12 @@ export function readCloudflareBindings(event: H3Event) {
 export function requireCloudflareBindings(event: H3Event) {
   const bindings = readCloudflareBindings(event)
 
-  if (!bindings)
+  if (!bindings) {
     throw createError({
       statusCode: 500,
       statusMessage: 'Cloudflare bindings are not available in this runtime.',
     })
+  }
 
   return bindings
 }

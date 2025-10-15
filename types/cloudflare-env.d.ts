@@ -5,6 +5,9 @@ declare global {
     DB?: D1Database
     R2?: R2Bucket
     ASSETS?: R2Bucket
+    IMAGES?: R2Bucket
+    PACKAGES?: R2Bucket
+    PLUGIN_PACKAGES?: R2Bucket
   }
 }
 

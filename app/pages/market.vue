@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import { PLUGIN_CATEGORIES, type PluginCategoryId } from '~/utils/plugin-categories'
+import { PLUGIN_CATEGORIES } from '~/utils/plugin-categories'
+import type { PluginCategoryId } from '~/utils/plugin-categories'
 
 definePageMeta({
   layout: 'home',
@@ -19,18 +20,28 @@ interface DashboardPluginAuthor {
   avatarColor?: string
 }
 
+type PluginChannel = 'SNAPSHOT' | 'BETA' | 'RELEASE'
+
+interface DashboardPluginVersion {
+  id: string
+  channel: PluginChannel
+  version: string
+  iconUrl: string
+  createdAt: string
+  signature: string
+  readmeMarkdown?: string | null
+}
+
 interface DashboardPlugin {
   id: string
   name: string
   summary: string
   category: string
   installs: number
-  icon: string
-  lastUpdated: string
-  version: string
   isOfficial: boolean
   badges: string[]
   author?: DashboardPluginAuthor | null
+  latestVersion?: DashboardPluginVersion | null
 }
 
 type FilterCategory = PluginCategoryId | 'all'
@@ -44,7 +55,7 @@ const {
   data: pluginsPayload,
   pending: pluginsPending,
 } = await useAsyncData('market-plugins', () =>
-  $fetch<{ plugins: DashboardPlugin[] }>('/api/dashboard/plugins'),
+  $fetch<{ plugins: DashboardPlugin[] }>('/api/market/plugins'),
 )
 
 const localeTag = computed(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
@@ -77,9 +88,9 @@ const categoryLabels = computed<Record<string, string>>(() => {
   return map
 })
 
-const officialPlugins = computed(() => (pluginsPayload.value?.plugins ?? []).filter(plugin => plugin.isOfficial))
+const allPlugins = computed(() => (pluginsPayload.value?.plugins ?? []).filter(plugin => plugin.latestVersion))
 
-const totalOfficial = computed(() => officialPlugins.value.length)
+const totalPlugins = computed(() => allPlugins.value.length)
 
 const normalizedSearch = computed(() => filters.search.trim().toLowerCase())
 
@@ -116,7 +127,7 @@ function matchesCategoryFilter(plugin: DashboardPlugin) {
 const filteredPlugins = computed(() => {
   const query = normalizedSearch.value
 
-  return officialPlugins.value.filter((plugin) => {
+  return allPlugins.value.filter((plugin) => {
     if (!matchesCategoryFilter(plugin))
       return false
 
@@ -127,7 +138,8 @@ const filteredPlugins = computed(() => {
     const haystack = [
       plugin.name,
       plugin.summary,
-      plugin.version,
+      plugin.latestVersion?.version ?? '',
+      plugin.latestVersion?.channel ?? '',
       plugin.author?.name ?? '',
       categoryLabel,
       plugin.badges.join(' '),
@@ -140,10 +152,10 @@ const filteredPlugins = computed(() => {
 })
 
 const hasResults = computed(() => filteredPlugins.value.length > 0)
-const hasOfficial = computed(() => totalOfficial.value > 0)
+const hasPlugins = computed(() => totalPlugins.value > 0)
 
 const resultSummary = computed(() => {
-  const total = totalOfficial.value
+  const total = totalPlugins.value
   const count = filteredPlugins.value.length
 
   if (!total)
@@ -161,7 +173,7 @@ function formatInstalls(count: number) {
 
 function formatDate(value?: string) {
   if (!value)
-    return ''
+    return '—'
   const parsed = new Date(value)
   if (Number.isNaN(parsed.getTime()))
     return value
@@ -242,7 +254,7 @@ useSeoMeta({
 
     <div v-else>
       <div
-        v-if="!hasOfficial"
+        v-if="!hasPlugins"
         class="rounded-3xl border border-primary/10 bg-white/80 px-6 py-12 text-center text-sm text-primary/70 shadow-sm dark:border-light/15 dark:bg-primary/30 dark:text-light/80"
       >
         {{ t('market.results.none') }}
@@ -265,8 +277,16 @@ useSeoMeta({
           <div class="space-y-4">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3">
-                <span class="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-light/10 dark:text-light">
-                  <span :class="[plugin.icon, 'text-2xl']" aria-hidden="true" />
+                <span class="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-primary/10 text-primary dark:border-light/20 dark:bg-light/10 dark:text-light">
+                  <img
+                    v-if="plugin.latestVersion?.iconUrl"
+                    :src="plugin.latestVersion.iconUrl"
+                    :alt="`${plugin.name} icon`"
+                    class="h-full w-full object-cover"
+                  >
+                  <span v-else class="text-2xl font-semibold">
+                    {{ plugin.name.charAt(0) }}
+                  </span>
                 </span>
                 <div>
                   <h3 class="text-lg font-semibold text-primary dark:text-light">
@@ -279,7 +299,15 @@ useSeoMeta({
               </div>
               <span class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-primary/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-badge text-sm" aria-hidden="true" />
-                {{ t('market.badges.official') }}
+                <template v-if="plugin.isOfficial">
+                  {{ t('market.badges.official') }}
+                </template>
+                <template v-else-if="plugin.author">
+                  {{ plugin.author.name }}
+                </template>
+                <template v-else>
+                  {{ t('market.badges.community', 'Community') }}
+                </template>
               </span>
             </div>
 
@@ -290,11 +318,23 @@ useSeoMeta({
             <div class="flex flex-wrap gap-2 text-xs text-primary/60 dark:text-light/70">
               <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-calendar text-sm" aria-hidden="true" />
-                {{ t('dashboard.sections.plugins.updatedOn', { date: formatDate(plugin.lastUpdated) }) }}
+                {{ t('dashboard.sections.plugins.updatedOn', { date: formatDate(plugin.latestVersion?.createdAt) }) }}
               </span>
               <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-version text-sm" aria-hidden="true" />
-                v{{ plugin.version }}
+                <template v-if="plugin.latestVersion">
+                  v{{ plugin.latestVersion.version }}
+                </template>
+                <template v-else>
+                  —
+                </template>
+              </span>
+              <span
+                v-if="plugin.latestVersion"
+                class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80"
+              >
+                <span class="i-carbon-skill-level text-sm" aria-hidden="true" />
+                {{ plugin.latestVersion.channel }}
               </span>
               <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-user-multiple text-sm" aria-hidden="true" />

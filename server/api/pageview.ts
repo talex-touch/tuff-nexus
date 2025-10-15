@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
       `).run()
 
       const existing = await bindings.DB.prepare(
-        'SELECT value FROM metrics WHERE key = ?1'
+        'SELECT value FROM metrics WHERE key = ?1',
       ).bind('pageviews').first<{ value: number }>()
 
       const nextValue = (existing?.value ?? 0) + 1

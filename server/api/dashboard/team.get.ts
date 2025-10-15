@@ -1,5 +1,5 @@
-import { requireAuth } from '../../utils/auth'
 import { clerkClient } from '@clerk/nuxt/server'
+import { requireAuth } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
   const { userId } = await requireAuth(event)

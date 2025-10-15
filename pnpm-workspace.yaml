@@ -2,6 +2,7 @@ catalog:
   '@clerk/nuxt': ^1.10.0
   fighting-design: 0.25.1
   gsap: ^3.12.5
+  jszip: ^3.10.1
   markdown-it: ^14.1.0
   motion-v: ^1.7.2
   ogl: ^1.0.11
