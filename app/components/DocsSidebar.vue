@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import DocSection from './docs/DocSection.vue'
+
 const { data: navigationTree, pending, error } = await useAsyncData(
   'docs-navigation',
   () => queryCollectionNavigation('docs'),
@@ -145,70 +147,34 @@ watch(
       </div>
     </template>
     <template v-else>
-      <div
+      <DocSection
         v-for="section in sections"
         :key="sectionKey(section)"
-        class="overflow-hidden border border-primary/5 rounded-2xl bg-white/60 shadow-sm backdrop-blur transition dark:border-light/10 dark:bg-dark/70"
+        :active="isSectionExpanded(section)"
+        :link="linkTarget(section) || undefined"
+        :list="section.children?.length || 0"
+        class="overflow-hidden"
+        @click="toggleSection(section)"
       >
-        <button
-          v-if="section.children && section.children.length"
-          type="button"
-          class="group w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm text-black/80 font-semibold transition hover:bg-dark/5 dark:text-light/80 dark:hover:bg-light/10"
-          @click="toggleSection(section)"
+        <template #header>
+          <span class="flex-1 truncate">{{ itemTitle(section.title, section.path ?? linkTarget(section) ?? undefined) }}</span>
+        </template>
+        <li
+          v-for="child in section.children"
+          :key="child.path ?? child.title"
         >
-          <span class="flex-1 truncate">{{ itemTitle(section.title, section.path ?? undefined) }}</span>
-          <span
-            class="i-heroicons-chevron-down-20-solid text-base transition-transform duration-200"
-            :class="isSectionExpanded(section) ? 'rotate-180 text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
-          />
-        </button>
-        <NuxtLink
-          v-else-if="linkTarget(section)"
-          :to="localePath(linkTarget(section)!)"
-          class="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-dark/5 dark:hover:bg-light/10"
-          :class="isLinkActive(linkTarget(section) || section.path || '')
-            ? 'text-black dark:text-light'
-            : 'text-black/70 dark:text-light/70'"
-        >
-          <span class="truncate">
-            {{ itemTitle(section.title, section.path ?? linkTarget(section) ?? undefined) }}
-          </span>
-          <span
-            class="i-heroicons-arrow-up-right-20-solid text-base"
-            :class="isLinkActive(linkTarget(section) || section.path || '') ? 'text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
-          />
-        </NuxtLink>
-        <transition
-          enter-active-class="overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
-          enter-from-class="max-h-0 opacity-0"
-          enter-to-class="max-h-[480px] opacity-100"
-          leave-active-class="overflow-hidden transition-[max-height,opacity] duration-150 ease-in"
-          leave-from-class="max-h-[480px] opacity-100"
-          leave-to-class="max-h-0 opacity-0"
-        >
-          <ul
-            v-if="section.children && section.children.length && isSectionExpanded(section)"
-            class="flex flex-col gap-1 border-t border-primary/5 bg-white/80 px-3 py-3 dark:border-light/10 dark:bg-dark/60"
+          <NuxtLink
+            v-if="linkTarget(child)"
+            :to="localePath(linkTarget(child)!)"
+            class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition"
+            :class="isLinkActive(linkTarget(child) || child.path || '')
+              ? 'bg-dark/5 text-black font-semibold dark:bg-light/10 dark:text-light'
+              : 'text-black/70 hover:bg-dark/5 dark:text-light/70 dark:hover:bg-light/10'"
           >
-            <li
-              v-for="child in section.children"
-              :key="child.path ?? child.title"
-            >
-              <NuxtLink
-                v-if="linkTarget(child)"
-                :to="localePath(linkTarget(child)!)"
-                class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition"
-                :class="isLinkActive(linkTarget(child) || child.path || '')
-                  ? 'bg-dark/5 text-black font-semibold dark:bg-light/10 dark:text-light'
-                  : 'text-black/70 hover:bg-dark/5 dark:text-light/70 dark:hover:bg-light/10'"
-              >
-                <span class="i-heroicons-minus-small-20-solid text-base opacity-40" />
-                <span class="truncate">{{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}</span>
-              </NuxtLink>
-            </li>
-          </ul>
-        </transition>
-      </div>
+            <span class="truncate">{{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}</span>
+          </NuxtLink>
+        </li>
+      </DocSection>
     </template>
   </nav>
 </template>

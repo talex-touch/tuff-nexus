@@ -11,7 +11,7 @@
       <div class="relative flex flex-1 justify-center px-4 pb-24 pt-24 lg:px-10 sm:px-6">
         <div class="max-w-7xl w-full flex gap-6 lg:gap-10">
           <aside class="hidden w-[240px] shrink-0 xl:block">
-            <div class="sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto border border-primary/10 rounded-3xl bg-white/80 p-4 shadow-[0_18px_46px_rgba(15,23,42,0.08)] backdrop-blur dark:border-light/10 dark:bg-[#11162a]/80 dark:shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-scroll p-4">
               <DocsSidebar />
             </div>
           </aside>
@@ -21,7 +21,7 @@
             </div>
           </main>
           <aside class="hidden w-[220px] shrink-0 lg:block">
-            <div class="sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto border border-primary/10 rounded-3xl bg-white/80 p-5 shadow-[0_18px_46px_rgba(15,23,42,0.08)] backdrop-blur dark:border-light/10 dark:bg-[#11162a]/80 dark:shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <div class="sticky top-24 max-h-[calc(100vh-9rem)] overflow-y-auto border border-primary/10 rounded-3xl bg-white/80 p-5 shadow-[0_18px_46px_rgba(15,23,42,0.08)] backdrop-blur dark:border-light/10 dark:bg-[#11162a]/80 dark:shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
               <DocsOutline />
             </div>
           </aside>
