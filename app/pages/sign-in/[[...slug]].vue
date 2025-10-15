@@ -66,7 +66,7 @@ const currentPath = computed(() => route.path)
       >
         <template #fallback>
           <div class="flex flex-col items-center gap-4 text-center text-sm text-gray-600 dark:text-gray-300">
-            <span class="i-carbon-circle-dash text-3xl text-primary/80" />
+            <span class="i-carbon-circle-dash text-3xl text-black/80" />
             <span>{{ t('auth.callbackProcessing') }}</span>
           </div>
         </template>
@@ -76,7 +76,7 @@ const currentPath = computed(() => route.path)
         v-else
         class="space-y-6"
       >
-        <div class="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-primary/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
+        <div class="rounded-2xl border border-primary/15 bg-dark/5 px-4 py-3 text-sm text-black/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
           {{ t('auth.linuxdoWaitlistNotice') }}
         </div>
         <SignIn
@@ -93,7 +93,7 @@ const currentPath = computed(() => route.path)
     <div class="fixed bottom-6 left-6">
       <NuxtLink
         to="/"
-        class="text-sm font-medium text-primary/70 underline-offset-4 transition hover:text-primary hover:underline dark:text-light/70 dark:hover:text-light"
+        class="text-sm font-medium text-black/70 underline-offset-4 transition hover:text-black hover:underline dark:text-light/70 dark:hover:text-light"
       >
         {{ t('auth.backToHome') }}
       </NuxtLink>

@@ -35,7 +35,7 @@ async function toggleLocale() {
 <template>
   <button
     type="button"
-    class="LanguageToggle h-9 w-9 inline-flex items-center justify-center rounded-full border-none bg-white/80 text-primary/80 transition-colors duration-200 dark:bg-white/10 hover:bg-white dark:text-light/80 dark:hover:bg-white/15"
+    class="LanguageToggle h-9 w-9 inline-flex items-center justify-center rounded-full border-none bg-white/80 text-black/80 transition-colors duration-200 dark:bg-white/10 hover:bg-white dark:text-light/80 dark:hover:bg-white/15"
     :aria-label="ariaLabel"
     :title="tooltipLabel"
     :aria-pressed="locale === 'zh'"

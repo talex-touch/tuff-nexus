@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { ReleaseChannelId, ReleaseEntryDefinition } from '~/data/updates'
 import { computed, ref, watch } from 'vue'
 import { releaseChannels, releaseEntries } from '~/data/updates'
-import type { ReleaseChannelId, ReleaseEntryDefinition } from '~/data/updates'
 
 definePageMeta({
   layout: 'home',
@@ -122,21 +122,21 @@ function channelLabel(id: ReleaseChannelId) {
 </script>
 
 <template>
-  <section class="relative mx-auto flex min-h-screen w-full flex-col gap-12 px-24 py-24 lg:px-12 sm:px-6 sm:py-20">
-    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 text-center">
-      <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-primary/70 dark:border-light/20 dark:bg-light/15 dark:text-light/80">
+  <section class="relative mx-auto min-h-screen w-full flex flex-col gap-12 px-24 py-24 lg:px-12 sm:px-6 sm:py-20">
+    <div class="mx-auto max-w-5xl w-full flex flex-col gap-6 text-center">
+      <p class="mx-auto inline-flex items-center gap-2 border border-primary/15 rounded-full bg-dark/5 px-4 py-1 text-xs text-black/70 font-semibold tracking-[0.32em] uppercase dark:border-light/20 dark:bg-light/15 dark:text-light/80">
         {{ t('updates.badge') }}
       </p>
-      <h1 class="text-4xl font-semibold tracking-tight text-primary dark:text-light sm:text-5xl">
+      <h1 class="text-4xl text-black font-semibold tracking-tight sm:text-5xl dark:text-light">
         {{ t('updates.title') }}
       </h1>
-      <p class="mx-auto max-w-2xl text-base text-primary/70 dark:text-light/80">
+      <p class="mx-auto max-w-2xl text-base text-black/70 dark:text-light/80">
         {{ t('updates.subtitle') }}
       </p>
     </div>
 
-    <div class="mx-auto flex w-full max-w-5xl flex-col gap-4">
-      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/60 dark:text-light/60">
+    <div class="mx-auto max-w-5xl w-full flex flex-col gap-4">
+      <p class="text-xs text-black/60 font-semibold tracking-[0.28em] uppercase dark:text-light/60">
         {{ t('updates.channelSelector.label') }}
       </p>
       <div class="grid gap-4 sm:grid-cols-2">
@@ -144,35 +144,35 @@ function channelLabel(id: ReleaseChannelId) {
           v-for="option in channelOptions"
           :key="option.id"
           type="button"
-          class="group flex flex-col gap-4 rounded-3xl border border-primary/15 bg-white/70 p-6 text-left shadow-[0_24px_80px_rgba(17,35,85,0.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_30px_110px_rgba(17,35,85,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:border-light/20 dark:bg-primary/40 dark:text-light dark:shadow-[0_24px_80px_rgba(5,9,25,0.45)] dark:hover:shadow-[0_30px_120px_rgba(5,9,25,0.55)]"
-          :class="selectedChannel === option.id ? 'border-primary/50 bg-primary/5 dark:border-light/60 dark:bg-light/10' : ''"
+          class="group flex flex-col gap-4 border border-primary/15 rounded-3xl bg-white/70 p-6 text-left shadow-[0_24px_80px_rgba(17,35,85,0.12)] transition duration-200 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:shadow-[0_24px_80px_rgba(5,9,25,0.45)] hover:shadow-[0_30px_110px_rgba(17,35,85,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 hover:-translate-y-1 dark:hover:shadow-[0_30px_120px_rgba(5,9,25,0.55)]"
+          :class="selectedChannel === option.id ? 'border-primary/50 bg-dark/5 dark:border-light/60 dark:bg-light/10' : ''"
           @click="selectedChannel = option.id"
         >
           <div class="flex items-center justify-between">
-            <span class="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-primary/70 dark:border-light/20 dark:bg-light/15 dark:text-light/70">
+            <span class="inline-flex items-center gap-2 border border-primary/15 rounded-full bg-dark/10 px-3 py-1 text-[11px] text-black/70 font-semibold tracking-[0.3em] uppercase dark:border-light/20 dark:bg-light/15 dark:text-light/70">
               <span :class="option.icon" class="text-base" aria-hidden="true" />
               {{ option.badge }}
             </span>
             <span
               v-if="selectedChannel === option.id"
-              class="i-carbon-checkbox-checked text-xl text-primary dark:text-light"
+              class="i-carbon-checkbox-checked text-xl text-black dark:text-light"
               aria-hidden="true"
             />
             <span
               v-else
-              class="i-carbon-checkbox text-xl text-primary/40 dark:text-light/40"
+              class="i-carbon-checkbox text-xl text-black/40 dark:text-light/40"
               aria-hidden="true"
             />
           </div>
           <div class="space-y-2">
-            <h2 class="text-xl font-semibold text-primary dark:text-light">
+            <h2 class="text-xl text-black font-semibold dark:text-light">
               {{ option.label }}
             </h2>
-            <p class="text-sm text-primary/70 dark:text-light/70">
+            <p class="text-sm text-black/70 dark:text-light/70">
               {{ option.description }}
             </p>
           </div>
-          <p class="text-xs font-medium uppercase tracking-[0.24em] text-primary/50 dark:text-light/60">
+          <p class="text-xs text-black/50 font-medium tracking-[0.24em] uppercase dark:text-light/60">
             {{ option.meta }}
           </p>
         </button>
@@ -181,39 +181,39 @@ function channelLabel(id: ReleaseChannelId) {
 
     <div
       v-if="latestEntry"
-      class="mx-auto grid w-full max-w-5xl gap-6 rounded-[36px] border border-primary/10 bg-white/80 p-10 shadow-[0_40px_130px_rgba(17,35,85,0.15)] lg:grid-cols-[1.15fr_0.85fr] dark:border-light/15 dark:bg-primary/40 dark:text-light/90 dark:shadow-[0_40px_120px_rgba(5,9,25,0.55)] sm:p-8"
+      class="grid mx-auto max-w-5xl w-full gap-6 border border-primary/10 rounded-[36px] bg-white/80 p-10 shadow-[0_40px_130px_rgba(17,35,85,0.15)] lg:grid-cols-[1.15fr_0.85fr] dark:border-light/15 dark:bg-dark/40 sm:p-8 dark:text-light/90 dark:shadow-[0_40px_120px_rgba(5,9,25,0.55)]"
     >
       <article class="flex flex-col gap-6">
         <header class="flex flex-col gap-2">
-          <div class="flex items-center gap-3 text-sm text-primary/70 dark:text-light/70">
-            <span class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-primary/70 dark:border-light/20 dark:bg-light/10 dark:text-light/70">
+          <div class="flex items-center gap-3 text-sm text-black/70 dark:text-light/70">
+            <span class="inline-flex items-center gap-2 border border-primary/20 rounded-full bg-dark/10 px-3 py-1 text-[11px] text-black/70 font-semibold tracking-[0.3em] uppercase dark:border-light/20 dark:bg-light/10 dark:text-light/70">
               {{ t('updates.latest.heading') }}
             </span>
-            <span class="text-xs font-medium uppercase tracking-[0.24em] text-primary/50 dark:text-light/60">
+            <span class="text-xs text-black/50 font-medium tracking-[0.24em] uppercase dark:text-light/60">
               {{ channelLabel(latestEntry.channel) }}
             </span>
           </div>
-          <h2 class="text-3xl font-semibold text-primary dark:text-light">
+          <h2 class="text-3xl text-black font-semibold dark:text-light">
             {{ latestEntry.version }}
           </h2>
-          <p class="text-sm font-medium uppercase tracking-[0.24em] text-primary/50 dark:text-light/60">
+          <p class="text-sm text-black/50 font-medium tracking-[0.24em] uppercase dark:text-light/60">
             {{ t('updates.latest.releaseDate', { date: formatReleaseDate(latestEntry.releasedAt) }) }}
           </p>
         </header>
-        <p class="text-base text-primary/80 dark:text-light/80">
+        <p class="text-base text-black/80 dark:text-light/80">
           {{ entrySummary(latestEntry.key) }}
         </p>
         <div class="space-y-3">
-          <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-primary/50 dark:text-light/60">
+          <h3 class="text-sm text-black/50 font-semibold tracking-[0.3em] uppercase dark:text-light/60">
             {{ t('updates.latest.highlightsHeading') }}
           </h3>
           <ul class="space-y-3">
             <li
               v-for="highlight in entryHighlights(latestEntry.key)"
               :key="highlight"
-              class="flex items-start gap-3 rounded-2xl border border-primary/10 bg-primary/5 p-3 text-sm text-primary/80 dark:border-light/10 dark:bg-light/10 dark:text-light/80"
+              class="flex items-start gap-3 border border-primary/10 rounded-2xl bg-dark/5 p-3 text-sm text-black/80 dark:border-light/10 dark:bg-light/10 dark:text-light/80"
             >
-              <span class="i-carbon-dot-mark text-base text-primary/60 dark:text-light/60" aria-hidden="true" />
+              <span class="i-carbon-dot-mark text-base text-black/60 dark:text-light/60" aria-hidden="true" />
               <span>{{ highlight }}</span>
             </li>
           </ul>
@@ -221,7 +221,7 @@ function channelLabel(id: ReleaseChannelId) {
         <div class="flex flex-wrap items-center gap-3">
           <NuxtLink
             :to="latestEntry.notesPath"
-            class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(12,32,98,0.35)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 dark:bg-light dark:text-primary dark:hover:bg-light/90"
+            class="inline-flex items-center gap-2 rounded-full bg-dark px-5 py-2.5 text-sm text-white font-semibold shadow-[0_18px_40px_rgba(12,32,98,0.35)] transition dark:bg-light hover:bg-dark/90 dark:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 hover:-translate-y-0.5 dark:hover:bg-light/90"
           >
             <span class="i-carbon-document-view text-base" aria-hidden="true" />
             {{ t('updates.latest.notesCta') }}
@@ -232,7 +232,7 @@ function channelLabel(id: ReleaseChannelId) {
             :href="download.href"
             target="_blank"
             rel="noopener"
-            class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-5 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-light/25 dark:text-light dark:hover:border-light/60 dark:hover:bg-light/10"
+            class="inline-flex items-center gap-2 border border-primary/20 rounded-full px-5 py-2.5 text-sm text-black font-semibold transition dark:border-light/25 hover:border-primary/50 hover:bg-dark/5 dark:text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 hover:-translate-y-0.5 dark:hover:border-light/60 dark:hover:bg-light/10"
           >
             <span class="i-carbon-download text-base" aria-hidden="true" />
             {{ t(download.labelKey) }}
@@ -240,16 +240,16 @@ function channelLabel(id: ReleaseChannelId) {
         </div>
       </article>
 
-      <aside class="flex h-full flex-col justify-between gap-6 rounded-[28px] border border-primary/10 bg-primary/5 p-6 text-sm text-primary/70 dark:border-light/15 dark:bg-light/10 dark:text-light/70">
+      <aside class="h-full flex flex-col justify-between gap-6 border border-primary/10 rounded-[28px] bg-dark/5 p-6 text-sm text-black/70 dark:border-light/15 dark:bg-light/10 dark:text-light/70">
         <div class="space-y-4">
-          <h3 class="text-base font-semibold text-primary dark:text-light">
+          <h3 class="text-base text-black font-semibold dark:text-light">
             {{ t('updates.channelSummary.title') }}
           </h3>
           <p class="text-sm">
             {{ t('updates.channelSummary.description', { channel: channelLabel(selectedChannel) }) }}
           </p>
         </div>
-        <div class="space-y-2 text-xs text-primary/60 dark:text-light/60">
+        <div class="text-xs text-black/60 space-y-2 dark:text-light/60">
           <p>{{ t('updates.channelSummary.refreshHint') }}</p>
           <p>{{ t('updates.channelSummary.feedback') }}</p>
         </div>
@@ -258,7 +258,7 @@ function channelLabel(id: ReleaseChannelId) {
 
     <div
       v-else
-      class="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 rounded-[32px] border border-primary/15 bg-primary/5 px-8 py-16 text-center text-primary/70 dark:border-light/15 dark:bg-light/10 dark:text-light/70"
+      class="mx-auto max-w-4xl w-full flex flex-col items-center gap-4 border border-primary/15 rounded-[32px] bg-dark/5 px-8 py-16 text-center text-black/70 dark:border-light/15 dark:bg-light/10 dark:text-light/70"
     >
       <span class="i-carbon-incomplete text-3xl" aria-hidden="true" />
       <p>{{ t('updates.empty') }}</p>
@@ -266,21 +266,21 @@ function channelLabel(id: ReleaseChannelId) {
 
     <div
       v-if="filteredEntries.length"
-      class="mx-auto flex w-full max-w-5xl flex-col gap-4"
+      class="mx-auto max-w-5xl w-full flex flex-col gap-4"
     >
       <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 class="text-xl font-semibold text-primary dark:text-light">
+          <h3 class="text-xl text-black font-semibold dark:text-light">
             {{ t('updates.table.title') }}
           </h3>
-          <p class="text-sm text-primary/70 dark:text-light/70">
+          <p class="text-sm text-black/70 dark:text-light/70">
             {{ t('updates.table.description', { channel: channelLabel(selectedChannel) }) }}
           </p>
         </div>
         <button
           v-if="hasHistory"
           type="button"
-          class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-light/25 dark:text-light dark:hover:border-light/60 dark:hover:bg-light/10"
+          class="inline-flex items-center gap-2 border border-primary/20 rounded-full px-4 py-2 text-sm text-black font-semibold transition dark:border-light/25 hover:border-primary/50 hover:bg-dark/5 dark:text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:hover:border-light/60 dark:hover:bg-light/10"
           @click="historyExpanded = !historyExpanded"
         >
           <span :class="historyExpanded ? 'i-carbon-collapse-all' : 'i-carbon-expand-all'" class="text-base" aria-hidden="true" />
@@ -291,11 +291,11 @@ function channelLabel(id: ReleaseChannelId) {
       <transition name="fade">
         <div
           v-if="historyExpanded"
-          class="overflow-hidden rounded-[28px] border border-primary/10 bg-white/70 shadow-[0_32px_110px_rgba(17,35,85,0.12)] dark:border-light/15 dark:bg-primary/40 dark:shadow-[0_32px_110px_rgba(5,9,25,0.45)]"
+          class="overflow-hidden border border-primary/10 rounded-[28px] bg-white/70 shadow-[0_32px_110px_rgba(17,35,85,0.12)] dark:border-light/15 dark:bg-dark/40 dark:shadow-[0_32px_110px_rgba(5,9,25,0.45)]"
         >
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-primary/10 text-left text-sm text-primary/80 dark:divide-light/15 dark:text-light/80">
-              <thead class="text-xs uppercase tracking-[0.28em] text-primary/50 dark:text-light/60">
+            <table class="min-w-full text-left text-sm text-black/80 divide-y divide-primary/10 dark:text-light/80 dark:divide-light/15">
+              <thead class="text-xs text-black/50 tracking-[0.28em] uppercase dark:text-light/60">
                 <tr>
                   <th scope="col" class="px-6 py-4">
                     {{ t('updates.table.columns.version') }}
@@ -315,22 +315,22 @@ function channelLabel(id: ReleaseChannelId) {
                 <tr
                   v-for="entry in filteredEntries"
                   :key="entry.version"
-                  class="transition hover:bg-primary/5 dark:hover:bg-light/10"
+                  class="transition hover:bg-dark/5 dark:hover:bg-light/10"
                 >
-                  <td class="px-6 py-4 font-semibold text-primary dark:text-light">
+                  <td class="px-6 py-4 text-black font-semibold dark:text-light">
                     {{ entry.version }}
                     <span
                       v-if="entry === latestEntry"
-                      class="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-primary/70 dark:bg-light/10 dark:text-light/70"
+                      class="ml-2 inline-flex items-center rounded-full bg-dark/10 px-2 py-0.5 text-[11px] text-black/70 font-semibold tracking-[0.3em] uppercase dark:bg-light/10 dark:text-light/70"
                     >
                       {{ t('updates.table.latestBadge') }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-sm text-primary/70 dark:text-light/70">
+                  <td class="px-6 py-4 text-sm text-black/70 dark:text-light/70">
                     {{ formatReleaseDate(entry.releasedAt) }}
                   </td>
-                  <td class="px-6 py-4 text-sm text-primary/70 dark:text-light/70">
-                    <ul class="list-disc space-y-1 pl-4">
+                  <td class="px-6 py-4 text-sm text-black/70 dark:text-light/70">
+                    <ul class="list-disc pl-4 space-y-1">
                       <li
                         v-for="highlight in entryHighlights(entry.key).slice(0, 2)"
                         :key="highlight"
@@ -343,7 +343,7 @@ function channelLabel(id: ReleaseChannelId) {
                     <div class="inline-flex flex-col items-end gap-2">
                       <NuxtLink
                         :to="entry.notesPath"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary/70 transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:text-light/70 dark:hover:text-light"
+                        class="inline-flex items-center gap-1.5 text-xs text-black/70 font-semibold tracking-[0.28em] uppercase transition dark:text-light/70 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:hover:text-light"
                       >
                         <span class="i-carbon-document-blank text-sm" aria-hidden="true" />
                         {{ t('updates.table.viewNotes') }}
@@ -354,7 +354,7 @@ function channelLabel(id: ReleaseChannelId) {
                         :href="download.href"
                         target="_blank"
                         rel="noopener"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary/50 transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:text-light/60 dark:hover:text-light"
+                        class="inline-flex items-center gap-1.5 text-xs text-black/50 font-semibold tracking-[0.28em] uppercase transition dark:text-light/60 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:hover:text-light"
                       >
                         <span class="i-carbon-launch text-sm" aria-hidden="true" />
                         {{ t(download.labelKey) }}

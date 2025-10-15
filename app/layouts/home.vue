@@ -5,4 +5,5 @@
       <slot />
     </main>
   </div>
+  <TuffFooter />
 </template>

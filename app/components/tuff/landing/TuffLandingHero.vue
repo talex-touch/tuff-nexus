@@ -93,74 +93,74 @@ function introDelay(delayInSeconds: number) {
 onMounted(async () => {
   beginSequence()
 
-  if (typeof window === 'undefined')
-    return
+  // if (typeof window === 'undefined')
+  //   return
 
-  const heroEl = heroSectionRef.value
-  if (!heroEl)
-    return
+  // const heroEl = heroSectionRef.value
+  // if (!heroEl)
+  //   return
 
-  const statsSection = document.querySelector<HTMLElement>('#landing-stats')
-  if (!statsSection)
-    return
+  // const statsSection = document.querySelector<HTMLElement>('#landing-stats')
+  // if (!statsSection)
+  //   return
 
-  const [{ gsap }, { ScrollTrigger }, { ScrollToPlugin }] = await Promise.all([
-    import('gsap'),
-    import('gsap/ScrollTrigger'),
-    import('gsap/ScrollToPlugin'),
-  ])
+  // const [{ gsap }, { ScrollTrigger }, { ScrollToPlugin }] = await Promise.all([
+  //   import('gsap'),
+  //   import('gsap/ScrollTrigger'),
+  //   import('gsap/ScrollToPlugin'),
+  // ])
 
-  if (!heroScrollPluginsRegistered) {
-    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
-    heroScrollPluginsRegistered = true
-  }
+  // if (!heroScrollPluginsRegistered) {
+  //   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+  //   heroScrollPluginsRegistered = true
+  // }
 
-  autoScrollTriggered = false
-  autoScrollTween?.kill()
-  autoScrollTween = null
+  // autoScrollTriggered = false
+  // autoScrollTween?.kill()
+  // autoScrollTween = null
 
-  heroScrollContext = gsap.context(() => {
-    ScrollTrigger.create({
-      trigger: heroEl,
-      start: 'top top',
-      end: '+=260',
-      onLeave: (self) => {
-        if (autoScrollTriggered)
-          return
+  // heroScrollContext = gsap.context(() => {
+  //   ScrollTrigger.create({
+  //     trigger: heroEl,
+  //     start: 'top top',
+  //     end: '+=260',
+  //     onLeave: (self) => {
+  //       if (autoScrollTriggered)
+  //         return
 
-        autoScrollTriggered = true
+  //       autoScrollTriggered = true
 
-        const trigger = self
-        autoScrollTween?.kill()
+  //       const trigger = self
+  //       autoScrollTween?.kill()
 
-        const releaseTrigger = () => {
-          autoScrollTween = null
-          trigger.kill()
-        }
+  //       const releaseTrigger = () => {
+  //         autoScrollTween = null
+  //         trigger.kill()
+  //       }
 
-        autoScrollTween = gsap.to(window, {
-          scrollTo: {
-            y: statsSection,
-            offsetY: -60,
-          },
-          duration: 1.35,
-          ease: 'power3.out',
-          autoKill: false,
-          overwrite: 'auto',
-          onComplete: releaseTrigger,
-          onInterrupt: releaseTrigger,
-        })
-      },
-    })
-  }, heroEl)
+  //       autoScrollTween = gsap.to(window, {
+  //         scrollTo: {
+  //           y: statsSection,
+  //           offsetY: -60,
+  //         },
+  //         duration: 1.35,
+  //         ease: 'power3.out',
+  //         autoKill: false,
+  //         overwrite: 'auto',
+  //         onComplete: releaseTrigger,
+  //         onInterrupt: releaseTrigger,
+  //       })
+  //     },
+  //   })
+  // }, heroEl)
 })
 
 onBeforeUnmount(() => {
-  heroScrollContext?.revert()
-  heroScrollContext = undefined
-  autoScrollTween?.kill()
-  autoScrollTween = null
-  autoScrollTriggered = false
+  // heroScrollContext?.revert()
+  // heroScrollContext = undefined
+  // autoScrollTween?.kill()
+  // autoScrollTween = null
+  // autoScrollTriggered = false
   resetSequence({ preserveHeader: true })
 })
 </script>

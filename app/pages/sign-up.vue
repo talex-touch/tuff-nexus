@@ -55,7 +55,7 @@ const currentPath = computed(() => route.path)
     <div class="fixed bottom-6 left-6">
       <NuxtLink
         to="/"
-        class="text-sm font-medium text-primary/70 underline-offset-4 transition hover:text-primary hover:underline dark:text-light/70 dark:hover:text-light"
+        class="text-sm font-medium text-black/70 underline-offset-4 transition hover:text-black hover:underline dark:text-light/70 dark:hover:text-light"
       >
         {{ t('auth.backToHome') }}
       </NuxtLink>

@@ -871,6 +871,12 @@ export default {
       primaryCta: 'Download Beta',
       secondaryCta: 'View Docs',
       rights: 'All rights reserved.',
+      privacy: 'Privacy',
+      terms: 'Terms',
+      sections: {
+        product: 'Product',
+        resources: 'Resources',
+      },
       socials: {
         github: 'GitHub',
       },

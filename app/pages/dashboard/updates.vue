@@ -163,13 +163,13 @@ async function deleteUpdateItem(update: DashboardUpdate) {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-primary/70">
+  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-dark/70">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h2 class="text-lg font-semibold text-primary dark:text-light">
+        <h2 class="text-lg font-semibold text-black dark:text-light">
           {{ t('dashboard.sections.updates.title') }}
         </h2>
-        <p class="mt-1 text-sm text-primary/70 dark:text-light/80">
+        <p class="mt-1 text-sm text-black/70 dark:text-light/80">
           {{ t('dashboard.sections.updates.subtitle') }}
         </p>
       </div>
@@ -177,7 +177,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
         href="https://docs.tuff.chat/changelog"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-primary transition hover:border-primary/40 hover:bg-primary/5 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-black transition hover:border-primary/40 hover:bg-dark/5 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
       >
         <span class="i-carbon-news text-base" />
         {{ t('dashboard.sections.updates.cta') }}
@@ -186,21 +186,21 @@ async function deleteUpdateItem(update: DashboardUpdate) {
 
     <div
       v-if="isAdmin"
-      class="mt-6 rounded-2xl border border-dashed border-primary/20 bg-white/70 p-4 text-sm text-primary dark:border-light/20 dark:bg-primary/50 dark:text-light"
+      class="mt-6 rounded-2xl border border-dashed border-primary/20 bg-white/70 p-4 text-sm text-black dark:border-light/20 dark:bg-dark/50 dark:text-light"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 class="text-sm font-semibold text-primary dark:text-light">
+          <h3 class="text-sm font-semibold text-black dark:text-light">
             {{ t('dashboard.sections.updates.manageTitle') }}
           </h3>
-          <p class="text-xs text-primary/60 dark:text-light/70">
+          <p class="text-xs text-black/60 dark:text-light/70">
             {{ t('dashboard.sections.updates.manageSubtitle') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary transition hover:border-primary/30 hover:bg-primary/20 dark:border-light/30 dark:bg-light/10 dark:text-light"
+            class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-dark/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/20 dark:border-light/30 dark:bg-light/10 dark:text-light"
             @click="openCreateUpdateForm"
           >
             <span class="i-carbon-add text-base" />
@@ -209,7 +209,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
           <button
             v-if="showUpdateForm"
             type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary/70 transition hover:bg-primary/15 dark:bg-light/10 dark:text-light/70 dark:hover:bg-light/15"
+            class="inline-flex items-center gap-2 rounded-full border border-transparent bg-dark/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black/70 transition hover:bg-dark/15 dark:bg-light/10 dark:text-light/70 dark:hover:bg-light/15"
             @click="closeUpdateForm"
           >
             <span class="i-carbon-close text-base" />
@@ -224,50 +224,50 @@ async function deleteUpdateItem(update: DashboardUpdate) {
         @submit.prevent="submitUpdateForm"
       >
         <div class="grid gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.updates.form.title') }}
             <input
               v-model="updateForm.title"
               type="text"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.updates.form.date') }}
             <input
               v-model="updateForm.timestamp"
               type="date"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60 md:col-span-2">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
             {{ t('dashboard.sections.updates.form.summary') }}
             <textarea
               v-model="updateForm.summary"
               rows="3"
               required
-              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             ></textarea>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.updates.form.tags') }}
             <input
               v-model="updateForm.tags"
               type="text"
               placeholder="release, roadmap"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.updates.form.link') }}
             <input
               v-model="updateForm.link"
               type="url"
               required
               placeholder="https://"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
         </div>
@@ -280,7 +280,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
           </p>
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-primary/40 transition hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-60 dark:bg-light dark:text-primary dark:hover:bg-light/90"
+            class="inline-flex items-center gap-2 rounded-full bg-dark px-4 py-2 text-sm font-semibold text-white shadow-primary/40 transition hover:bg-dark/90 disabled:pointer-events-none disabled:opacity-60 dark:bg-light dark:text-black dark:hover:bg-light/90"
             :disabled="updateSaving"
           >
             <span class="i-carbon-checkmark text-base" />
@@ -293,7 +293,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
     <div class="mt-6 space-y-4">
       <div
         v-if="updatesPending"
-        class="flex items-center gap-3 rounded-2xl border border-dashed border-primary/20 bg-primary/5 px-4 py-6 text-sm text-primary/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
+        class="flex items-center gap-3 rounded-2xl border border-dashed border-primary/20 bg-dark/5 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
       >
         <span class="i-carbon-circle-dash animate-spin text-base" />
         <span>{{ t('dashboard.sections.updates.loading') }}</span>
@@ -301,7 +301,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
 
       <div
         v-else-if="!updates.length"
-        class="rounded-2xl border border-dashed border-primary/15 bg-white/70 px-4 py-6 text-sm text-primary/60 dark:border-light/20 dark:bg-primary/60 dark:text-light/70"
+        class="rounded-2xl border border-dashed border-primary/15 bg-white/70 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-dark/60 dark:text-light/70"
       >
         {{ t('dashboard.sections.updates.empty') }}
       </div>
@@ -313,7 +313,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
         <li
           v-for="update in updates"
           :key="update.id"
-          class="group relative rounded-2xl border border-primary/10 bg-white/70 p-5 transition hover:border-primary/30 hover:shadow-lg dark:border-light/10 dark:bg-primary/60"
+          class="group relative rounded-2xl border border-primary/10 bg-white/70 p-5 transition hover:border-primary/30 hover:shadow-lg dark:border-light/10 dark:bg-dark/60"
         >
           <div
             v-if="isAdmin"
@@ -321,7 +321,7 @@ async function deleteUpdateItem(update: DashboardUpdate) {
           >
             <button
               type="button"
-              class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-white/80 text-primary/70 transition hover:border-primary/40 hover:text-primary dark:border-light/20 dark:bg-primary/40 dark:text-light/70"
+              class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-white/80 text-black/70 transition hover:border-primary/40 hover:text-black dark:border-light/20 dark:bg-dark/40 dark:text-light/70"
               @click.stop="openEditUpdateForm(update)"
             >
               <span class="i-carbon-edit text-sm" />
@@ -336,32 +336,32 @@ async function deleteUpdateItem(update: DashboardUpdate) {
           </div>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="text-xs uppercase tracking-widest text-primary/60 dark:text-light/60">
+              <p class="text-xs uppercase tracking-widest text-black/60 dark:text-light/60">
                 {{ formatDate(update.timestamp) }}
               </p>
-              <h3 class="mt-1 text-base font-semibold text-primary dark:text-light">
+              <h3 class="mt-1 text-base font-semibold text-black dark:text-light">
                 {{ update.title }}
               </h3>
             </div>
-            <div class="flex flex-wrap items-center gap-2 text-[11px] font-medium text-primary/60 dark:text-light/60">
+            <div class="flex flex-wrap items-center gap-2 text-[11px] font-medium text-black/60 dark:text-light/60">
               <span
                 v-for="tag in update.tags"
                 :key="tag"
-                class="inline-flex items-center gap-1 rounded-full bg-primary/5 px-3 py-1 text-primary/70 dark:bg-light/10 dark:text-light/70"
+                class="inline-flex items-center gap-1 rounded-full bg-dark/5 px-3 py-1 text-black/70 dark:bg-light/10 dark:text-light/70"
               >
                 <span class="i-carbon-tag text-sm" />
                 {{ tag }}
               </span>
             </div>
           </div>
-          <p class="mt-3 text-sm leading-relaxed text-primary/70 dark:text-light/80">
+          <p class="mt-3 text-sm leading-relaxed text-black/70 dark:text-light/80">
             {{ update.summary }}
           </p>
           <a
             :href="update.link"
             target="_blank"
             rel="noopener"
-            class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary transition hover:text-primary/80 dark:text-light dark:hover:text-light/80"
+            class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-black transition hover:text-black/80 dark:text-light dark:hover:text-light/80"
           >
             {{ t('dashboard.sections.updates.readMore') }}
             <span class="i-carbon-arrow-up-right text-base" />

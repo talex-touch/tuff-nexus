@@ -101,12 +101,12 @@ const headerRevealStyle = computed(() => {
     <div
       class="TuffHeader-Main mx-auto flex flex-wrap items-center justify-between gap-4 border-1 border-transparent border-solid px-4 py-2 sm:flex-nowrap"
       :class="{
-        'border-primary/10 bg-white/50 shadow-sm dark:border-light/10 dark:bg-primary/50': scrolled,
+        'border-primary/10 bg-white/50 shadow-sm dark:border-light/10 dark:bg-dark/50': scrolled,
       }"
     >
       <NuxtLink
         to="/"
-        class="flex items-center gap-1 text-primary font-semibold tracking-tight no-underline dark:text-light"
+        class="flex items-center gap-1 text-black font-semibold tracking-tight no-underline dark:text-light"
       >
         <span class="text-lg sm:text-xl">Tuff</span>
         <span
@@ -122,8 +122,8 @@ const headerRevealStyle = computed(() => {
             v-for="link in links"
             :key="link.to"
             :to="link.to"
-            class="rounded-full px-3 py-1 text-primary/65 font-medium no-underline transition-colors duration-200 hover:bg-primary/5 dark:text-light/70 hover:text-primary dark:hover:bg-light/10 dark:hover:text-light"
-            :class="isActiveLink(link) ? 'bg-primary/5 text-primary dark:bg-light/15 dark:text-light' : ''"
+            class="rounded-full px-3 py-1 text-black/65 font-medium no-underline transition-colors duration-200 hover:bg-dark/5 dark:text-light/70 hover:text-black dark:hover:bg-light/10 dark:hover:text-light"
+            :class="isActiveLink(link) ? 'bg-dark/5 text-black dark:bg-light/15 dark:text-light' : ''"
           >
             {{ link.label }}
           </NuxtLink>
@@ -138,7 +138,7 @@ const headerRevealStyle = computed(() => {
           <SignedOut>
             <NuxtLink
               :to="signInRoute"
-              class="border border-primary/20 rounded-full bg-transparent px-3 py-1 text-sm text-primary font-medium transition dark:border-light/15 hover:border-primary/40 hover:bg-primary/5 dark:text-light dark:hover:bg-light/10"
+              class="border border-primary/20 rounded-full bg-transparent px-3 py-1 text-sm text-black font-medium transition dark:border-light/15 hover:border-primary/40 hover:bg-dark/5 dark:text-light dark:hover:bg-light/10"
             >
               {{ t('nav.login') }}
             </NuxtLink>
@@ -146,13 +146,13 @@ const headerRevealStyle = computed(() => {
           <SignedIn>
             <NuxtLink
               to="/dashboard"
-              class="border border-primary/20 rounded-full bg-primary px-3 py-1 text-sm text-white font-semibold shadow-primary/30 shadow-sm transition dark:border-transparent dark:bg-light hover:bg-primary/90 dark:text-primary dark:shadow-light/40 dark:hover:bg-light/90"
+              class="border border-primary/20 rounded-full bg-dark px-3 py-1 text-sm text-white font-semibold shadow-primary/30 shadow-sm transition dark:border-transparent dark:bg-light hover:bg-dark/90 dark:text-black dark:shadow-light/40 dark:hover:bg-light/90"
             >
               {{ t('nav.dashboard') }}
             </NuxtLink>
           </SignedIn>
           <SignedIn>
-            <div class="flex items-center border border-primary/10 rounded-full bg-primary/5 px-3 py-1 shadow-sm dark:border-light/15 dark:bg-light/10">
+            <div class="flex items-center border border-primary/10 rounded-full bg-dark/5 px-3 py-1 shadow-sm dark:border-light/15 dark:bg-light/10">
               <UserButton
                 :after-sign-out-url="afterSignOutUrl"
                 :appearance="{

@@ -140,7 +140,7 @@ watch(
       <div v-for="index in 6" :key="index" class="h-8 animate-pulse rounded-md bg-gray-100 dark:bg-gray-800" />
     </template>
     <template v-else-if="error">
-      <div class="border border-gray-200 rounded-md bg-white p-3 text-sm text-gray-500 dark:border-gray-800 dark:bg-primary/80 dark:text-gray-300">
+      <div class="border border-gray-200 rounded-md bg-white p-3 text-sm text-gray-500 dark:border-gray-800 dark:bg-dark/80 dark:text-gray-300">
         {{ t('docsSidebar.error') }}
       </div>
     </template>
@@ -148,34 +148,34 @@ watch(
       <div
         v-for="section in sections"
         :key="sectionKey(section)"
-        class="overflow-hidden border border-primary/5 rounded-2xl bg-white/60 shadow-sm backdrop-blur transition dark:border-light/10 dark:bg-primary/70"
+        class="overflow-hidden border border-primary/5 rounded-2xl bg-white/60 shadow-sm backdrop-blur transition dark:border-light/10 dark:bg-dark/70"
       >
         <button
           v-if="section.children && section.children.length"
           type="button"
-          class="group w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm text-primary/80 font-semibold transition hover:bg-primary/5 dark:text-light/80 dark:hover:bg-light/10"
+          class="group w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm text-black/80 font-semibold transition hover:bg-dark/5 dark:text-light/80 dark:hover:bg-light/10"
           @click="toggleSection(section)"
         >
           <span class="flex-1 truncate">{{ itemTitle(section.title, section.path ?? undefined) }}</span>
           <span
             class="i-heroicons-chevron-down-20-solid text-base transition-transform duration-200"
-            :class="isSectionExpanded(section) ? 'rotate-180 text-primary dark:text-light' : 'text-primary/40 dark:text-light/40'"
+            :class="isSectionExpanded(section) ? 'rotate-180 text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
           />
         </button>
         <NuxtLink
           v-else-if="linkTarget(section)"
           :to="localePath(linkTarget(section)!)"
-          class="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-primary/5 dark:hover:bg-light/10"
+          class="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold transition hover:bg-dark/5 dark:hover:bg-light/10"
           :class="isLinkActive(linkTarget(section) || section.path || '')
-            ? 'text-primary dark:text-light'
-            : 'text-primary/70 dark:text-light/70'"
+            ? 'text-black dark:text-light'
+            : 'text-black/70 dark:text-light/70'"
         >
           <span class="truncate">
             {{ itemTitle(section.title, section.path ?? linkTarget(section) ?? undefined) }}
           </span>
           <span
             class="i-heroicons-arrow-up-right-20-solid text-base"
-            :class="isLinkActive(linkTarget(section) || section.path || '') ? 'text-primary dark:text-light' : 'text-primary/40 dark:text-light/40'"
+            :class="isLinkActive(linkTarget(section) || section.path || '') ? 'text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
           />
         </NuxtLink>
         <transition
@@ -188,7 +188,7 @@ watch(
         >
           <ul
             v-if="section.children && section.children.length && isSectionExpanded(section)"
-            class="flex flex-col gap-1 border-t border-primary/5 bg-white/80 px-3 py-3 dark:border-light/10 dark:bg-primary/60"
+            class="flex flex-col gap-1 border-t border-primary/5 bg-white/80 px-3 py-3 dark:border-light/10 dark:bg-dark/60"
           >
             <li
               v-for="child in section.children"
@@ -199,8 +199,8 @@ watch(
                 :to="localePath(linkTarget(child)!)"
                 class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition"
                 :class="isLinkActive(linkTarget(child) || child.path || '')
-                  ? 'bg-primary/5 text-primary font-semibold dark:bg-light/10 dark:text-light'
-                  : 'text-primary/70 hover:bg-primary/5 dark:text-light/70 dark:hover:bg-light/10'"
+                  ? 'bg-dark/5 text-black font-semibold dark:bg-light/10 dark:text-light'
+                  : 'text-black/70 hover:bg-dark/5 dark:text-light/70 dark:hover:bg-light/10'"
               >
                 <span class="i-heroicons-minus-small-20-solid text-base opacity-40" />
                 <span class="truncate">{{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}</span>

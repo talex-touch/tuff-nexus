@@ -851,6 +851,12 @@ export default {
       primaryCta: '下载 Beta',
       secondaryCta: '查看文档',
       rights: '保留所有权利。',
+      privacy: '隐私政策',
+      terms: '服务条款',
+      sections: {
+        product: '产品',
+        resources: '资源',
+      },
       socials: {
         github: 'GitHub',
       },

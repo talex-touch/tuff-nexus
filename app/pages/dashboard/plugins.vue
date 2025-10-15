@@ -410,19 +410,19 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
 </script>
 
 <template>
-  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-primary/70">
+  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-dark/70">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h2 class="text-lg font-semibold text-primary dark:text-light">
+        <h2 class="text-lg font-semibold text-black dark:text-light">
           {{ t('dashboard.sections.plugins.title') }}
         </h2>
-        <p class="mt-1 text-sm text-primary/70 dark:text-light/80">
+        <p class="mt-1 text-sm text-black/70 dark:text-light/80">
           {{ t('dashboard.sections.plugins.subtitle') }}
         </p>
       </div>
       <NuxtLink
         to="/marketplace"
-        class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-primary transition hover:border-primary/40 hover:bg-primary/5 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+        class="inline-flex items-center gap-2 rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-black transition hover:border-primary/40 hover:bg-dark/5 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
       >
         <span class="i-carbon-store text-base" />
         {{ t('dashboard.sections.plugins.cta') }}
@@ -431,21 +431,21 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
 
     <div
       v-if="isAdmin"
-      class="mt-6 rounded-2xl border border-dashed border-primary/20 bg-white/70 p-4 text-sm text-primary dark:border-light/20 dark:bg-primary/50 dark:text-light"
+      class="mt-6 rounded-2xl border border-dashed border-primary/20 bg-white/70 p-4 text-sm text-black dark:border-light/20 dark:bg-dark/50 dark:text-light"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 class="text-sm font-semibold text-primary dark:text-light">
+          <h3 class="text-sm font-semibold text-black dark:text-light">
             {{ t('dashboard.sections.plugins.manageTitle') }}
           </h3>
-          <p class="text-xs text-primary/60 dark:text-light/70">
+          <p class="text-xs text-black/60 dark:text-light/70">
             {{ t('dashboard.sections.plugins.manageSubtitle') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary transition hover:border-primary/30 hover:bg-primary/20 dark:border-light/30 dark:bg-light/10 dark:text-light"
+            class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-dark/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/20 dark:border-light/30 dark:bg-light/10 dark:text-light"
             @click="openCreatePluginForm"
           >
             <span class="i-carbon-add text-base" />
@@ -454,7 +454,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
           <button
             v-if="showPluginForm"
             type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary/70 transition hover:bg-primary/15 dark:bg-light/10 dark:text-light/70 dark:hover:bg-light/15"
+            class="inline-flex items-center gap-2 rounded-full border border-transparent bg-dark/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black/70 transition hover:bg-dark/15 dark:bg-light/10 dark:text-light/70 dark:hover:bg-light/15"
             @click="closePluginForm"
           >
             <span class="i-carbon-close text-base" />
@@ -469,21 +469,21 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
         @submit.prevent="submitPluginForm"
       >
         <div class="grid gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.name') }}
             <input
               v-model="pluginForm.name"
               type="text"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light dark:focus:border-light/40 dark:focus:ring-light/20"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:focus:border-light/40 dark:focus:ring-light/20"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.category') }}
             <select
               v-model="pluginForm.category"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
               <option
                 v-for="category in pluginCategoryOptions"
@@ -494,66 +494,66 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               </option>
             </select>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60 md:col-span-2">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
             {{ t('dashboard.sections.plugins.form.summary') }}
             <textarea
               v-model="pluginForm.summary"
               rows="3"
               required
-              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             ></textarea>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.installCount') }}
             <input
               v-model="pluginForm.installs"
               type="number"
               min="0"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.homepage') }}
             <input
               v-model="pluginForm.homepage"
               type="url"
               placeholder="https://github.com/..."
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             <input
               v-model="pluginForm.isOfficial"
               type="checkbox"
-              class="h-4 w-4 rounded border border-primary/30 text-primary focus:ring-primary/40 dark:border-light/30 dark:bg-primary/40"
+              class="h-4 w-4 rounded border border-primary/30 text-black focus:ring-primary/40 dark:border-light/30 dark:bg-dark/40"
             >
             {{ t('dashboard.sections.plugins.form.isOfficial') }}
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60 md:col-span-2">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
             {{ t('dashboard.sections.plugins.form.badges') }}
             <input
               v-model="pluginForm.badges"
               type="text"
               placeholder="featured, stable"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.authorName') }}
             <input
               v-model="pluginForm.authorName"
               type="text"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.authorColor') }}
             <input
               v-model="pluginForm.authorColor"
               type="text"
               placeholder="#FAFAFA"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
         </div>
@@ -566,7 +566,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
           </p>
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-light dark:text-primary dark:hover:bg-light/90"
+            class="inline-flex items-center gap-2 rounded-full bg-dark px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-dark/90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-light dark:text-black dark:hover:bg-light/90"
             :disabled="pluginSaving"
           >
             <span v-if="pluginSaving" class="i-carbon-circle-dash animate-spin" />
@@ -581,66 +581,66 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
         @submit.prevent="submitVersionForm"
       >
         <div class="grid gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.versionForm.version') }}
             <input
               v-model="versionForm.version"
               type="text"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.versionForm.channel') }}
             <select
               v-model="versionForm.channel"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
               <option value="SNAPSHOT">SNAPSHOT</option>
               <option value="BETA">BETA</option>
               <option value="RELEASE">RELEASE</option>
             </select>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.homepage') }}
             <input
               v-model="versionForm.homepage"
               type="url"
               placeholder="https://github.com/..."
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.versionForm.notes') }}
             <textarea
               v-model="versionForm.notes"
               rows="2"
-              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+              class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             ></textarea>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.versionForm.package') }}
             <input
               type="file"
               accept=".tpex"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-dark/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-black transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
               @change="handleVersionPackageInput"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.versionForm.icon') }}
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
               required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-dark/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-black transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
               @change="handleVersionIconInput"
             >
           </label>
         </div>
-        <div class="rounded-2xl border border-primary/10 bg-primary/5 p-4 text-xs text-primary/70 dark:border-light/20 dark:bg-light/10 dark:text-light/70">
+        <div class="rounded-2xl border border-primary/10 bg-dark/5 p-4 text-xs text-black/70 dark:border-light/20 dark:bg-light/10 dark:text-light/70">
           <p class="font-semibold uppercase tracking-wide">
             {{ t('dashboard.sections.plugins.readmePreview') }}
           </p>
@@ -663,7 +663,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
           </p>
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-light dark:text-primary dark:hover:bg-light/90"
+            class="inline-flex items-center gap-2 rounded-full bg-dark px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-dark/90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-light dark:text-black dark:hover:bg-light/90"
             :disabled="versionSaving"
           >
             <span v-if="versionSaving" class="i-carbon-circle-dash animate-spin" />
@@ -675,13 +675,13 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
 
     <div
       v-if="pluginsPending"
-      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-primary/70 dark:border-light/15 dark:bg-primary/40 dark:text-light/80"
+      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-black/70 dark:border-light/15 dark:bg-dark/40 dark:text-light/80"
     >
       {{ t('dashboard.sections.plugins.loading') }}
     </div>
     <div
       v-else-if="!plugins.length"
-      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-primary/70 dark:border-light/15 dark:bg-primary/40 dark:text-light/80"
+      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-black/70 dark:border-light/15 dark:bg-dark/40 dark:text-light/80"
     >
       {{ t('dashboard.sections.plugins.empty') }}
     </div>
@@ -692,17 +692,17 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
       <article
         v-for="plugin in plugins"
         :key="plugin.id"
-        class="rounded-2xl border border-primary/15 bg-white/90 p-5 shadow-sm dark:border-light/15 dark:bg-primary/50"
+        class="rounded-2xl border border-primary/15 bg-white/90 p-5 shadow-sm dark:border-light/15 dark:bg-dark/50"
       >
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-          <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-primary/5 dark:border-light/20 dark:bg-light/10">
+          <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-dark/5 dark:border-light/20 dark:bg-light/10">
             <img
               v-if="plugin.latestVersion?.iconUrl"
               :src="plugin.latestVersion.iconUrl"
               :alt="`${plugin.name} icon`"
               class="h-full w-full object-cover"
             >
-            <span v-else class="text-2xl font-semibold text-primary/70 dark:text-light/80">
+            <span v-else class="text-2xl font-semibold text-black/70 dark:text-light/80">
               {{ plugin.name.charAt(0) }}
             </span>
           </div>
@@ -710,28 +710,28 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="text-base font-semibold text-primary dark:text-light">
+                  <h3 class="text-base font-semibold text-black dark:text-light">
                     {{ plugin.name }}
                   </h3>
                   <span
                     v-if="plugin.latestVersion"
-                    class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary dark:bg-light/10 dark:text-light"
+                    class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-black dark:bg-light/10 dark:text-light"
                   >
                     {{ plugin.latestVersion.channel }}
                   </span>
                   <span
                     v-if="plugin.isOfficial"
-                    class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary dark:bg-light/10 dark:text-light"
+                    class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-black dark:bg-light/10 dark:text-light"
                   >
                     <span class="i-carbon-certificate text-xs" />
                     {{ t('dashboard.sections.plugins.officialBadge') }}
                   </span>
                 </div>
-                <p class="text-sm text-primary/70 dark:text-light/80">
+                <p class="text-sm text-black/70 dark:text-light/80">
                   {{ plugin.summary }}
                 </p>
-                <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-primary/60 dark:text-light/60">
-                  <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 dark:bg-light/10">
+                <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-black/60 dark:text-light/60">
+                  <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-0.5 dark:bg-light/10">
                     <span class="i-carbon-tag text-sm" />
                     {{ resolvePluginCategory(plugin.category) }}
                   </span>
@@ -759,7 +759,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                     :href="plugin.homepage"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-2 hover:underline dark:text-light"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-black underline-offset-2 hover:underline dark:text-light"
                   >
                     <span class="i-carbon-logo-github text-sm" />
                     {{ t('dashboard.sections.plugins.homepage') }}
@@ -769,7 +769,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                   <span
                     v-for="badge in plugin.badges"
                     :key="badge"
-                    class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary/80 dark:bg-light/10 dark:text-light/80"
+                    class="inline-flex items-center rounded-full bg-dark/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black/80 dark:bg-light/10 dark:text-light/80"
                   >
                     {{ resolveBadgeLabel(badge) }}
                   </span>
@@ -779,7 +779,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                 <button
                   v-if="isAdmin"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary transition hover:border-primary/30 hover:bg-primary/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
                   @click="openPublishVersionForm(plugin)"
                 >
                   <span class="i-carbon-cloud-upload text-xs" />
@@ -788,7 +788,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                 <button
                   v-if="isAdmin"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary transition hover:border-primary/30 hover:bg-primary/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
                   @click="openEditPluginForm(plugin)"
                 >
                   <span class="i-carbon-edit text-xs" />
@@ -806,13 +806,13 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               </div>
             </div>
 
-            <div class="rounded-2xl border border-primary/10 bg-primary/5 p-4 text-sm text-primary/70 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
+            <div class="rounded-2xl border border-primary/10 bg-dark/5 p-4 text-sm text-black/70 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm font-semibold text-primary dark:text-light">
+                  <p class="text-sm font-semibold text-black dark:text-light">
                     {{ t('dashboard.sections.plugins.versionHistory') }}
                   </p>
-                  <p class="text-xs text-primary/60 dark:text-light/60">
+                  <p class="text-xs text-black/60 dark:text-light/60">
                     {{ t('dashboard.sections.plugins.versionDescription') }}
                   </p>
                 </div>
@@ -821,20 +821,20 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                 <article
                   v-for="version in plugin.versions"
                   :key="version.id"
-                  class="rounded-xl border border-primary/15 bg-white/80 p-3 text-xs text-primary/80 dark:border-light/15 dark:bg-primary/40 dark:text-light/80"
+                  class="rounded-xl border border-primary/15 bg-white/80 p-3 text-xs text-black/80 dark:border-light/15 dark:bg-dark/40 dark:text-light/80"
                 >
                   <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p class="text-sm font-semibold text-primary dark:text-light">
+                      <p class="text-sm font-semibold text-black dark:text-light">
                         v{{ version.version }} · {{ version.channel }}
                       </p>
-                      <p class="mt-1 font-mono text-[11px] text-primary/70 dark:text-light/70">
+                      <p class="mt-1 font-mono text-[11px] text-black/70 dark:text-light/70">
                         {{ t('dashboard.sections.plugins.signature') }}: {{ version.signature }}
                       </p>
-                      <p class="text-[11px] text-primary/60 dark:text-light/60">
+                      <p class="text-[11px] text-black/60 dark:text-light/60">
                         {{ formatDate(version.createdAt) }} • {{ version.packageSize ? (version.packageSize / 1024).toFixed(1) : '—' }} KB
                       </p>
-                      <p v-if="version.notes" class="mt-1 text-[11px] text-primary/70 dark:text-light/70">
+                      <p v-if="version.notes" class="mt-1 text-[11px] text-black/70 dark:text-light/70">
                         {{ version.notes }}
                       </p>
                     </div>
@@ -843,7 +843,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                         :href="version.packageUrl"
                         target="_blank"
                         rel="noopener"
-                        class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary transition hover:border-primary/30 hover:bg-primary/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                        class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
                       >
                         <span class="i-carbon-download text-xs" />
                         {{ t('dashboard.sections.plugins.downloadPackage') }}
@@ -859,20 +859,20 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                       </button>
                     </div>
                   </div>
-                  <details class="mt-3 rounded-lg border border-primary/10 bg-primary/5 p-3 dark:border-light/20 dark:bg-light/5">
-                    <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wide text-primary/70 dark:text-light/70">
+                  <details class="mt-3 rounded-lg border border-primary/10 bg-dark/5 p-3 dark:border-light/20 dark:bg-light/5">
+                    <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wide text-black/70 dark:text-light/70">
                       {{ t('dashboard.sections.plugins.readmePreview') }}
                     </summary>
                     <div v-if="version.readmeMarkdown" class="prose prose-sm mt-2 max-w-none dark:prose-invert">
                       <ContentRendererMarkdown :value="version.readmeMarkdown" />
                     </div>
-                    <p v-else class="mt-2 text-[11px] text-primary/60 dark:text-light/60">
+                    <p v-else class="mt-2 text-[11px] text-black/60 dark:text-light/60">
                       {{ t('dashboard.sections.plugins.noReadme') }}
                     </p>
                   </details>
                 </article>
               </div>
-              <p v-else class="mt-3 text-xs text-primary/60 dark:text-light/60">
+              <p v-else class="mt-3 text-xs text-black/60 dark:text-light/60">
                 {{ t('dashboard.sections.plugins.noVersions') }}
               </p>
             </div>

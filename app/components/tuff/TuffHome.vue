@@ -8,7 +8,6 @@ import TuffLandingEcosystem from './landing/TuffLandingEcosystem.vue'
 import TuffLandingExperience from './landing/TuffLandingExperience.vue'
 import TuffLandingFaq from './landing/TuffLandingFaq.vue'
 import TuffLandingFeatures from './landing/TuffLandingFeatures.vue'
-import TuffLandingFooter from './landing/TuffLandingFooter.vue'
 import TuffLandingHero from './landing/TuffLandingHero.vue'
 import TuffLandingIntegrations from './landing/TuffLandingIntegrations.vue'
 import TuffLandingPlugins from './landing/TuffLandingPlugins.vue'
@@ -502,14 +501,6 @@ onBeforeUnmount(() => {
         data-smooth-section
       >
         <TuffLandingWaitlist />
-      </section>
-
-      <section
-        ref="footerSectionRef"
-        class="TuffHome-SmoothSection"
-        data-smooth-section
-      >
-        <TuffLandingFooter />
       </section>
     </div>
   </div>

@@ -194,31 +194,31 @@ useSeoMeta({
 <template>
   <section class="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-24 py-20 lg:px-12 sm:px-6">
     <header class="space-y-4 text-center">
-      <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-primary/70 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
+      <p class="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-dark/5 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-black/70 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
         <span class="i-carbon-store text-sm" aria-hidden="true" />
         {{ t('market.hero.badge') }}
       </p>
-      <h1 class="text-3xl font-semibold text-primary sm:text-4xl dark:text-light">
+      <h1 class="text-3xl font-semibold text-black sm:text-4xl dark:text-light">
         {{ t('market.hero.title') }}
       </h1>
-      <p class="mx-auto max-w-2xl text-base text-primary/70 dark:text-light/80">
+      <p class="mx-auto max-w-2xl text-base text-black/70 dark:text-light/80">
         {{ t('market.hero.subtitle') }}
       </p>
     </header>
 
-    <div class="space-y-6 rounded-3xl border border-primary/10 bg-white/80 p-8 shadow-lg shadow-primary/10 backdrop-blur dark:border-light/15 dark:bg-primary/30 dark:shadow-light/10">
+    <div class="space-y-6 rounded-3xl border border-primary/10 bg-white/80 p-8 shadow-lg shadow-primary/10 backdrop-blur dark:border-light/15 dark:bg-dark/30 dark:shadow-light/10">
       <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <label class="flex w-full items-center gap-3 rounded-2xl border border-primary/20 bg-white/90 px-4 py-3 text-sm text-primary/70 shadow-sm transition focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 dark:border-light/20 dark:bg-primary/40 dark:text-light/80">
+        <label class="flex w-full items-center gap-3 rounded-2xl border border-primary/20 bg-white/90 px-4 py-3 text-sm text-black/70 shadow-sm transition focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 dark:border-light/20 dark:bg-dark/40 dark:text-light/80">
           <span class="i-carbon-search text-lg" aria-hidden="true" />
           <input
             v-model="filters.search"
             type="search"
             :placeholder="t('market.search.placeholder')"
             :aria-label="t('market.search.label')"
-            class="w-full bg-transparent text-sm text-primary outline-none dark:text-light"
+            class="w-full bg-transparent text-sm text-black outline-none dark:text-light"
           >
         </label>
-        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-primary/50 dark:text-light/60">
+        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-black/50 dark:text-light/60">
           {{ resultSummary }}
         </p>
       </div>
@@ -230,8 +230,8 @@ useSeoMeta({
           type="button"
           class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:focus-visible:outline-light"
           :class="filters.category === category.id
-            ? 'border-primary bg-primary text-white shadow-primary/30 dark:border-light dark:bg-light dark:text-primary'
-            : 'border-primary/15 bg-white/70 text-primary hover:border-primary/30 hover:bg-white/90 hover:text-primary/80 dark:border-light/20 dark:bg-primary/40 dark:text-light/80 dark:hover:border-light/30 dark:hover:bg-primary/30'"
+            ? 'border-primary bg-dark text-white shadow-primary/30 dark:border-light dark:bg-light dark:text-black'
+            : 'border-primary/15 bg-white/70 text-black hover:border-primary/30 hover:bg-white/90 hover:text-black/80 dark:border-light/20 dark:bg-dark/40 dark:text-light/80 dark:hover:border-light/30 dark:hover:bg-dark/30'"
           @click="filters.category = category.id"
         >
           <span
@@ -246,7 +246,7 @@ useSeoMeta({
 
     <div
       v-if="pluginsPending"
-      class="flex items-center justify-center gap-3 rounded-3xl border border-dashed border-primary/20 bg-primary/5 px-6 py-12 text-sm text-primary/70 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
+      class="flex items-center justify-center gap-3 rounded-3xl border border-dashed border-primary/20 bg-dark/5 px-6 py-12 text-sm text-black/70 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
     >
       <span class="i-carbon-circle-dash animate-spin text-base" aria-hidden="true" />
       <span>{{ t('dashboard.sections.plugins.loading') }}</span>
@@ -255,13 +255,13 @@ useSeoMeta({
     <div v-else>
       <div
         v-if="!hasPlugins"
-        class="rounded-3xl border border-primary/10 bg-white/80 px-6 py-12 text-center text-sm text-primary/70 shadow-sm dark:border-light/15 dark:bg-primary/30 dark:text-light/80"
+        class="rounded-3xl border border-primary/10 bg-white/80 px-6 py-12 text-center text-sm text-black/70 shadow-sm dark:border-light/15 dark:bg-dark/30 dark:text-light/80"
       >
         {{ t('market.results.none') }}
       </div>
       <div
         v-else-if="!hasResults"
-        class="rounded-3xl border border-primary/10 bg-white/80 px-6 py-12 text-center text-sm text-primary/70 shadow-sm dark:border-light/15 dark:bg-primary/30 dark:text-light/80"
+        class="rounded-3xl border border-primary/10 bg-white/80 px-6 py-12 text-center text-sm text-black/70 shadow-sm dark:border-light/15 dark:bg-dark/30 dark:text-light/80"
       >
         {{ t('market.results.empty') }}
       </div>
@@ -272,12 +272,12 @@ useSeoMeta({
         <article
           v-for="plugin in filteredPlugins"
           :key="plugin.id"
-          class="group flex h-full flex-col justify-between rounded-3xl border border-primary/10 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 dark:border-light/15 dark:bg-primary/30 dark:hover:shadow-light/10"
+          class="group flex h-full flex-col justify-between rounded-3xl border border-primary/10 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 dark:border-light/15 dark:bg-dark/30 dark:hover:shadow-light/10"
         >
           <div class="space-y-4">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3">
-                <span class="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-primary/10 text-primary dark:border-light/20 dark:bg-light/10 dark:text-light">
+                <span class="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-dark/10 text-black dark:border-light/20 dark:bg-light/10 dark:text-light">
                   <img
                     v-if="plugin.latestVersion?.iconUrl"
                     :src="plugin.latestVersion.iconUrl"
@@ -289,15 +289,15 @@ useSeoMeta({
                   </span>
                 </span>
                 <div>
-                  <h3 class="text-lg font-semibold text-primary dark:text-light">
+                  <h3 class="text-lg font-semibold text-black dark:text-light">
                     {{ plugin.name }}
                   </h3>
-                  <p class="text-[11px] font-semibold uppercase tracking-[0.35em] text-primary/50 dark:text-light/60">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.35em] text-black/50 dark:text-light/60">
                     {{ resolveCategoryLabel(plugin.category) }}
                   </p>
                 </div>
               </div>
-              <span class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-primary/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
+              <span class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-dark/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-black/80 dark:border-light/20 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-badge text-sm" aria-hidden="true" />
                 <template v-if="plugin.isOfficial">
                   {{ t('market.badges.official') }}
@@ -311,16 +311,16 @@ useSeoMeta({
               </span>
             </div>
 
-            <p class="line-clamp-3 text-sm leading-relaxed text-primary/70 dark:text-light/80">
+            <p class="line-clamp-3 text-sm leading-relaxed text-black/70 dark:text-light/80">
               {{ plugin.summary }}
             </p>
 
-            <div class="flex flex-wrap gap-2 text-xs text-primary/60 dark:text-light/70">
-              <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
+            <div class="flex flex-wrap gap-2 text-xs text-black/60 dark:text-light/70">
+              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-calendar text-sm" aria-hidden="true" />
                 {{ t('dashboard.sections.plugins.updatedOn', { date: formatDate(plugin.latestVersion?.createdAt) }) }}
               </span>
-              <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
+              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-version text-sm" aria-hidden="true" />
                 <template v-if="plugin.latestVersion">
                   v{{ plugin.latestVersion.version }}
@@ -331,12 +331,12 @@ useSeoMeta({
               </span>
               <span
                 v-if="plugin.latestVersion"
-                class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80"
+                class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80"
               >
                 <span class="i-carbon-skill-level text-sm" aria-hidden="true" />
                 {{ plugin.latestVersion.channel }}
               </span>
-              <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
+              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
                 <span class="i-carbon-user-multiple text-sm" aria-hidden="true" />
                 {{ t('dashboard.sections.plugins.stats.installs', { count: formatInstalls(plugin.installs) }) }}
               </span>
@@ -349,7 +349,7 @@ useSeoMeta({
               <span
                 v-for="badge in plugin.badges"
                 :key="badge"
-                class="inline-flex items-center gap-1 rounded-full border border-primary/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.35em] text-primary/60 dark:border-light/20 dark:text-light/70"
+                class="inline-flex items-center gap-1 rounded-full border border-primary/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.35em] text-black/60 dark:border-light/20 dark:text-light/70"
               >
                 <span class="i-carbon-tag text-xs" aria-hidden="true" />
                 {{ badge }}

@@ -134,13 +134,13 @@ watchEffect(() => {
 </script>
 
 <template>
-  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-primary/70">
+  <section class="rounded-3xl border border-primary/10 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-light/10 dark:bg-dark/70">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
-        <h2 class="text-lg font-semibold text-primary dark:text-light">
+        <h2 class="text-lg font-semibold text-black dark:text-light">
           {{ t('dashboard.sections.images.title', 'Images') }}
         </h2>
-        <p class="mt-1 text-sm text-primary/70 dark:text-light/80">
+        <p class="mt-1 text-sm text-black/70 dark:text-light/80">
           {{ t('dashboard.sections.images.subtitle', 'Manage your uploaded images') }}
         </p>
       </div>
@@ -148,33 +148,33 @@ watchEffect(() => {
 
     <div
       v-if="!isAdmin"
-      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-primary/70 dark:border-light/15 dark:bg-primary/40 dark:text-light/80"
+      class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-black/70 dark:border-light/15 dark:bg-dark/40 dark:text-light/80"
     >
       {{ t('dashboard.sections.images.adminOnly', 'Only administrators can manage images.') }}
     </div>
 
     <div v-else class="mt-6">
-      <div class="rounded-2xl border border-primary/20 border-dashed bg-white/70 p-4 text-sm text-primary dark:border-light/20 dark:bg-primary/50 dark:text-light">
+      <div class="rounded-2xl border border-primary/20 border-dashed bg-white/70 p-4 text-sm text-black dark:border-light/20 dark:bg-dark/50 dark:text-light">
         <div class="flex flex-col gap-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 class="text-sm font-semibold text-primary dark:text-light">
+              <h3 class="text-sm font-semibold text-black dark:text-light">
                 {{ t('dashboard.sections.images.uploadTitle', 'Upload Image') }}
               </h3>
-              <p class="text-xs text-primary/60 dark:text-light/70">
+              <p class="text-xs text-black/60 dark:text-light/70">
                 {{ t('dashboard.sections.images.uploadSubtitle', 'Upload images to use in plugins and updates') }}
               </p>
             </div>
           </div>
 
           <div class="flex flex-col gap-3">
-            <label class="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-primary/60 dark:text-light/60">
+            <label class="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
               {{ t('dashboard.sections.images.selectFile', 'Select Image File') }}
               <input
                 id="image-upload-input"
                 type="file"
                 accept="image/*"
-                class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-primary outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-primary/40 dark:text-light"
+                class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
                 @change="handleImageUpload"
               >
             </label>
@@ -188,7 +188,7 @@ watchEffect(() => {
 
             <div
               v-if="imageUploading"
-              class="flex items-center gap-2 text-xs text-primary/60 dark:text-light/70"
+              class="flex items-center gap-2 text-xs text-black/60 dark:text-light/70"
             >
               <span class="i-carbon-circle-dash animate-spin text-base" />
               {{ t('dashboard.sections.images.uploading', 'Uploading...') }}
@@ -200,7 +200,7 @@ watchEffect(() => {
       <div class="mt-6 space-y-4">
         <div
           v-if="imagesPending"
-          class="flex items-center gap-3 rounded-2xl border border-primary/20 border-dashed bg-primary/5 px-4 py-6 text-sm text-primary/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
+          class="flex items-center gap-3 rounded-2xl border border-primary/20 border-dashed bg-dark/5 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
         >
           <span class="i-carbon-circle-dash animate-spin text-base" />
           <span>{{ t('dashboard.sections.images.loading', 'Loading images...') }}</span>
@@ -208,7 +208,7 @@ watchEffect(() => {
 
         <div
           v-else-if="!images.length"
-          class="rounded-2xl border border-primary/15 border-dashed bg-white/70 px-4 py-6 text-sm text-primary/60 dark:border-light/20 dark:bg-primary/60 dark:text-light/70"
+          class="rounded-2xl border border-primary/15 border-dashed bg-white/70 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-dark/60 dark:text-light/70"
         >
           {{ t('dashboard.sections.images.empty', 'No images uploaded yet') }}
         </div>
@@ -220,9 +220,9 @@ watchEffect(() => {
           <article
             v-for="image in images as DashboardImage[]"
             :key="image.key"
-            class="group relative overflow-hidden rounded-2xl border border-primary/10 bg-white/70 transition hover:border-primary/30 hover:shadow-lg dark:border-light/10 dark:bg-primary/60"
+            class="group relative overflow-hidden rounded-2xl border border-primary/10 bg-white/70 transition hover:border-primary/30 hover:shadow-lg dark:border-light/10 dark:bg-dark/60"
           >
-            <div class="aspect-video w-full overflow-hidden bg-primary/5 dark:bg-light/5">
+            <div class="aspect-video w-full overflow-hidden bg-dark/5 dark:bg-light/5">
               <img
                 :src="image.url"
                 :alt="image.key"
@@ -231,13 +231,13 @@ watchEffect(() => {
               >
             </div>
             <div class="p-4">
-              <p class="truncate font-mono text-xs text-primary/60 dark:text-light/60">
+              <p class="truncate font-mono text-xs text-black/60 dark:text-light/60">
                 {{ image.key }}
               </p>
               <div class="mt-3 flex items-center gap-2">
                 <button
                   type="button"
-                  class="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/10 dark:border-light/20 dark:bg-light/10 dark:text-light"
+                  class="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/20 bg-dark/5 px-3 py-1.5 text-xs font-medium text-black transition hover:bg-dark/10 dark:border-light/20 dark:bg-light/10 dark:text-light"
                   @click="copyImageUrl(image.url, image.key)"
                 >
                   <span :class="copiedImageKey === image.key ? 'i-carbon-checkmark' : 'i-carbon-copy'" class="text-sm" />
