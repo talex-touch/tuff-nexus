@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
   <div class="relative">
     <div
       v-if="status === 'pending'"
-      class="flex items-center justify-center border border-primary/10 rounded-3xl bg-white/70 px-6 py-20 text-sm text-gray-500 dark:border-light/10 dark:bg-dark/70 dark:text-gray-300"
+      class="flex items-center justify-center px-6 py-20 text-sm text-gray-500 dark:bg-dark/70 dark:text-gray-300"
     >
       <span class="i-carbon-circle-dash text-lg" />
       <span class="ml-3">{{ t('docs.loading') }}</span>
@@ -83,7 +83,7 @@ onBeforeUnmount(() => {
 
     <div
       v-else-if="doc"
-      class="docs-surface border border-primary/5 rounded-3xl bg-white/80 px-8 py-10 shadow-sm dark:border-light/10 dark:bg-dark/70"
+      class="docs-surface px-8 py-10"
     >
       <ContentRenderer
         :value="doc"
@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
 
     <div
       v-else
-      class="border border-primary/10 rounded-3xl bg-white/80 p-10 text-center shadow-sm space-y-4 dark:border-light/10 dark:bg-dark/70"
+      class="p-10 text-center space-y-4"
     >
       <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-dark/5 text-3xl text-black dark:bg-light/10 dark:text-light">
         <span class="i-carbon-warning" />
@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
       </p>
       <NuxtLink
         to="/docs"
-        class="inline-flex items-center justify-center gap-2 rounded-full bg-dark px-5 py-2 text-sm text-light font-medium transition dark:bg-light hover:bg-black dark:text-black dark:hover:bg-light/90"
+        class="inline-flex items-center justify-center gap-2 rounded-full bg-dark px-5 py-2 text-sm text-light font-medium no-underline transition dark:bg-light hover:bg-black dark:text-black dark:hover:bg-light/90"
       >
         <span class="i-carbon-arrow-left text-base" />
         {{ t('docs.backHome') }}

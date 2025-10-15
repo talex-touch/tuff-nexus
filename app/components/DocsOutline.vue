@@ -65,12 +65,8 @@ const localeLabel = computed(() => (docLocaleState.value === 'zh' ? '中文' : d
       <div class="text-xs text-black/40 tracking-[0.2em] uppercase dark:text-light/40">
         {{ t('docs.outlineLabel') }}
       </div>
-      <div class="text-base text-black font-semibold leading-tight dark:text-light">
+      <div class="text-base text-black font-semibold leading-tight op-60 dark:text-light">
         {{ docTitleState || t('docs.defaultTitle') }}
-      </div>
-      <div class="inline-flex items-center gap-1 rounded-full bg-dark/5 px-2.5 py-1 text-[11px] text-black/60 font-medium tracking-wide uppercase dark:bg-light/10 dark:text-light/65">
-        <span class="i-heroicons-globe-asia-australia-20-solid text-sm" />
-        {{ localeLabel }}
       </div>
     </div>
 
@@ -82,7 +78,7 @@ const localeLabel = computed(() => (docLocaleState.value === 'zh' ? '中文' : d
           :key="entry.id"
           :to="`#${entry.id}`"
           replace
-          class="group relative flex items-center gap-2 rounded-xl px-2 py-2 text-sm leading-snug transition"
+          class="group relative flex items-center gap-2 rounded-xl px-2 py-2 text-sm leading-snug no-underline transition"
           :style="{ marginLeft: `${entry.indent * 12}px` }"
           :class="activeHash === entry.id
             ? 'bg-dark/10 text-black font-semibold dark:bg-light/10 dark:text-light'
