@@ -51,7 +51,7 @@ const socialLinks = computed(() => [
       />
     </div>
 
-    <div class="TuffFooter-Main relative left-0 top-0 z-10 h-full w-full bg-white/10 dark:bg-black/10">
+    <div class="TuffFooter-Main relative left-0 top-0 z-10 h-full w-full bg-white/80 dark:bg-black/80">
       <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <!-- Main Content -->
         <div class="grid gap-12 lg:grid-cols-[2fr_3fr]">

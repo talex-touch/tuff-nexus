@@ -871,6 +871,10 @@ export default {
     outlineLabel: '大纲',
     defaultTitle: '文档',
     noOutline: '为文档添加标题后，这里会自动生成导航。',
+    lastUpdatedLabel: '最后更新于',
+    editOnGitHub: '在 GitHub 上编辑此页',
+    previousChapter: '上一章',
+    nextChapter: '下一章',
   },
   docsNav: {
     start: '快速上手',

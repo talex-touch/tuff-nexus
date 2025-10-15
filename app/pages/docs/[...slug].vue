@@ -5,8 +5,10 @@ definePageMeta({
 
 const route = useRoute()
 const { locale, t } = useI18n()
+const localePath = useLocalePath()
 
 const SUPPORTED_LOCALES = ['en', 'zh']
+const GITHUB_EDIT_BASE_URL = 'https://github.com/talex-touch/tuff-nexus/edit/main'
 
 function stripLocalePrefix(path: string) {
   if (!path)
@@ -36,6 +38,13 @@ const localizedPath = computed(() => {
   return `${docPath.value}.${locale.value}`
 })
 
+function normalizeContentPath(path: string | null | undefined) {
+  if (!path)
+    return null
+  const prefixed = path.startsWith('/') ? path : `/${path}`
+  return stripLocalePrefix(prefixed).replace(/\.(en|zh)$/, '')
+}
+
 const { data: doc, status } = await useAsyncData(
   () => `doc:${docPath.value}:${locale.value}`,
   async () => {
@@ -48,15 +57,178 @@ const { data: doc, status } = await useAsyncData(
   { watch: [docPath, locale] },
 )
 
+const { data: navigationTree } = await useAsyncData(
+  'docs:navigation',
+  () => queryCollectionNavigation('docs'),
+)
+
 const outlineState = useState<any[]>('docs-toc', () => [])
 const docTitleState = useState<string>('docs-title', () => '')
 const docLocaleState = useState<string>('docs-locale', () => locale.value)
+
+function resolveDocLocale(target: any) {
+  const path = typeof target?._path === 'string' ? target._path : null
+  if (!path)
+    return 'en'
+  if (path.endsWith('.zh'))
+    return 'zh'
+  if (path.endsWith('.en'))
+    return 'en'
+  return 'en'
+}
+
+const normalizedDocPath = computed(() => normalizeContentPath(doc.value?._path ?? docPath.value))
+
+function itemTitle(title?: string, path?: string) {
+  if (title)
+    return title
+  if (!path)
+    return 'Untitled'
+
+  return path
+    .split('/')
+    .filter(Boolean)
+    .pop()
+    ?.replace(/\.(en|zh)$/, '')
+    ?.replace(/[-_]/g, ' ')
+    ?.replace(/\b\w/g, c => c.toUpperCase()) ?? 'Untitled'
+}
+
+function collectSectionPages(node: any): any[] {
+  if (!node)
+    return []
+  const queue = Array.isArray(node) ? node : [node]
+  const result: any[] = []
+  for (const current of queue) {
+    if (!current)
+      continue
+    const currentPath = normalizeContentPath(current.path)
+    if (currentPath && current.page !== false)
+      result.push(current)
+    if (Array.isArray(current.children) && current.children.length > 0)
+      result.push(...collectSectionPages(current.children))
+  }
+  return result
+}
+
+const navigationSections = computed(() => {
+  const items = navigationTree.value ?? []
+  if (!items.length)
+    return []
+  const [first] = items
+  if (first?.path === '/docs' && Array.isArray(first.children))
+    return first.children
+  return items
+})
+
+const docPager = computed(() => {
+  const sections = navigationSections.value
+  const currentPath = normalizedDocPath.value
+
+  if (!sections.length || !currentPath)
+    return { prev: null, next: null, sectionTitle: null }
+
+  for (const section of sections) {
+    const pages = collectSectionPages(section)
+    const index = pages.findIndex(page => normalizeContentPath(page.path) === currentPath)
+    if (index === -1)
+      continue
+
+    const prev = index > 0 ? pages[index - 1] : null
+    const next = index < pages.length - 1 ? pages[index + 1] : null
+
+    return {
+      prev,
+      next,
+      sectionTitle: itemTitle(section.title, section.path),
+    }
+  }
+
+  return { prev: null, next: null, sectionTitle: null }
+})
+
+const githubEditUrl = computed(() => {
+  const file = doc.value?._file
+  if (!file)
+    return null
+  const segments = [
+    GITHUB_EDIT_BASE_URL,
+    'content',
+  ]
+  if (file.path) {
+    const normalized = file.path.startsWith('/') ? file.path.slice(1) : file.path
+    segments.push(normalized)
+  }
+  else if (doc.value?._path) {
+    const normalized = doc.value._path.replace(/^\//, '')
+    segments.push(`${normalized}${file.extension ? '' : '.md'}`)
+  }
+
+  let url = segments.join('/')
+  if (file.extension && !url.endsWith(`.${file.extension}`))
+    url = `${url}.${file.extension}`
+
+  return url
+})
+
+const lastUpdatedDate = computed(() => {
+  const source = doc.value
+  if (!source)
+    return null
+
+  const candidates = [
+    source.updatedAt,
+    source.modifiedAt,
+    source._file?.mtime,
+    source._file?.createdAt,
+    source._file?.updatedAt,
+  ]
+
+  for (const candidate of candidates) {
+    if (!candidate)
+      continue
+    const value = new Date(candidate)
+    if (!Number.isNaN(value.getTime()))
+      return value
+  }
+
+  return null
+})
+
+const formattedLastUpdated = computed(() => {
+  if (!lastUpdatedDate.value)
+    return null
+  return new Intl.DateTimeFormat(locale.value, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(lastUpdatedDate.value)
+})
+
+const pagerPrevPath = computed(() => {
+  const entry = docPager.value.prev
+  return entry ? normalizeContentPath(entry.path) : null
+})
+
+const pagerNextPath = computed(() => {
+  const entry = docPager.value.next
+  return entry ? normalizeContentPath(entry.path) : null
+})
+
+const pagerPrevTitle = computed(() => {
+  const entry = docPager.value.prev
+  return entry ? itemTitle(entry.title, entry.path) : null
+})
+
+const pagerNextTitle = computed(() => {
+  const entry = docPager.value.next
+  return entry ? itemTitle(entry.title, entry.path) : null
+})
 
 watchEffect(() => {
   if (doc.value) {
     outlineState.value = doc.value.body?.toc?.links ?? []
     docTitleState.value = doc.value.title ?? doc.value.head?.title ?? ''
-    docLocaleState.value = locale.value
+    docLocaleState.value = resolveDocLocale(doc.value)
   }
   else {
     outlineState.value = []
@@ -83,12 +255,68 @@ onBeforeUnmount(() => {
 
     <div
       v-else-if="doc"
-      class="docs-surface px-8 py-10"
+      class="docs-surface px-8 py-10 space-y-10"
     >
       <ContentRenderer
         :value="doc"
         class="docs-prose max-w-none prose prose-neutral dark:prose-invert"
       />
+      <div
+        v-if="githubEditUrl || formattedLastUpdated"
+        class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dark/10 bg-white/80 px-5 py-4 text-sm text-black/70 dark:border-light/10 dark:bg-white/5 dark:text-light/70"
+      >
+        <div v-if="formattedLastUpdated" class="flex items-center gap-2">
+          <span class="i-carbon-time text-base" />
+          <span>
+            {{ t('docs.lastUpdatedLabel') }}
+            <strong class="font-semibold text-black dark:text-light">{{ formattedLastUpdated }}</strong>
+          </span>
+        </div>
+        <NuxtLink
+          v-if="githubEditUrl"
+          :href="githubEditUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-primary/40 px-3 py-2 text-sm font-medium text-primary no-underline transition hover:border-primary hover:bg-primary/10 dark:border-primary/60 dark:text-primary-200 dark:hover:border-primary-200 dark:hover:bg-primary/15"
+        >
+          <span class="i-carbon-logo-github text-base" />
+          {{ t('docs.editOnGitHub') }}
+        </NuxtLink>
+      </div>
+
+      <div v-if="pagerPrevPath || pagerNextPath" class="space-y-4">
+        <div v-if="docPager.sectionTitle" class="text-xs uppercase tracking-[0.2em] text-black/40 dark:text-light/40">
+          {{ docPager.sectionTitle }}
+        </div>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <NuxtLink
+            v-if="pagerPrevPath"
+            :to="localePath(pagerPrevPath)"
+            class="group flex flex-col gap-2 rounded-2xl border border-dark/10 px-5 py-4 no-underline transition hover:border-dark/20 hover:bg-dark/5 dark:border-light/10 dark:hover:border-light/20 dark:hover:bg-light/5"
+          >
+            <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-black/40 group-hover:text-primary dark:text-light/40 dark:group-hover:text-primary-200">
+              <span class="i-carbon-arrow-left text-base" />
+              {{ t('docs.previousChapter') }}
+            </span>
+            <span class="text-base font-semibold text-black transition group-hover:text-primary dark:text-light dark:group-hover:text-primary-200">
+              {{ pagerPrevTitle }}
+            </span>
+          </NuxtLink>
+          <NuxtLink
+            v-if="pagerNextPath"
+            :to="localePath(pagerNextPath)"
+            class="group flex flex-col gap-2 rounded-2xl border border-dark/10 px-5 py-4 no-underline transition hover:border-primary/30 hover:bg-primary/5 dark:border-light/10 dark:hover:border-primary/40 dark:hover:bg-primary/10"
+          >
+            <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-black/40 group-hover:text-primary dark:text-light/40 dark:group-hover:text-primary-200">
+              {{ t('docs.nextChapter') }}
+              <span class="i-carbon-arrow-right text-base" />
+            </span>
+            <span class="text-base font-semibold text-black transition group-hover:text-primary dark:text-light dark:group-hover:text-primary-200">
+              {{ pagerNextTitle }}
+            </span>
+          </NuxtLink>
+        </div>
+      </div>
     </div>
 
     <div

@@ -146,4 +146,8 @@ button {
 ::view-transition-new(root) {
   z-index: 99999;
 }
+
+[id] {
+  scroll-margin-top: 120px;
+}
 </style>

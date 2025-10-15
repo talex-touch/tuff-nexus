@@ -891,6 +891,10 @@ export default {
     outlineLabel: 'Outline',
     defaultTitle: 'Documentation',
     noOutline: 'Headings will appear here once added to this document.',
+    lastUpdatedLabel: 'Last edited on',
+    editOnGitHub: 'Edit this page on GitHub',
+    previousChapter: 'Previous chapter',
+    nextChapter: 'Next chapter',
   },
   docsNav: {
     start: 'Get started',

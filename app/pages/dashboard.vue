@@ -75,7 +75,7 @@ const activeSection = computed(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen">
+  <div class="relative">
     <SignedIn>
       <section class="grid gap-8 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
         <aside class="sticky top-24 space-y-6">
