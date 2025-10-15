@@ -109,11 +109,7 @@ const headerRevealStyle = computed(() => {
         class="flex items-center gap-1 text-black font-semibold tracking-tight no-underline dark:text-light"
       >
         <span class="text-lg sm:text-xl">Tuff</span>
-        <span
-          class="beta-tag text-md uppercase"
-        >
-          BETA
-        </span>
+        <BetaIcon />
       </NuxtLink>
 
       <nav class="flex flex-1 items-center justify-between gap-2 overflow-hidden text-sm">
@@ -196,15 +192,6 @@ const headerRevealStyle = computed(() => {
   overflow: hidden;
   backdrop-filter: var(--header-backdrop-filter, blur(18px) saturate(180%)) !important;
   -webkit-backdrop-filter: var(--header-backdrop-filter, blur(18px) saturate(180%)) !important;
-}
-
-.beta-tag {
-  font-weight: 700;
-  background-color: rgb(15, 15, 15);
-  color: rgb(242, 156, 57) !important;
-  margin: 0px 0.5rem;
-  padding: 4px 8px;
-  border-radius: 12px;
 }
 
 .landing-header {

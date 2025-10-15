@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import BetaIcon from './BetaIcon.vue'
 
 const { t } = useI18n()
 
@@ -45,9 +46,7 @@ const socialLinks = computed(() => [
             class="inline-flex items-center gap-2.5 text-2xl text-white font-bold no-underline"
           >
             <span>Tuff</span>
-            <span class="border border-white/15 rounded-md bg-white/5 px-2 py-0.5 text-[10px] text-white/60 font-semibold tracking-wider uppercase">
-              Beta
-            </span>
+            <BetaIcon />
           </NuxtLink>
 
           <p class="max-w-md text-sm text-white/50 leading-relaxed">
