@@ -6,20 +6,44 @@ interface DashboardPluginResponse {
   total: number
 }
 
+interface DashboardPluginAuthor {
+  name: string
+  avatarColor?: string
+}
+
+interface DashboardPluginVersion {
+  id: string
+  pluginId?: string
+  channel: string
+  version: string
+  signature?: string
+  packageUrl: string
+  packageKey?: string
+  packageSize?: number
+  iconUrl?: string
+  iconKey?: string
+  readmeMarkdown?: string | null
+  notes?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 interface DashboardPlugin {
   id: string
+  userId: string
+  ownerOrgId?: string | null
   name: string
   summary: string
   category: string
   installs: number
+  homepage?: string | null
   isOfficial: boolean
   badges: string[]
-  latestVersion?: {
-    channel: string
-    version: string
-    iconUrl?: string
-    createdAt: string
-  } | null
+  author?: DashboardPluginAuthor | null
+  createdAt: string
+  updatedAt: string
+  versions?: DashboardPluginVersion[]
+  latestVersion?: DashboardPluginVersion | null
 }
 
 interface DashboardUpdate {

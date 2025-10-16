@@ -41,7 +41,7 @@ const { floatingStyles } = useFloating(reference, floating, {
 
 <template>
   <div class="LanguageToggle relative" @mouseenter="_hover = true" @mouseleave="_hover = false">
-    <div ref="reference" :title="tooltipLabel" :aria-pressed="locale === 'zh'" :aria-label="ariaLabel" class="LanguageToggle-Content flex cursor-pointer items-center gap-2 rounded-[12px] px-3 py-[6px] active:bg-black/8 hover:bg-black/5 dark:active:bg-white/8 dark:hover:bg-white/10">
+    <div ref="reference" :title="tooltipLabel" :aria-pressed="locale === 'zh'" :aria-label="ariaLabel" class="LanguageToggle-Content flex cursor-pointer items-center gap-2 rounded-[12px] px-3 py-[6px] text-black active:bg-black/8 hover:bg-black/5 dark:text-white dark:active:bg-white/8 dark:hover:bg-white/10">
       <Icon name="i-carbon-language" />
       <Icon name="i-carbon-chevron-down" :class="{ 'rotate-180': hover }" class="transition-transform duration-200" />
     </div>

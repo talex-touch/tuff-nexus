@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import JSZip from 'jszip'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { PLUGIN_CATEGORIES, isPluginCategoryId } from '~/utils/plugin-categories'
 import { useDashboardPluginsData } from '~/composables/useDashboardData'
 
@@ -23,15 +23,18 @@ interface DashboardPluginVersion {
   iconKey: string
   packageSize: number
   readmeMarkdown?: string | null
-  notes?: string | null
+  changelog?: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  reviewedAt?: string | null
   createdAt: string
   updatedAt: string
 }
 
 interface DashboardPlugin {
   id: string
-  userId?: string
+  userId: string
   ownerOrgId?: string | null
+  slug: string
   name: string
   summary: string
   category: string
@@ -40,6 +43,9 @@ interface DashboardPlugin {
   isOfficial: boolean
   badges: string[]
   author?: DashboardPluginAuthor | null
+  status: 'draft' | 'pending' | 'approved' | 'rejected'
+  readmeMarkdown?: string | null
+  iconUrl?: string | null
   createdAt: string
   updatedAt: string
   versions?: DashboardPluginVersion[]
@@ -47,15 +53,17 @@ interface DashboardPlugin {
 }
 
 interface PluginFormState {
+  slug: string
   name: string
   summary: string
   category: string
-  installs: string
   homepage: string
   isOfficial: boolean
   badges: string
-  authorName: string
-  authorColor: string
+  readme: string
+  iconFile: File | null
+  iconPreviewUrl: string | null
+  removeIcon: boolean
 }
 
 interface VersionFormState {
@@ -63,7 +71,7 @@ interface VersionFormState {
   version: string
   channel: PluginChannel
   homepage: string
-  notes: string
+  changelog: string
   packageFile: File | null
   iconFile: File | null
 }
@@ -86,6 +94,8 @@ const isAdmin = computed(() => {
   const metadata = (user.value?.publicMetadata ?? {}) as Record<string, unknown>
   return metadata?.role === 'admin'
 })
+
+const currentUserId = computed(() => user.value?.id ?? null)
 
 const localeTag = computed(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
 const numberFormatter = computed(() => new Intl.NumberFormat(localeTag.value))
@@ -130,19 +140,88 @@ function resolveBadgeLabel(badge: string) {
   return pluginBadgeLabels.value[badge] ?? badge
 }
 
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9\-_.]+/g, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64)
+}
+
+function revokeObjectUrl(url: string | null) {
+  if (!url)
+    return
+  if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function')
+    URL.revokeObjectURL(url)
+}
+
+function createObjectUrl(file: File): string | null {
+  if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function')
+    return URL.createObjectURL(file)
+  return null
+}
+
+const pluginStatusLabels = computed<Record<DashboardPlugin['status'], string>>(() => ({
+  draft: t('dashboard.sections.plugins.statuses.draft', 'Draft'),
+  pending: t('dashboard.sections.plugins.statuses.pending', 'Pending'),
+  approved: t('dashboard.sections.plugins.statuses.approved', 'Approved'),
+  rejected: t('dashboard.sections.plugins.statuses.rejected', 'Rejected'),
+}))
+
+const versionStatusLabels = computed<Record<DashboardPluginVersion['status'], string>>(() => ({
+  pending: t('dashboard.sections.plugins.versionStatuses.pending', 'Pending'),
+  approved: t('dashboard.sections.plugins.versionStatuses.approved', 'Approved'),
+  rejected: t('dashboard.sections.plugins.versionStatuses.rejected', 'Rejected'),
+}))
+
+function resolvePluginStatusLabel(status: DashboardPlugin['status']) {
+  return pluginStatusLabels.value[status] ?? status
+}
+
+function resolveVersionStatusLabel(status: DashboardPluginVersion['status']) {
+  return versionStatusLabels.value[status] ?? status
+}
+
+function pluginStatusClass(status: DashboardPlugin['status']) {
+  switch (status) {
+    case 'approved':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-200'
+    case 'pending':
+      return 'bg-amber-100 text-amber-700 dark:bg-amber-400/20 dark:text-amber-200'
+    case 'rejected':
+      return 'bg-rose-100 text-rose-700 dark:bg-rose-400/20 dark:text-rose-200'
+    default:
+      return 'bg-slate-100 text-slate-700 dark:bg-slate-400/20 dark:text-slate-200'
+  }
+}
+
+function versionStatusClass(status: DashboardPluginVersion['status']) {
+  switch (status) {
+    case 'approved':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-200'
+    case 'rejected':
+      return 'bg-rose-100 text-rose-700 dark:bg-rose-400/20 dark:text-rose-200'
+    default:
+      return 'bg-amber-100 text-amber-700 dark:bg-amber-400/20 dark:text-amber-200'
+  }
+}
+
 const defaultPluginCategoryId = PLUGIN_CATEGORIES[0]?.id ?? ''
 
 function createPluginFormState(): PluginFormState {
   return {
+    slug: '',
     name: '',
     summary: '',
     category: defaultPluginCategoryId,
-    installs: '0',
     homepage: '',
     isOfficial: false,
     badges: '',
-    authorName: '',
-    authorColor: '',
+    readme: '',
+    iconFile: null,
+    iconPreviewUrl: null,
+    removeIcon: false,
   }
 }
 
@@ -153,11 +232,40 @@ const editingPluginId = ref<string | null>(null)
 const pluginSaving = ref(false)
 const pluginFormError = ref<string | null>(null)
 
+const editingPluginInstalls = ref<number | null>(null)
+const pluginStatusUpdating = ref<string | null>(null)
+const versionStatusUpdating = ref<string | null>(null)
+const pluginActionError = ref<string | null>(null)
+const versionActionError = ref<string | null>(null)
+const iconPreviewObjectUrl = ref<string | null>(null)
+const editingPluginHasIcon = ref(false)
+
 function resetPluginForm() {
+  revokeObjectUrl(iconPreviewObjectUrl.value)
+  iconPreviewObjectUrl.value = null
   Object.assign(pluginForm, createPluginFormState())
   editingPluginId.value = null
   pluginFormError.value = null
+  editingPluginInstalls.value = null
+  editingPluginHasIcon.value = false
 }
+
+watch(() => pluginForm.name, (name) => {
+  if (pluginFormMode.value !== 'create')
+    return
+  if (pluginForm.slug.trim().length)
+    return
+  const generated = slugify(name)
+  pluginForm.slug = generated
+})
+
+watch(() => pluginForm.slug, (value, oldValue) => {
+  if (pluginFormMode.value !== 'create')
+    return
+  const normalized = slugify(value)
+  if (normalized !== value)
+    pluginForm.slug = normalized
+})
 
 function openCreatePluginForm() {
   pluginFormMode.value = 'create'
@@ -165,36 +273,169 @@ function openCreatePluginForm() {
   showPluginForm.value = true
 }
 
+function isPluginOwner(plugin: DashboardPlugin) {
+  return currentUserId.value !== null && plugin.userId === currentUserId.value
+}
+
+function canEditPlugin(plugin: DashboardPlugin) {
+  return isAdmin.value || isPluginOwner(plugin)
+}
+
+function canDeletePlugin(plugin: DashboardPlugin) {
+  return canEditPlugin(plugin)
+}
+
+function canPublishPluginVersion(plugin: DashboardPlugin) {
+  return isPluginOwner(plugin)
+}
+
 function openEditPluginForm(plugin: DashboardPlugin) {
   pluginFormMode.value = 'edit'
   editingPluginId.value = plugin.id
   const categoryValue = isPluginCategoryId(plugin.category) ? plugin.category : defaultPluginCategoryId
+  revokeObjectUrl(iconPreviewObjectUrl.value)
+  iconPreviewObjectUrl.value = null
   Object.assign(pluginForm, {
+    slug: plugin.slug,
     name: plugin.name,
     summary: plugin.summary,
     category: categoryValue,
-    installs: plugin.installs.toString(),
     homepage: plugin.homepage ?? '',
     isOfficial: plugin.isOfficial,
     badges: (plugin.badges ?? []).join(', '),
-    authorName: plugin.author?.name ?? '',
-    authorColor: plugin.author?.avatarColor ?? '',
+    readme: plugin.readmeMarkdown ?? '',
+    iconFile: null,
+    iconPreviewUrl: plugin.iconUrl ?? null,
+    removeIcon: false,
   })
+  editingPluginInstalls.value = plugin.installs
+  editingPluginHasIcon.value = Boolean(plugin.iconUrl)
   showPluginForm.value = true
+}
+
+function handlePluginIconInput(event: Event) {
+  const target = event.target as HTMLInputElement | null
+  const file = target?.files?.[0] ?? null
+  pluginForm.iconFile = file
+  pluginForm.removeIcon = false
+  revokeObjectUrl(iconPreviewObjectUrl.value)
+  iconPreviewObjectUrl.value = null
+  if (file) {
+    const objectUrl = createObjectUrl(file)
+    if (objectUrl) {
+      iconPreviewObjectUrl.value = objectUrl
+      pluginForm.iconPreviewUrl = objectUrl
+    }
+    else {
+      pluginForm.iconPreviewUrl = null
+    }
+    editingPluginHasIcon.value = true
+  }
+}
+
+function removePluginIconPreview() {
+  pluginForm.iconFile = null
+  pluginForm.removeIcon = true
+  revokeObjectUrl(iconPreviewObjectUrl.value)
+  iconPreviewObjectUrl.value = null
+  pluginForm.iconPreviewUrl = null
+  editingPluginHasIcon.value = false
+}
+
+function canSubmitPluginForReview(plugin: DashboardPlugin) {
+  return isPluginOwner(plugin) && ['draft', 'rejected'].includes(plugin.status)
+}
+
+function canWithdrawPluginReview(plugin: DashboardPlugin) {
+  return isPluginOwner(plugin) && plugin.status === 'pending'
+}
+
+function canApprovePluginStatus(plugin: DashboardPlugin) {
+  return isAdmin.value && plugin.status === 'pending'
+}
+
+function canRejectPluginStatus(plugin: DashboardPlugin) {
+  return isAdmin.value && plugin.status === 'pending'
+}
+
+async function updatePluginStatusAction(plugin: DashboardPlugin, status: DashboardPlugin['status']) {
+  pluginStatusUpdating.value = plugin.id
+  pluginActionError.value = null
+  try {
+    await $fetch(`/api/dashboard/plugins/${plugin.id}/status`, {
+      method: 'PATCH',
+      body: { status },
+    })
+    await refreshPlugins()
+  }
+  catch (error: unknown) {
+    pluginActionError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+  }
+  finally {
+    pluginStatusUpdating.value = null
+  }
+}
+
+function submitPluginForReview(plugin: DashboardPlugin) {
+  return updatePluginStatusAction(plugin, 'pending')
+}
+
+function withdrawPluginReview(plugin: DashboardPlugin) {
+  return updatePluginStatusAction(plugin, 'draft')
+}
+
+function approvePlugin(plugin: DashboardPlugin) {
+  return updatePluginStatusAction(plugin, 'approved')
+}
+
+function rejectPlugin(plugin: DashboardPlugin) {
+  return updatePluginStatusAction(plugin, 'rejected')
+}
+
+function canApproveVersion(plugin: DashboardPlugin, version: DashboardPluginVersion) {
+  return isAdmin.value && version.status === 'pending'
+}
+
+function canRejectVersion(plugin: DashboardPlugin, version: DashboardPluginVersion) {
+  return isAdmin.value && version.status === 'pending'
+}
+
+async function updateVersionStatus(plugin: DashboardPlugin, version: DashboardPluginVersion, status: DashboardPluginVersion['status']) {
+  versionStatusUpdating.value = version.id
+  versionActionError.value = null
+  try {
+    await $fetch(`/api/dashboard/plugins/${plugin.id}/versions/${version.id}`, {
+      method: 'PATCH',
+      body: { status },
+    })
+    await refreshPlugins()
+  }
+  catch (error: unknown) {
+    versionActionError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+  }
+  finally {
+    versionStatusUpdating.value = null
+  }
+}
+
+function approveVersion(plugin: DashboardPlugin, version: DashboardPluginVersion) {
+  return updateVersionStatus(plugin, version, 'approved')
+}
+
+function rejectVersion(plugin: DashboardPlugin, version: DashboardPluginVersion) {
+  return updateVersionStatus(plugin, version, 'rejected')
 }
 
 function closePluginForm() {
   showPluginForm.value = false
+  resetPluginForm()
 }
 
 async function submitPluginForm() {
   pluginSaving.value = true
   pluginFormError.value = null
   try {
-    const installsNumber = Number(pluginForm.installs)
-    if (Number.isNaN(installsNumber) || installsNumber < 0)
-      throw new Error(t('dashboard.sections.plugins.errors.invalidInstalls'))
-
+    const slug = pluginForm.slug.trim()
     if (!isPluginCategoryId(pluginForm.category))
       throw new Error(t('dashboard.sections.plugins.errors.invalidCategory'))
 
@@ -203,26 +444,41 @@ async function submitPluginForm() {
       .map(badge => badge.trim())
       .filter(Boolean)
 
-    const authorName = pluginForm.authorName.trim()
-    const author = authorName
-      ? {
-          name: authorName,
-          avatarColor: pluginForm.authorColor.trim() || undefined,
-        }
-      : null
-
     const homepage = pluginForm.homepage.trim()
+    const readme = pluginForm.readme.trim()
 
-    const payload = {
-      name: pluginForm.name.trim(),
-      summary: pluginForm.summary.trim(),
-      category: pluginForm.category.trim(),
-      installs: installsNumber,
-      homepage: homepage.length ? homepage : undefined,
-      isOfficial: pluginForm.isOfficial,
-      badges,
-      author,
-    }
+    if (pluginFormMode.value === 'create' && !slug.length)
+      throw new Error(t('dashboard.sections.plugins.errors.missingIdentifier', 'Please provide a plugin identifier.'))
+    if (!pluginForm.name.trim().length)
+      throw new Error(t('dashboard.sections.plugins.errors.missingName', 'Name is required.'))
+    if (!readme.length)
+      throw new Error(t('dashboard.sections.plugins.errors.missingReadme', 'README is required.'))
+
+    const formData = new FormData()
+
+    if (pluginFormMode.value === 'create')
+      formData.append('slug', slug)
+
+    formData.append('name', pluginForm.name.trim())
+    formData.append('summary', pluginForm.summary.trim())
+    formData.append('category', pluginForm.category.trim())
+    formData.append('readme', readme)
+
+    if (homepage.length)
+      formData.append('homepage', homepage)
+
+    if (badges.length)
+      formData.append('badges', badges.join(', '))
+
+    if (pluginForm.iconFile)
+      formData.append('icon', pluginForm.iconFile)
+    else if (pluginFormMode.value === 'edit' && pluginForm.removeIcon)
+      formData.append('removeIcon', 'true')
+
+    if (isAdmin.value && pluginForm.isOfficial)
+      formData.append('isOfficial', 'true')
+    else if (isAdmin.value)
+      formData.append('isOfficial', 'false')
 
     const endpoint = editingPluginId.value
       ? `/api/dashboard/plugins/${editingPluginId.value}`
@@ -231,7 +487,7 @@ async function submitPluginForm() {
 
     await $fetch(endpoint, {
       method,
-      body: payload,
+      body: formData,
     })
 
     await refreshPlugins()
@@ -254,6 +510,7 @@ async function deletePluginItem(plugin: DashboardPlugin) {
   }
 
   try {
+    pluginActionError.value = null
     await $fetch(`/api/dashboard/plugins/${plugin.id}`, {
       method: 'DELETE',
     })
@@ -261,7 +518,7 @@ async function deletePluginItem(plugin: DashboardPlugin) {
     await refreshPlugins()
   }
   catch (error: unknown) {
-    pluginFormError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+    pluginActionError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
   }
 }
 
@@ -271,7 +528,7 @@ function createVersionFormState(plugin?: DashboardPlugin): VersionFormState {
     version: '',
     channel: 'SNAPSHOT',
     homepage: plugin?.homepage ?? '',
-    notes: '',
+    changelog: '',
     packageFile: null,
     iconFile: null,
   }
@@ -366,9 +623,11 @@ async function submitVersionForm() {
     if (homepage.length)
       formData.append('homepage', homepage)
 
-    const notes = versionForm.notes.trim()
-    if (notes.length)
-      formData.append('notes', notes)
+    const changelog = versionForm.changelog.trim()
+    if (!changelog.length)
+      throw new Error(t('dashboard.sections.plugins.errors.missingChangelog', 'Changelog is required.'))
+
+    formData.append('changelog', changelog)
 
     formData.append('package', versionForm.packageFile)
     formData.append('icon', versionForm.iconFile)
@@ -404,7 +663,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
     await refreshPlugins()
   }
   catch (error: unknown) {
-    versionFormError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+    versionActionError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
   }
 }
 </script>
@@ -430,7 +689,6 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
     </div>
 
     <div
-      v-if="isAdmin"
       class="mt-6 rounded-2xl border border-dashed border-primary/20 bg-white/70 p-4 text-sm text-black dark:border-light/20 dark:bg-dark/50 dark:text-light"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -469,6 +727,20 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
         @submit.prevent="submitPluginForm"
       >
         <div class="grid gap-4 md:grid-cols-2">
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
+            {{ t('dashboard.sections.plugins.form.identifier') }}
+            <input
+              v-model="pluginForm.slug"
+              type="text"
+              :disabled="pluginFormMode === 'edit'"
+              required
+              autocomplete="off"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition disabled:cursor-not-allowed disabled:bg-black/5 focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:disabled:bg-white/5"
+            >
+            <span class="text-[11px] font-medium normal-case text-black/40 dark:text-light/50">
+              {{ t('dashboard.sections.plugins.form.identifierHelp') }}
+            </span>
+          </label>
           <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.name') }}
             <input
@@ -503,16 +775,42 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             ></textarea>
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            {{ t('dashboard.sections.plugins.form.installCount') }}
-            <input
-              v-model="pluginForm.installs"
-              type="number"
-              min="0"
-              required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
-            >
-          </label>
+          <div class="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
+            <span>{{ t('dashboard.sections.plugins.form.icon') }}</span>
+            <div class="flex items-center gap-3">
+              <div class="flex size-16 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-dark/5 text-lg font-semibold text-black dark:border-light/20 dark:bg-light/5 dark:text-light">
+                <img
+                  v-if="pluginForm.iconPreviewUrl"
+                  :src="pluginForm.iconPreviewUrl"
+                  alt="Plugin icon preview"
+                  class="h-full w-full object-cover"
+                >
+                <span v-else>{{ pluginForm.name ? pluginForm.name.charAt(0).toUpperCase() : '∗' }}</span>
+              </div>
+              <div class="flex flex-col gap-2 text-[11px] font-medium normal-case text-black/60 dark:text-light/60">
+                <label class="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    class="max-w-[220px] text-[11px] font-medium text-black outline-none file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:uppercase file:tracking-wide file:text-primary hover:file:bg-primary/20 dark:text-light dark:file:bg-light/20 dark:file:text-light"
+                    @change="handlePluginIconInput"
+                  >
+                </label>
+                <button
+                  v-if="pluginFormMode === 'edit' && (pluginForm.iconPreviewUrl || editingPluginHasIcon)"
+                  type="button"
+                  class="inline-flex w-max items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                  @click="removePluginIconPreview"
+                >
+                  <span class="i-carbon-trash-can text-xs" />
+                  {{ t('dashboard.sections.plugins.form.iconRemove') }}
+                </button>
+                <p class="max-w-xs leading-relaxed">
+                  {{ t('dashboard.sections.plugins.form.iconHelp') }}
+                </p>
+              </div>
+            </div>
+          </div>
           <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.homepage') }}
             <input
@@ -522,14 +820,15 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            <input
-              v-model="pluginForm.isOfficial"
-              type="checkbox"
-              class="h-4 w-4 rounded border border-primary/30 text-black focus:ring-primary/40 dark:border-light/30 dark:bg-dark/40"
-            >
-            {{ t('dashboard.sections.plugins.form.isOfficial') }}
-          </label>
+          <div
+            v-if="pluginFormMode === 'edit'"
+            class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60"
+          >
+            {{ t('dashboard.sections.plugins.form.installCount') }}
+            <div class="rounded-xl border border-primary/15 bg-white/70 px-3 py-2 text-sm text-black dark:border-light/20 dark:bg-dark/40 dark:text-light">
+              {{ formatInstalls(editingPluginInstalls ?? 0) }}
+            </div>
+          </div>
           <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
             {{ t('dashboard.sections.plugins.form.badges') }}
             <input
@@ -539,22 +838,28 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            {{ t('dashboard.sections.plugins.form.authorName') }}
+          <label
+            v-if="isAdmin"
+            class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60"
+          >
             <input
-              v-model="pluginForm.authorName"
-              type="text"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
+              v-model="pluginForm.isOfficial"
+              type="checkbox"
+              class="h-4 w-4 rounded border border-primary/30 text-black focus:ring-primary/40 dark:border-light/30 dark:bg-dark/40"
             >
+            {{ t('dashboard.sections.plugins.form.isOfficial') }}
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            {{ t('dashboard.sections.plugins.form.authorColor') }}
-            <input
-              v-model="pluginForm.authorColor"
-              type="text"
-              placeholder="#FAFAFA"
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
-            >
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
+            {{ t('dashboard.sections.plugins.form.readme') }}
+            <textarea
+              v-model="pluginForm.readme"
+              rows="8"
+              required
+              class="min-h-32 resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
+            ></textarea>
+            <span class="text-[11px] font-medium normal-case text-black/40 dark:text-light/50">
+              {{ t('dashboard.sections.plugins.form.readmeHelp') }}
+            </span>
           </label>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -574,6 +879,21 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
           </button>
         </div>
       </form>
+
+      <div v-if="pluginActionError || versionActionError" class="mt-4 space-y-2">
+        <p
+          v-if="pluginActionError"
+          class="text-xs text-red-500"
+        >
+          {{ pluginActionError }}
+        </p>
+        <p
+          v-if="versionActionError"
+          class="text-xs text-red-500"
+        >
+          {{ versionActionError }}
+        </p>
+      </div>
 
       <form
         v-if="showVersionForm"
@@ -611,11 +931,12 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            {{ t('dashboard.sections.plugins.versionForm.notes') }}
+          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2">
+            {{ t('dashboard.sections.plugins.versionForm.changelog') }}
             <textarea
-              v-model="versionForm.notes"
-              rows="2"
+              v-model="versionForm.changelog"
+              rows="3"
+              required
               class="resize-y rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
             ></textarea>
           </label>
@@ -714,6 +1035,13 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                     {{ plugin.name }}
                   </h3>
                   <span
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
+                    :class="pluginStatusClass(plugin.status)"
+                  >
+                    <span class="i-carbon-information text-xs" />
+                    {{ resolvePluginStatusLabel(plugin.status) }}
+                  </span>
+                  <span
                     v-if="plugin.latestVersion"
                     class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-black dark:bg-light/10 dark:text-light"
                   >
@@ -777,7 +1105,51 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               </div>
               <div class="flex flex-wrap gap-2">
                 <button
-                  v-if="isAdmin"
+                  v-if="canSubmitPluginForReview(plugin)"
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                  :disabled="pluginStatusUpdating === plugin.id"
+                  @click="submitPluginForReview(plugin)"
+                >
+                  <span v-if="pluginStatusUpdating === plugin.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                  <span v-else class="i-carbon-send text-xs" />
+                  {{ t('dashboard.sections.plugins.actions.submitReview') }}
+                </button>
+                <button
+                  v-if="canWithdrawPluginReview(plugin)"
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
+                  :disabled="pluginStatusUpdating === plugin.id"
+                  @click="withdrawPluginReview(plugin)"
+                >
+                  <span v-if="pluginStatusUpdating === plugin.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                  <span v-else class="i-carbon-undo text-xs" />
+                  {{ t('dashboard.sections.plugins.actions.withdrawReview') }}
+                </button>
+                <button
+                  v-if="canApprovePluginStatus(plugin)"
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full border border-emerald-200/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-600 transition hover:border-emerald-300 hover:bg-emerald-100/60 dark:border-emerald-400/40 dark:text-emerald-200 dark:hover:bg-emerald-400/20"
+                  :disabled="pluginStatusUpdating === plugin.id"
+                  @click="approvePlugin(plugin)"
+                >
+                  <span v-if="pluginStatusUpdating === plugin.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                  <span v-else class="i-carbon-checkmark text-xs" />
+                  {{ t('dashboard.sections.plugins.actions.approve') }}
+                </button>
+                <button
+                  v-if="canRejectPluginStatus(plugin)"
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full border border-rose-200/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-600 transition hover:border-rose-300 hover:bg-rose-100/60 dark:border-rose-400/40 dark:text-rose-200 dark:hover:bg-rose-400/20"
+                  :disabled="pluginStatusUpdating === plugin.id"
+                  @click="rejectPlugin(plugin)"
+                >
+                  <span v-if="pluginStatusUpdating === plugin.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                  <span v-else class="i-carbon-close text-xs" />
+                  {{ t('dashboard.sections.plugins.actions.reject') }}
+                </button>
+                <button
+                  v-if="canPublishPluginVersion(plugin)"
                   type="button"
                   class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
                   @click="openPublishVersionForm(plugin)"
@@ -786,7 +1158,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                   {{ t('dashboard.sections.plugins.publishVersion') }}
                 </button>
                 <button
-                  v-if="isAdmin"
+                  v-if="canEditPlugin(plugin)"
                   type="button"
                   class="inline-flex items-center gap-1 rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-black transition hover:border-primary/30 hover:bg-dark/10 dark:border-light/20 dark:text-light dark:hover:bg-light/10"
                   @click="openEditPluginForm(plugin)"
@@ -795,7 +1167,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                   {{ t('dashboard.sections.plugins.editMetadata') }}
                 </button>
                 <button
-                  v-if="isAdmin"
+                  v-if="canDeletePlugin(plugin)"
                   type="button"
                   class="inline-flex items-center gap-1 rounded-full border border-red/30 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-red-500 transition hover:border-red-400/60 hover:bg-red-50 dark:border-red-400/40 dark:text-red-200 dark:hover:bg-red-400/20"
                   @click="deletePluginItem(plugin)"
@@ -825,20 +1197,57 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                 >
                   <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p class="text-sm font-semibold text-black dark:text-light">
-                        v{{ version.version }} · {{ version.channel }}
-                      </p>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <p class="text-sm font-semibold text-black dark:text-light">
+                          v{{ version.version }} · {{ version.channel }}
+                        </p>
+                        <span
+                          class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
+                          :class="versionStatusClass(version.status)"
+                        >
+                          <span class="i-carbon-information text-xs" />
+                          {{ resolveVersionStatusLabel(version.status) }}
+                        </span>
+                      </div>
                       <p class="mt-1 font-mono text-[11px] text-black/70 dark:text-light/70">
                         {{ t('dashboard.sections.plugins.signature') }}: {{ version.signature }}
                       </p>
                       <p class="text-[11px] text-black/60 dark:text-light/60">
                         {{ formatDate(version.createdAt) }} • {{ version.packageSize ? (version.packageSize / 1024).toFixed(1) : '—' }} KB
                       </p>
-                      <p v-if="version.notes" class="mt-1 text-[11px] text-black/70 dark:text-light/70">
-                        {{ version.notes }}
+                      <p
+                        v-if="version.reviewedAt"
+                        class="text-[11px] text-black/50 dark:text-light/50"
+                      >
+                        {{ t('dashboard.sections.plugins.versionReviewedAt', { date: formatDate(version.reviewedAt) }) }}
+                      </p>
+                      <p v-if="version.changelog" class="mt-1 text-[11px] text-black/70 dark:text-light/70">
+                        {{ version.changelog }}
                       </p>
                     </div>
                     <div class="flex flex-wrap gap-2">
+                      <button
+                        v-if="canApproveVersion(plugin, version)"
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-full border border-emerald-200/60 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-600 transition hover:border-emerald-300 hover:bg-emerald-100/60 dark:border-emerald-400/40 dark:text-emerald-200 dark:hover:bg-emerald-400/20"
+                        :disabled="versionStatusUpdating === version.id"
+                        @click="approveVersion(plugin, version)"
+                      >
+                        <span v-if="versionStatusUpdating === version.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                        <span v-else class="i-carbon-checkmark text-xs" />
+                        {{ t('dashboard.sections.plugins.actions.approve') }}
+                      </button>
+                      <button
+                        v-if="canRejectVersion(plugin, version)"
+                        type="button"
+                        class="inline-flex items-center gap-1 rounded-full border border-rose-200/60 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-rose-600 transition hover:border-rose-300 hover:bg-rose-100/60 dark:border-rose-400/40 dark:text-rose-200 dark:hover:bg-rose-400/20"
+                        :disabled="versionStatusUpdating === version.id"
+                        @click="rejectVersion(plugin, version)"
+                      >
+                        <span v-if="versionStatusUpdating === version.id" class="i-carbon-circle-dash animate-spin text-xs" />
+                        <span v-else class="i-carbon-close text-xs" />
+                        {{ t('dashboard.sections.plugins.actions.reject') }}
+                      </button>
                       <a
                         :href="version.packageUrl"
                         target="_blank"
@@ -849,7 +1258,7 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
                         {{ t('dashboard.sections.plugins.downloadPackage') }}
                       </a>
                       <button
-                        v-if="isAdmin"
+                        v-if="canDeletePlugin(plugin)"
                         type="button"
                         class="inline-flex items-center gap-1 rounded-full border border-red/20 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-red-500 transition hover:border-red-400/60 hover:bg-red-50 dark:border-red-400/40 dark:text-red-200 dark:hover:bg-red-400/20"
                         @click="deletePluginVersion(plugin, version)"

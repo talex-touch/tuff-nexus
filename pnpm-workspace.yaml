@@ -55,6 +55,7 @@ catalogs:
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
+  - '@sentry/cli'
   - esbuild
   - sharp
   - unrs-resolver

@@ -6,6 +6,18 @@ import { readCloudflareBindings } from './cloudflare'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const ATTACHMENT_TYPES = [
+  ...ALLOWED_TYPES,
+  'application/pdf',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/octet-stream',
+  'application/json',
+  'text/plain',
+  'text/markdown',
+]
+
+export const RESOURCE_ALLOWED_TYPES = ATTACHMENT_TYPES
 
 // 内存存储（用于开发环境）
 const memoryStorage = new Map<string, { data: Buffer, contentType: string }>()
@@ -23,17 +35,17 @@ function getR2Bucket(event?: H3Event | null): R2Bucket | null {
     return null
 
   const bindings = readCloudflareBindings(event)
-  return bindings?.IMAGES ?? null
+  return bindings?.IMAGES ?? bindings?.R2 ?? bindings?.ASSETS ?? null
 }
 
 /**
  * 验证文件类型和大小
  */
-function validateFile(file: File): void {
-  if (!ALLOWED_TYPES.includes(file.type)) {
+function validateFile(file: File, allowedTypes: string[]): void {
+  if (!allowedTypes.includes(file.type)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.',
+      statusMessage: 'Invalid file type.',
     })
   }
 
@@ -129,8 +141,9 @@ function deleteFromMemory(key: string): void {
 export async function uploadImage(
   event: H3Event,
   file: File,
+  options: { allowedTypes?: string[] } = {},
 ): Promise<UploadResult> {
-  validateFile(file)
+  validateFile(file, options.allowedTypes ?? ALLOWED_TYPES)
 
   const ext = getFileExtension(file.type)
   const key = `${randomUUID()}.${ext}`

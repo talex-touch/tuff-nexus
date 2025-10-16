@@ -41,6 +41,10 @@ const imageUploading = ref(false)
 const imageError = ref<string | null>(null)
 const copiedImageKey = ref<string | null>(null)
 
+function isImageResource(key: string) {
+  return /\.(png|jpe?g|gif|webp|svg)$/i.test(key)
+}
+
 function resetFileInput() {
   if (import.meta.client) {
     const fileInput = document.getElementById('image-upload-input') as HTMLInputElement | null
@@ -138,10 +142,10 @@ watchEffect(() => {
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <h2 class="text-lg font-semibold text-black dark:text-light">
-          {{ t('dashboard.sections.images.title', 'Images') }}
+          {{ t('dashboard.sections.images.title', 'Resources') }}
         </h2>
         <p class="mt-1 text-sm text-black/70 dark:text-light/80">
-          {{ t('dashboard.sections.images.subtitle', 'Manage your uploaded images') }}
+          {{ t('dashboard.sections.images.subtitle', 'Manage your shared assets') }}
         </p>
       </div>
     </div>
@@ -150,7 +154,7 @@ watchEffect(() => {
       v-if="!isAdmin"
       class="mt-6 rounded-2xl border border-primary/15 bg-white/80 p-6 text-sm text-black/70 dark:border-light/15 dark:bg-dark/40 dark:text-light/80"
     >
-      {{ t('dashboard.sections.images.adminOnly', 'Only administrators can manage images.') }}
+      {{ t('dashboard.sections.images.adminOnly', 'Only administrators can manage shared resources.') }}
     </div>
 
     <div v-else class="mt-6">
@@ -159,21 +163,21 @@ watchEffect(() => {
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 class="text-sm font-semibold text-black dark:text-light">
-                {{ t('dashboard.sections.images.uploadTitle', 'Upload Image') }}
+                {{ t('dashboard.sections.images.uploadTitle', 'Upload Resource') }}
               </h3>
               <p class="text-xs text-black/60 dark:text-light/70">
-                {{ t('dashboard.sections.images.uploadSubtitle', 'Upload images to use in plugins and updates') }}
+                {{ t('dashboard.sections.images.uploadSubtitle', 'Upload assets to use in plugins and updates') }}
               </p>
             </div>
           </div>
 
           <div class="flex flex-col gap-3">
             <label class="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-              {{ t('dashboard.sections.images.selectFile', 'Select Image File') }}
+              {{ t('dashboard.sections.images.selectFile', 'Select File') }}
               <input
                 id="image-upload-input"
                 type="file"
-                accept="image/*"
+                accept="*/*"
                 class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light"
                 @change="handleImageUpload"
               >
@@ -199,19 +203,19 @@ watchEffect(() => {
 
       <div class="mt-6 space-y-4">
         <div
-          v-if="imagesPending"
-          class="flex items-center gap-3 rounded-2xl border border-primary/20 border-dashed bg-dark/5 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
-        >
-          <span class="i-carbon-circle-dash animate-spin text-base" />
-          <span>{{ t('dashboard.sections.images.loading', 'Loading images...') }}</span>
-        </div>
+        v-if="imagesPending"
+        class="flex items-center gap-3 rounded-2xl border border-primary/20 border-dashed bg-dark/5 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-light/5 dark:text-light/70"
+      >
+        <span class="i-carbon-circle-dash animate-spin text-base" />
+        <span>{{ t('dashboard.sections.images.loading', 'Loading resources...') }}</span>
+      </div>
 
-        <div
-          v-else-if="!images.length"
-          class="rounded-2xl border border-primary/15 border-dashed bg-white/70 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-dark/60 dark:text-light/70"
-        >
-          {{ t('dashboard.sections.images.empty', 'No images uploaded yet') }}
-        </div>
+      <div
+        v-else-if="!images.length"
+        class="rounded-2xl border border-primary/15 border-dashed bg-white/70 px-4 py-6 text-sm text-black/60 dark:border-light/20 dark:bg-dark/60 dark:text-light/70"
+      >
+        {{ t('dashboard.sections.images.empty', 'No resources uploaded yet') }}
+      </div>
 
         <div
           v-else
@@ -222,13 +226,18 @@ watchEffect(() => {
             :key="image.key"
             class="group relative overflow-hidden rounded-2xl border border-primary/10 bg-white/70 transition hover:border-primary/30 hover:shadow-lg dark:border-light/10 dark:bg-dark/60"
           >
-            <div class="aspect-video w-full overflow-hidden bg-dark/5 dark:bg-light/5">
+            <div class="aspect-video w-full overflow-hidden bg-dark/5 dark:bg-light/5 flex items-center justify-center">
               <img
+                v-if="isImageResource(image.key)"
                 :src="image.url"
                 :alt="image.key"
                 class="h-full w-full object-cover transition group-hover:scale-105"
                 loading="lazy"
               >
+              <span
+                v-else
+                class="i-carbon-document text-3xl text-black/30 transition group-hover:text-black/60 dark:text-light/30 dark:group-hover:text-light/60"
+              />
             </div>
             <div class="p-4">
               <p class="truncate font-mono text-xs text-black/60 dark:text-light/60">

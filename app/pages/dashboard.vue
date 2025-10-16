@@ -55,7 +55,7 @@ const menuItems = computed(() => {
     })
     items.push({
       id: 'images',
-      label: t('dashboard.sections.menu.images', 'Images'),
+      label: t('dashboard.sections.menu.images', 'Resources'),
     })
   }
 

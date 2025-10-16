@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
   // Market 页面显示所有插件，依据可见规则过滤版本
   const plugins = await listPlugins(event, {
     includeVersions: true,
+    forMarket: true,
   })
 
   const enriched = plugins

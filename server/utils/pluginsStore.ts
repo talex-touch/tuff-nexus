@@ -21,6 +21,8 @@ const SUBMISSION_COOLDOWN_MS = 5 * 60 * 1000
 let schemaInitialized = false
 
 export type PluginChannel = 'SNAPSHOT' | 'BETA' | 'RELEASE'
+export type PluginStatus = 'draft' | 'pending' | 'approved' | 'rejected'
+export type PluginVersionStatus = 'pending' | 'approved' | 'rejected'
 
 export interface DashboardPluginAuthor {
   name: string
@@ -41,7 +43,9 @@ export interface DashboardPluginVersion {
   iconUrl: string
   readmeMarkdown?: string | null
   manifest?: Record<string, unknown> | null
-  notes?: string | null
+  changelog?: string | null
+  status: PluginVersionStatus
+  reviewedAt?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -50,6 +54,7 @@ export interface DashboardPlugin {
   id: string
   userId: string
   ownerOrgId?: string | null
+  slug: string
   name: string
   summary: string
   category: string
@@ -58,6 +63,10 @@ export interface DashboardPlugin {
   isOfficial: boolean
   badges: string[]
   author?: DashboardPluginAuthor | null
+  status: PluginStatus
+  readmeMarkdown?: string | null
+  iconKey?: string | null
+  iconUrl?: string | null
   createdAt: string
   updatedAt: string
   latestVersionId?: string | null
@@ -80,6 +89,11 @@ interface D1PluginRow {
   is_official: number
   badges: string | null
   author: string | null
+  slug: string | null
+  status: string | null
+  readme_markdown: string | null
+  icon_key: string | null
+  icon_url: string | null
   created_at: string
   updated_at: string
   latest_version_id: string | null
@@ -100,6 +114,8 @@ interface D1PluginVersionRow {
   readme_markdown: string | null
   manifest: string | null
   notes: string | null
+  status: string | null
+  reviewed_at: string | null
   created_at: string
   updated_at: string
 }
@@ -111,17 +127,22 @@ interface PluginVisibilityOptions {
   viewerIsAdmin?: boolean
   includeVersions?: boolean
   forMarket?: boolean
+  statuses?: PluginStatus[]
 }
 
 interface CreatePluginInput {
+  slug: string
   name: string
   summary: string
   category: string
-  installs?: number
   homepage?: string | null
   isOfficial?: boolean
   badges?: string[]
   author?: DashboardPluginAuthor | null
+  readmeMarkdown?: string
+  iconKey?: string | null
+  iconUrl?: string | null
+  status?: PluginStatus
 }
 
 interface UpdatePluginInput extends Partial<CreatePluginInput> {
@@ -132,11 +153,12 @@ interface PublishVersionInput {
   pluginId: string
   channel: PluginChannel
   version: string
-  notes?: string | null
+  changelog: string
   homepage?: string | null
   packageFile: File
   iconFile: File
   createdBy: string
+  autoApprove?: boolean
 }
 
 function getD1Database(event?: H3Event | null): D1Database | null {
@@ -168,6 +190,11 @@ async function ensurePluginSchema(db: D1Database) {
       is_official INTEGER NOT NULL DEFAULT 0,
       badges TEXT NOT NULL,
       author TEXT,
+      slug TEXT NOT NULL UNIQUE,
+      status TEXT NOT NULL DEFAULT 'draft',
+      readme_markdown TEXT,
+      icon_key TEXT,
+      icon_url TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       latest_version_id TEXT
@@ -190,6 +217,8 @@ async function ensurePluginSchema(db: D1Database) {
       readme_markdown TEXT,
       manifest TEXT,
       notes TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      reviewed_at TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -208,13 +237,25 @@ async function ensurePluginSchema(db: D1Database) {
   await addColumnIfMissing('homepage', 'homepage TEXT')
   await addColumnIfMissing('owner_org_id', 'owner_org_id TEXT')
   await addColumnIfMissing('latest_version_id', 'latest_version_id TEXT')
+  await addColumnIfMissing('slug', 'slug TEXT')
+  await addColumnIfMissing('status', "status TEXT NOT NULL DEFAULT 'draft'")
+  await addColumnIfMissing('readme_markdown', 'readme_markdown TEXT')
+  await addColumnIfMissing('icon_key', 'icon_key TEXT')
+  await addColumnIfMissing('icon_url', 'icon_url TEXT')
+
+  await db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_${PLUGINS_TABLE}_slug ON ${PLUGINS_TABLE}(slug);`).run()
 
   const versionColumns = await db.prepare(`PRAGMA table_info(${PLUGIN_VERSIONS_TABLE});`).all<{ name: string }>()
   const versionColumnNames = new Set((versionColumns.results ?? []).map(col => col.name))
 
-  if (!versionColumnNames.has('notes')) {
-    await db.prepare(`ALTER TABLE ${PLUGIN_VERSIONS_TABLE} ADD COLUMN notes TEXT;`).run()
+  const addVersionColumnIfMissing = async (column: string, ddl: string) => {
+    if (!versionColumnNames.has(column))
+      await db.prepare(`ALTER TABLE ${PLUGIN_VERSIONS_TABLE} ADD COLUMN ${ddl};`).run()
   }
+
+  await addVersionColumnIfMissing('notes', 'notes TEXT')
+  await addVersionColumnIfMissing('status', "status TEXT NOT NULL DEFAULT 'pending'")
+  await addVersionColumnIfMissing('reviewed_at', 'reviewed_at TEXT')
 
   schemaInitialized = true
 }
@@ -250,6 +291,7 @@ function mapPluginRow(row: D1PluginRow): DashboardPlugin {
     id: row.id,
     userId: row.user_id,
     ownerOrgId: row.owner_org_id,
+    slug: row.slug ?? row.id,
     name: row.name,
     summary: row.summary,
     category: row.category,
@@ -258,6 +300,10 @@ function mapPluginRow(row: D1PluginRow): DashboardPlugin {
     isOfficial: Boolean(row.is_official),
     badges: parseJsonArray(row.badges),
     author: parseJsonObject<DashboardPluginAuthor>(row.author),
+    status: (row.status as PluginStatus) || 'draft',
+    readmeMarkdown: row.readme_markdown,
+    iconKey: row.icon_key ?? row.icon ?? null,
+    iconUrl: row.icon_url ?? row.image_url ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     latestVersionId: row.latest_version_id,
@@ -279,7 +325,9 @@ function mapPluginVersionRow(row: D1PluginVersionRow): DashboardPluginVersion {
     iconUrl: row.icon_url,
     readmeMarkdown: row.readme_markdown,
     manifest: parseJsonObject<Record<string, unknown>>(row.manifest),
-    notes: row.notes,
+    changelog: row.notes,
+    status: (row.status as PluginVersionStatus) || 'pending',
+    reviewedAt: row.reviewed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
@@ -293,16 +341,36 @@ function sanitizeBadges(badges?: string[]): string[] {
 
 function validatePluginInput(input: CreatePluginInput, forUpdate = false) {
   if (!forUpdate) {
+    if (!input.slug || typeof input.slug !== 'string')
+      throw createError({ statusCode: 400, statusMessage: 'Plugin identifier is required.' })
     if (!input.name || typeof input.name !== 'string')
       throw createError({ statusCode: 400, statusMessage: 'Plugin name is required.' })
     if (!input.summary || typeof input.summary !== 'string')
       throw createError({ statusCode: 400, statusMessage: 'Plugin summary is required.' })
     if (!input.category || typeof input.category !== 'string' || !isPluginCategoryId(input.category))
       throw createError({ statusCode: 400, statusMessage: 'Plugin category is invalid.' })
+    if (!input.readmeMarkdown || typeof input.readmeMarkdown !== 'string' || !input.readmeMarkdown.trim())
+      throw createError({ statusCode: 400, statusMessage: 'Plugin README is required.' })
   }
   else {
     if (input.category && !isPluginCategoryId(input.category))
       throw createError({ statusCode: 400, statusMessage: 'Plugin category is invalid.' })
+    if (input.readmeMarkdown !== undefined && input.readmeMarkdown !== null && !input.readmeMarkdown.trim())
+      throw createError({ statusCode: 400, statusMessage: 'Plugin README cannot be empty.' })
+  }
+
+  if (input.slug) {
+    const normalized = input.slug.trim()
+    const slugPattern = /^[a-z0-9][a-z0-9\-_.]{1,62}[a-z0-9]$/
+    if (!slugPattern.test(normalized))
+      throw createError({ statusCode: 400, statusMessage: 'Plugin identifier must be 3-64 characters, lowercase, and may include numbers, dashes, underscores, or dots.' })
+    input.slug = normalized
+  }
+
+  if (input.status) {
+    const allowedStatuses: PluginStatus[] = ['draft', 'pending', 'approved', 'rejected']
+    if (!allowedStatuses.includes(input.status))
+      throw createError({ statusCode: 400, statusMessage: 'Plugin status is invalid.' })
   }
 
   if (input.homepage) {
@@ -323,18 +391,50 @@ function validateChannel(channel: string): asserts channel is PluginChannel {
     throw createError({ statusCode: 400, statusMessage: 'Invalid plugin channel.' })
 }
 
+async function ensureUniquePluginSlug(event: H3Event | undefined, slug: string, excludeId?: string) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensurePluginSchema(db)
+    const existing = await db.prepare(`
+      SELECT id
+      FROM ${PLUGINS_TABLE}
+      WHERE slug = ?1
+      LIMIT 1;
+    `).bind(slug).first<{ id: string }>()
+
+    if (existing && existing.id !== excludeId)
+      throw createError({ statusCode: 400, statusMessage: 'Plugin identifier is already in use.' })
+    return
+  }
+
+  const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
+  const found = plugins.find(plugin => plugin.slug === slug && plugin.id !== excludeId)
+  if (found)
+    throw createError({ statusCode: 400, statusMessage: 'Plugin identifier is already in use.' })
+}
+
 function versionIsVisible(
   version: DashboardPluginVersion,
   plugin: DashboardPlugin,
   options: PluginVisibilityOptions,
 ): boolean {
+  const viewerIsAdmin = Boolean(options.viewerIsAdmin)
+  const isOwner = options.viewerId === plugin.userId
+
+  if (options.forMarket)
+    return version.status === 'approved'
+
+  if (!viewerIsAdmin && !isOwner && version.status !== 'approved')
+    return false
+
   if (version.channel !== 'BETA')
     return true
 
-  if (options.viewerIsAdmin)
+  if (viewerIsAdmin)
     return true
 
-  if (options.viewerId === plugin.userId)
+  if (isOwner)
     return true
 
   if (plugin.ownerOrgId && options.viewerOrgIds?.includes(plugin.ownerOrgId))
@@ -362,6 +462,28 @@ function selectLatestVisibleVersion(
         return channelDiff
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })[0]
+}
+
+function pluginIsVisible(plugin: DashboardPlugin, options: PluginVisibilityOptions): boolean {
+  if (options.statuses && options.statuses.length && !options.statuses.includes(plugin.status))
+    return false
+
+  if (options.forMarket)
+    return plugin.status === 'approved'
+
+  const viewerIsAdmin = Boolean(options.viewerIsAdmin)
+  const isOwner = options.viewerId === plugin.userId
+
+  if (viewerIsAdmin || isOwner)
+    return true
+
+  if (plugin.status === 'approved')
+    return true
+
+  if (plugin.status === 'pending' && plugin.ownerOrgId && options.viewerOrgIds?.includes(plugin.ownerOrgId))
+    return true
+
+  return false
 }
 
 async function readCollection<T>(key: string): Promise<T[]> {
@@ -496,11 +618,12 @@ export async function listPlugins(event: H3Event | undefined, options: PluginVis
       : await stmt.all<D1PluginRow>()
 
     const plugins = (results ?? []).map(mapPluginRow)
+    const visiblePlugins = plugins.filter(plugin => pluginIsVisible(plugin, options))
 
-    if (!options.includeVersions || !plugins.length)
-      return plugins
+    if (!options.includeVersions || !visiblePlugins.length)
+      return visiblePlugins
 
-    const ids = plugins.map(plugin => plugin.id)
+    const ids = visiblePlugins.map(plugin => plugin.id)
     const placeholders = ids.map((_, idx) => `?${idx + 1}`).join(', ')
 
     const versionsQuery = `
@@ -520,7 +643,7 @@ export async function listPlugins(event: H3Event | undefined, options: PluginVis
       byPlugin.get(version.pluginId)!.push(version)
     }
 
-    return plugins.map((plugin) => {
+    return visiblePlugins.map((plugin) => {
       const pluginVersions = byPlugin.get(plugin.id) ?? []
       const filtered = pluginVersions.filter(version => versionIsVisible(version, plugin, options))
       const latest = selectLatestVisibleVersion(pluginVersions, plugin, options)
@@ -538,16 +661,22 @@ export async function listPlugins(event: H3Event | undefined, options: PluginVis
     ...plugin,
     badges: Array.isArray(plugin.badges) ? plugin.badges : [],
     author: plugin.author ?? null,
+    slug: plugin.slug ?? plugin.id,
+    status: (plugin.status ?? 'draft') as PluginStatus,
   }))
 
   const plugins = normalized
     .filter(plugin => (options.ownerId ? plugin.userId === options.ownerId : true))
+    .filter(plugin => pluginIsVisible(plugin, options))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   if (!options.includeVersions)
     return plugins
 
-  const storedVersions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+  const storedVersions = (await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)).map(version => ({
+    ...version,
+    status: (version.status ?? 'pending') as PluginVersionStatus,
+  }))
   const byPlugin = new Map<string, DashboardPluginVersion[]>()
 
   for (const version of storedVersions) {
@@ -638,24 +767,57 @@ export async function getPluginById(event: H3Event | undefined, id: string, opti
   }
 }
 
+export async function getPluginBySlug(event: H3Event | undefined, slug: string, options: PluginVisibilityOptions = {}) {
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensurePluginSchema(db)
+    const row = await db.prepare(`
+      SELECT id
+      FROM ${PLUGINS_TABLE}
+      WHERE slug = ?1
+      LIMIT 1;
+    `).bind(slug).first<{ id: string }>()
+
+    if (!row)
+      return null
+
+    return getPluginById(event, row.id, options)
+  }
+
+  const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
+  const match = plugins.find(plugin => (plugin.slug ?? plugin.id) === slug)
+  if (!match)
+    return null
+
+  return getPluginById(event, match.id, options)
+}
+
 export async function createPlugin(event: H3Event, input: CreatePluginInput & { userId: string, ownerOrgId?: string | null }) {
   validatePluginInput(input)
+  await ensureUniquePluginSlug(event, input.slug)
   await checkUserPluginLimit(event, input.userId)
 
   const now = new Date().toISOString()
+  const status: PluginStatus = input.status ?? 'draft'
 
   const plugin: DashboardPlugin = {
     id: randomUUID(),
     userId: input.userId,
     ownerOrgId: input.ownerOrgId ?? null,
+    slug: input.slug,
     name: input.name,
     summary: input.summary,
     category: input.category,
-    installs: Number(input.installs ?? 0),
+    installs: 0,
     homepage: input.homepage ?? null,
     isOfficial: Boolean(input.isOfficial),
     badges: sanitizeBadges(input.badges),
     author: input.author ?? null,
+    status,
+    readmeMarkdown: input.readmeMarkdown ?? '',
+    iconKey: input.iconKey ?? null,
+    iconUrl: input.iconUrl ?? null,
     createdAt: now,
     updatedAt: now,
     latestVersionId: null,
@@ -683,10 +845,15 @@ export async function createPlugin(event: H3Event, input: CreatePluginInput & { 
         is_official,
         badges,
         author,
+        slug,
+        status,
+        readme_markdown,
+        icon_key,
+        icon_url,
         created_at,
         updated_at,
         latest_version_id
-      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, NULL, NULL, NULL, NULL, ?9, ?10, ?11, ?12, ?13, NULL);
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, NULL, NULL, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, NULL);
     `).bind(
       plugin.id,
       plugin.userId,
@@ -696,9 +863,16 @@ export async function createPlugin(event: H3Event, input: CreatePluginInput & { 
       plugin.category,
       plugin.installs,
       plugin.homepage ?? null,
+      plugin.iconKey ?? null,
+      plugin.iconUrl ?? null,
       plugin.isOfficial ? 1 : 0,
       JSON.stringify(plugin.badges),
       plugin.author ? JSON.stringify(plugin.author) : null,
+      plugin.slug,
+      plugin.status,
+      plugin.readmeMarkdown ?? null,
+      plugin.iconKey ?? null,
+      plugin.iconUrl ?? null,
       plugin.createdAt,
       plugin.updatedAt,
     ).run()
@@ -718,17 +892,24 @@ export async function updatePlugin(event: H3Event, id: string, input: UpdatePlug
   if (!existing)
     throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
 
-  const merged: CreatePluginInput & { userId: string, ownerOrgId?: string | null } = {
+  if (input.slug && input.slug !== existing.slug)
+    throw createError({ statusCode: 400, statusMessage: 'Plugin identifier cannot be changed once created.' })
+
+  const merged: CreatePluginInput & { userId: string, ownerOrgId?: string | null, slug: string } = {
     userId: existing.userId,
     ownerOrgId: input.ownerOrgId ?? existing.ownerOrgId ?? null,
+    slug: existing.slug,
     name: input.name ?? existing.name,
     summary: input.summary ?? existing.summary,
     category: input.category ?? existing.category,
-    installs: input.installs ?? existing.installs,
     homepage: input.homepage ?? existing.homepage ?? null,
     isOfficial: input.isOfficial ?? existing.isOfficial,
     badges: input.badges ?? existing.badges,
     author: input.author ?? existing.author ?? null,
+    readmeMarkdown: input.readmeMarkdown ?? existing.readmeMarkdown ?? '',
+    iconKey: input.iconKey === undefined ? existing.iconKey ?? null : input.iconKey,
+    iconUrl: input.iconUrl === undefined ? existing.iconUrl ?? null : input.iconUrl,
+    status: input.status ?? existing.status,
   }
 
   validatePluginInput(merged, true)
@@ -737,6 +918,10 @@ export async function updatePlugin(event: H3Event, id: string, input: UpdatePlug
     ...existing,
     ...merged,
     badges: sanitizeBadges(merged.badges),
+    readmeMarkdown: merged.readmeMarkdown ?? '',
+    iconKey: merged.iconKey ?? null,
+    iconUrl: merged.iconUrl ?? null,
+    status: merged.status ?? existing.status,
     updatedAt: new Date().toISOString(),
   }
 
@@ -750,27 +935,40 @@ export async function updatePlugin(event: H3Event, id: string, input: UpdatePlug
         name = ?1,
         summary = ?2,
         category = ?3,
-        installs = ?4,
-        homepage = ?5,
-        is_official = ?6,
-        badges = ?7,
-        author = ?8,
-        owner_org_id = ?9,
-        updated_at = ?10
-      WHERE id = ?11;
+        homepage = ?4,
+        is_official = ?5,
+        badges = ?6,
+        author = ?7,
+        owner_org_id = ?8,
+        status = ?9,
+        readme_markdown = ?10,
+        icon = ?11,
+        image_url = ?12,
+        icon_key = ?13,
+        icon_url = ?14,
+        updated_at = ?15
+      WHERE id = ?16;
     `).bind(
       updated.name,
       updated.summary,
       updated.category,
-      updated.installs,
       updated.homepage ?? null,
       updated.isOfficial ? 1 : 0,
       JSON.stringify(updated.badges),
       updated.author ? JSON.stringify(updated.author) : null,
       updated.ownerOrgId ?? null,
+      updated.status,
+      updated.readmeMarkdown ?? null,
+      updated.iconKey ?? null,
+      updated.iconUrl ?? null,
+      updated.iconKey ?? null,
+      updated.iconUrl ?? null,
       updated.updatedAt,
       updated.id,
     ).run()
+
+    if (existing.iconKey && existing.iconKey !== updated.iconKey)
+      await deleteImage(event, existing.iconKey)
 
     return updated
   }
@@ -783,6 +981,10 @@ export async function updatePlugin(event: H3Event, id: string, input: UpdatePlug
 
   plugins[index] = updated
   await writeCollection(PLUGINS_KEY, plugins)
+
+  if (existing.iconKey && existing.iconKey !== updated.iconKey)
+    await deleteImage(event, existing.iconKey)
+
   return updated
 }
 
@@ -819,6 +1021,8 @@ export async function deletePlugin(event: H3Event, id: string) {
       DELETE FROM ${PLUGINS_TABLE}
       WHERE id = ?1;
     `).bind(id).run()
+    if (plugin.iconKey)
+      await deleteImage(event, plugin.iconKey)
   }
   else {
     const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
@@ -833,24 +1037,159 @@ export async function deletePlugin(event: H3Event, id: string) {
     await writeCollection(PLUGIN_VERSIONS_KEY, remainingVersions)
 
     const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
+    const pluginToDelete = plugins.find(item => item.id === id)
     await writeCollection(
       PLUGINS_KEY,
       plugins.filter(item => item.id !== id),
     )
+    if (pluginToDelete?.iconKey)
+      await deleteImage(event, pluginToDelete.iconKey)
   }
 
   return plugin
 }
 
+export async function setPluginStatus(event: H3Event, id: string, status: PluginStatus) {
+  const plugin = await getPluginById(event, id)
+
+  if (!plugin)
+    throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
+
+  if (plugin.status === status)
+    return plugin
+
+  const now = new Date().toISOString()
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensurePluginSchema(db)
+    await db.prepare(`
+      UPDATE ${PLUGINS_TABLE}
+      SET status = ?1, updated_at = ?2
+      WHERE id = ?3;
+    `).bind(status, now, id).run()
+  }
+  else {
+    const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
+    const index = plugins.findIndex(item => item.id === id)
+    if (index === -1)
+      throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
+    plugins[index] = {
+      ...plugins[index],
+      status,
+      updatedAt: now,
+    }
+    await writeCollection(PLUGINS_KEY, plugins)
+  }
+
+  return {
+    ...plugin,
+    status,
+    updatedAt: now,
+  }
+}
+
+export async function setPluginVersionStatus(event: H3Event, pluginId: string, versionId: string, status: PluginVersionStatus) {
+  const plugin = await getPluginById(event, pluginId, { includeVersions: true, viewerIsAdmin: true })
+
+  if (!plugin)
+    throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
+
+  const version = (plugin.versions ?? []).find(item => item.id === versionId)
+
+  if (!version)
+    throw createError({ statusCode: 404, statusMessage: 'Version not found.' })
+
+  if (version.status === status)
+    return version
+
+  const now = new Date().toISOString()
+  const reviewedAt = status === 'approved' ? now : null
+  const db = getD1Database(event)
+
+  if (db) {
+    await ensurePluginSchema(db)
+    await db.prepare(`
+      UPDATE ${PLUGIN_VERSIONS_TABLE}
+      SET status = ?1, reviewed_at = ?2, updated_at = ?3
+      WHERE id = ?4;
+    `).bind(status, reviewedAt, now, versionId).run()
+  }
+  else {
+    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const index = versions.findIndex(item => item.id === versionId)
+    if (index === -1)
+      throw createError({ statusCode: 404, statusMessage: 'Version not found.' })
+    versions[index] = {
+      ...versions[index],
+      status,
+      reviewedAt,
+      updatedAt: now,
+    }
+    await writeCollection(PLUGIN_VERSIONS_KEY, versions)
+  }
+
+  if (db) {
+    const refreshed = await getPluginById(event, pluginId, {
+      includeVersions: true,
+      viewerIsAdmin: true,
+    })
+
+    if (refreshed) {
+      const latest = selectLatestVisibleVersion(refreshed.versions ?? [], refreshed, {
+        viewerIsAdmin: true,
+      })
+
+      await db.prepare(`
+        UPDATE ${PLUGINS_TABLE}
+        SET latest_version_id = ?1, updated_at = ?2
+        WHERE id = ?3;
+      `).bind(latest?.id ?? null, now, pluginId).run()
+    }
+  }
+  else {
+    const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
+    const index = plugins.findIndex(item => item.id === pluginId)
+    if (index !== -1) {
+      const refreshed = await getPluginById(event, pluginId, {
+        includeVersions: true,
+        viewerIsAdmin: true,
+      })
+      const latest = selectLatestVisibleVersion(refreshed?.versions ?? [], refreshed ?? plugin, {
+        viewerIsAdmin: true,
+      })
+      plugins[index] = {
+        ...plugins[index],
+        latestVersionId: latest?.id ?? plugins[index].latestVersionId ?? null,
+        updatedAt: now,
+      }
+      await writeCollection(PLUGINS_KEY, plugins)
+    }
+  }
+
+  return {
+    ...version,
+    status,
+    reviewedAt,
+    updatedAt: now,
+  }
+}
+
 export async function publishPluginVersion(event: H3Event, input: PublishVersionInput) {
   validateChannel(input.channel)
+
+  if (!input.changelog || !input.changelog.trim())
+    throw createError({ statusCode: 400, statusMessage: 'Changelog is required.' })
 
   const plugin = await getPluginById(event, input.pluginId)
 
   if (!plugin)
     throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
 
-  if (plugin.userId !== input.createdBy)
+  const isCreator = plugin.userId === input.createdBy
+  const shouldAutoApprove = Boolean(input.autoApprove)
+
+  if (!isCreator && !shouldAutoApprove)
     throw createError({ statusCode: 403, statusMessage: 'You cannot publish versions for this plugin.' })
 
   const pluginWithVersions = await getPluginById(event, plugin.id, {
@@ -871,6 +1210,8 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
   const packageResult = await uploadPluginPackage(event, input.packageFile, packageBuffer)
 
   const now = new Date().toISOString()
+  const status: PluginVersionStatus = shouldAutoApprove ? 'approved' : 'pending'
+  const reviewedAt = shouldAutoApprove ? now : null
   const version: DashboardPluginVersion = {
     id: randomUUID(),
     pluginId: plugin.id,
@@ -885,7 +1226,9 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     iconUrl: iconResult.url,
     readmeMarkdown: metadata.readmeMarkdown ?? null,
     manifest: metadata.manifest ?? null,
-    notes: input.notes ?? null,
+    changelog: input.changelog,
+    status,
+    reviewedAt,
     createdAt: now,
     updatedAt: now,
   }
@@ -913,15 +1256,17 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
         signature,
         package_key,
         package_url,
-        package_size,
-        icon_key,
-        icon_url,
-        readme_markdown,
-        manifest,
-        notes,
-        created_at,
-        updated_at
-      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16);
+      package_size,
+      icon_key,
+      icon_url,
+      readme_markdown,
+      manifest,
+      notes,
+      status,
+      reviewed_at,
+      created_at,
+      updated_at
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);
     `).bind(
       version.id,
       version.pluginId,
@@ -936,7 +1281,9 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
       version.iconUrl,
       version.readmeMarkdown ?? null,
       version.manifest ? JSON.stringify(version.manifest) : null,
-      version.notes ?? null,
+      version.changelog ?? null,
+      version.status,
+      version.reviewedAt ?? null,
       version.createdAt,
       version.updatedAt,
     ).run()
@@ -989,6 +1336,11 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
       await writeCollection(PLUGINS_KEY, plugins)
     }
   }
+
+  if (!shouldAutoApprove && plugin.status === 'draft')
+    await setPluginStatus(event, plugin.id, 'pending')
+  else if (shouldAutoApprove && plugin.status !== 'approved')
+    await setPluginStatus(event, plugin.id, 'approved')
 
   return version
 }

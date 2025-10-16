@@ -3,18 +3,18 @@ import TouchButton from './base/TouchButton.vue'
 </script>
 
 <template>
-  <!-- Plugin & Extension 版面 -->
+  <!-- Plugin capabilities section -->
   <div class="plugin-extension-section">
     <div class="section-content">
       <div class="beta-tag">
         <span class="beta-text">EXTENSIBLE</span>
       </div>
       
-      <h2 class="section-title">Powerful Plugin & Extension System</h2>
-      <p class="section-subtitle">Lightweight plugins and heavyweight extensions for ultimate customization</p>
+      <h2 class="section-title">Powerful Plugin System</h2>
+      <p class="section-subtitle">Lightweight plugins for simple tweaks, advanced builds for immersive customization</p>
       
       <div class="introduction">
-        <p>Polyglot Toolbox features a sophisticated plugin architecture that allows you to tailor the application to your exact needs. From simple lightweight plugins to complex heavyweight extensions, our system provides unparalleled flexibility and power.</p>
+        <p>Polyglot Toolbox features a sophisticated plugin architecture that allows you to tailor the application to your exact needs. From simple lightweight plugins to advanced automation suites, our system provides unparalleled flexibility and power.</p>
       </div>
       
       <div class="features-grid">
@@ -33,8 +33,8 @@ import TouchButton from './base/TouchButton.vue'
               <path fill="rgba(255, 255, 255, 0.8)" d="M7 2v11h3v9l7-12h-4l4-8z"/>
             </svg>
           </div>
-          <h3 class="card-title">Heavyweight Extensions</h3>
-          <p class="card-description">Comprehensive extensions that transform the core functionality of the application. Build entire new workflows and capabilities.</p>
+          <h3 class="card-title">Advanced Builds</h3>
+          <p class="card-description">Comprehensive plugins that transform the core functionality of the application. Build entire new workflows and capabilities.</p>
         </div>
         <div class="feature-card">
           <div class="card-icon">
@@ -43,20 +43,20 @@ import TouchButton from './base/TouchButton.vue'
             </svg>
           </div>
           <h3 class="card-title">Seamless Integration</h3>
-          <p class="card-description">All plugins and extensions integrate smoothly with the core application, maintaining performance and consistency.</p>
+          <p class="card-description">All plugins integrate smoothly with the core application, maintaining performance and consistency.</p>
         </div>
         <div class="feature-card">
           <div class="card-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 26 26"><!-- Icon from Garden SVG Icons by Zendesk - https://github.com/zendeskgarden/svg-icons/blob/main/LICENSE.md --><path fill="currentColor" d="m22.475 18.881l-8.891 4.925c-.525.259-.643.259-1.168 0l-8.89-4.925c-1.164-.644-.195-2.385.97-1.74L13 21.85l8.505-4.71c1.164-.645 2.133 1.096.97 1.74zm0-5l-8.891 4.925c-.525.259-.643.259-1.168 0l-8.89-4.925c-1.164-.644-.195-2.385.97-1.74L13 16.85l8.505-4.71c1.164-.645 2.133 1.096.97 1.74zM3.515 8.89a1 1 0 0 1-.002-1.749l9-5.015a1 1 0 0 1 .974 0l9 5.015a1 1 0 0 1-.003 1.749l-9.007 4.985a1 1 0 0 1-.97 0z"/></svg>
           </div>
           <h3 class="card-title">Developer Friendly</h3>
-          <p class="card-description">Comprehensive SDK and documentation make it easy for developers to create their own plugins and extensions.</p>
+          <p class="card-description">Comprehensive SDK and documentation make it easy for developers to create their own plugins.</p>
         </div>
       </div>
       
       <div class="cta-section">
         <TouchButton>
-          Explore Plugins & Extensions
+          Explore Plugins
         </TouchButton>
       </div>
     </div>

@@ -21,7 +21,17 @@ export default defineNuxtConfig({
     '@nuxt/content',
     '@nuxtjs/i18n',
     '@clerk/nuxt',
+    '@sentry/nuxt/module',
   ],
+
+  sentry: {
+    sourceMapsUploadOptions: {
+      org: 'quotawish',
+      project: 'tuff-nexus',
+      // store your auth token in an environment variable
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    },
+  },
 
   content: {
     highlight: {
