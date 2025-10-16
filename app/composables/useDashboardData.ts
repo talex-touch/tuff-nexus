@@ -24,6 +24,7 @@ interface DashboardPluginVersion {
   iconKey?: string
   readmeMarkdown?: string | null
   notes?: string | null
+  manifest?: Record<string, unknown> | null
   createdAt: string
   updatedAt: string
 }

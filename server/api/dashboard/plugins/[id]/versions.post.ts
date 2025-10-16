@@ -20,7 +20,8 @@ export default defineEventHandler(async (event) => {
   const changelogField = formData.get('changelog') ?? formData.get('notes')
   const homepage = formData.get('homepage')
   const packageFile = formData.get('package')
-  const iconFile = formData.get('icon')
+  const iconField = formData.get('icon')
+  const iconFile = isFile(iconField) ? iconField : null
 
   if (typeof version !== 'string' || !version.trim())
     throw createError({ statusCode: 400, statusMessage: 'Version is required.' })
@@ -30,9 +31,6 @@ export default defineEventHandler(async (event) => {
 
   if (!isFile(packageFile))
     throw createError({ statusCode: 400, statusMessage: 'Package file is required.' })
-
-  if (!isFile(iconFile))
-    throw createError({ statusCode: 400, statusMessage: 'Icon file is required.' })
 
   const changelog = typeof changelogField === 'string' ? changelogField.trim() : ''
 
@@ -52,9 +50,9 @@ export default defineEventHandler(async (event) => {
     changelog,
     homepage: typeof homepage === 'string' ? homepage.trim() || null : null,
     packageFile,
-    iconFile,
+    iconFile: iconFile ?? undefined,
     createdBy: userId,
-    autoApprove: isAdmin,
+    canModerate: isAdmin,
   })
 
   return {

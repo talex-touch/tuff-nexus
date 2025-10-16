@@ -156,9 +156,9 @@ interface PublishVersionInput {
   changelog: string
   homepage?: string | null
   packageFile: File
-  iconFile: File
+  iconFile?: File | null
   createdBy: string
-  autoApprove?: boolean
+  canModerate?: boolean
 }
 
 function getD1Database(event?: H3Event | null): D1Database | null {
@@ -1187,9 +1187,9 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     throw createError({ statusCode: 404, statusMessage: 'Plugin not found.' })
 
   const isCreator = plugin.userId === input.createdBy
-  const shouldAutoApprove = Boolean(input.autoApprove)
+  const canModerate = Boolean(input.canModerate)
 
-  if (!isCreator && !shouldAutoApprove)
+  if (!isCreator && !canModerate)
     throw createError({ statusCode: 403, statusMessage: 'You cannot publish versions for this plugin.' })
 
   const pluginWithVersions = await getPluginById(event, plugin.id, {
@@ -1206,12 +1206,20 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
   const signature = createHash('sha256').update(packageBuffer).digest('hex')
 
   const metadata = await extractTpexMetadata(packageBuffer)
-  const iconResult = await uploadImage(event, input.iconFile)
+  let iconKey = plugin.iconKey ?? ''
+  let iconUrl = plugin.iconUrl ?? ''
+
+  if (input.iconFile && input.iconFile.size > 0) {
+    const iconUpload = await uploadImage(event, input.iconFile)
+    iconKey = iconUpload.key
+    iconUrl = iconUpload.url
+  }
+
   const packageResult = await uploadPluginPackage(event, input.packageFile, packageBuffer)
 
   const now = new Date().toISOString()
-  const status: PluginVersionStatus = shouldAutoApprove ? 'approved' : 'pending'
-  const reviewedAt = shouldAutoApprove ? now : null
+  const status: PluginVersionStatus = 'pending'
+  const reviewedAt: string | null = null
   const version: DashboardPluginVersion = {
     id: randomUUID(),
     pluginId: plugin.id,
@@ -1222,8 +1230,8 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     packageKey: packageResult.key,
     packageUrl: packageResult.url,
     packageSize: packageResult.size,
-    iconKey: iconResult.key,
-    iconUrl: iconResult.url,
+    iconKey,
+    iconUrl,
     readmeMarkdown: metadata.readmeMarkdown ?? null,
     manifest: metadata.manifest ?? null,
     changelog: input.changelog,
@@ -1256,16 +1264,16 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
         signature,
         package_key,
         package_url,
-      package_size,
-      icon_key,
-      icon_url,
-      readme_markdown,
-      manifest,
-      notes,
-      status,
-      reviewed_at,
-      created_at,
-      updated_at
+        package_size,
+        icon_key,
+        icon_url,
+        readme_markdown,
+        manifest,
+        notes,
+        status,
+        reviewed_at,
+        created_at,
+        updated_at
       ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);
     `).bind(
       version.id,
@@ -1337,9 +1345,9 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     }
   }
 
-  if (!shouldAutoApprove && plugin.status === 'draft')
+  if (!canModerate && plugin.status === 'draft')
     await setPluginStatus(event, plugin.id, 'pending')
-  else if (shouldAutoApprove && plugin.status !== 'approved')
+  else if (canModerate && plugin.status !== 'approved')
     await setPluginStatus(event, plugin.id, 'approved')
 
   return version

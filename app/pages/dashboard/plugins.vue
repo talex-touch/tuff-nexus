@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import JSZip from 'jszip'
 import { computed, reactive, ref, watch } from 'vue'
 import { PLUGIN_CATEGORIES, isPluginCategoryId } from '~/utils/plugin-categories'
 import { useDashboardPluginsData } from '~/composables/useDashboardData'
@@ -19,11 +18,10 @@ interface DashboardPluginVersion {
   signature: string
   packageUrl: string
   packageKey: string
-  iconUrl: string
-  iconKey: string
   packageSize: number
   readmeMarkdown?: string | null
   changelog?: string | null
+  manifest?: Record<string, unknown> | null
   status: 'pending' | 'approved' | 'rejected'
   reviewedAt?: string | null
   createdAt: string
@@ -73,7 +71,27 @@ interface VersionFormState {
   homepage: string
   changelog: string
   packageFile: File | null
-  iconFile: File | null
+}
+
+interface ExtractedManifest {
+  id?: string
+  name?: string
+  description?: string
+  version?: string
+  homepage?: string
+  changelog?: string
+  channel?: string
+  category?: string
+  icon?: {
+    type?: string
+    value?: string
+  }
+  [key: string]: unknown
+}
+
+interface PackagePreviewResult {
+  manifest: ExtractedManifest | null
+  readmeMarkdown: string | null
 }
 
 definePageMeta({
@@ -140,13 +158,91 @@ function resolveBadgeLabel(badge: string) {
   return pluginBadgeLabels.value[badge] ?? badge
 }
 
+const PLUGIN_IDENTIFIER_PATTERN = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/
+const PLUGIN_RESERVED_TOKENS = [
+  'official',
+  '官方',
+  'tuff',
+  'talex-touch',
+  'talex.touch',
+  'talex touch',
+  '第一',
+  'first',
+] as const
+
+function containsReservedToken(value: string) {
+  const normalized = value.toLowerCase()
+  return PLUGIN_RESERVED_TOKENS.some(token => normalized.includes(token))
+}
+
 function slugify(input: string): string {
-  return input
+  const normalized = input
     .toLowerCase()
-    .replace(/[^a-z0-9\-_.]+/g, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 64)
+    .replace(/[^a-z0-9.]+/g, '.')
+    .replace(/\.+/g, '.')
+    .replace(/^\.+/g, '')
+    .slice(0, 128)
+  return normalized.replace(/^[^a-z]+/, '')
+}
+
+const PACKAGE_PREVIEW_ENDPOINT = '/api/dashboard/plugins/package/preview'
+const PACKAGE_CHANNELS: PluginChannel[] = ['SNAPSHOT', 'BETA', 'RELEASE']
+
+function isValidChannel(value: string | undefined | null): value is PluginChannel {
+  if (!value)
+    return false
+  return PACKAGE_CHANNELS.includes(value as PluginChannel)
+}
+
+async function requestPackagePreview(file: File): Promise<PackagePreviewResult> {
+  const formData = new FormData()
+  formData.append('package', file)
+  return await $fetch<PackagePreviewResult>(PACKAGE_PREVIEW_ENDPOINT, {
+    method: 'POST',
+    body: formData,
+  })
+}
+
+function applyManifestToPluginForm(manifest: ExtractedManifest | null, readme: string | null) {
+  if (pluginFormMode.value !== 'create' || !manifest)
+    return
+
+  const manifestId = typeof manifest.id === 'string' ? manifest.id : ''
+  if (manifestId && !pluginForm.slug.trim())
+    pluginForm.slug = slugify(manifestId)
+
+  if (typeof manifest.name === 'string' && !pluginForm.name.trim())
+    pluginForm.name = manifest.name
+
+  if (typeof manifest.description === 'string' && !pluginForm.summary.trim())
+    pluginForm.summary = manifest.description
+
+  if (typeof manifest.homepage === 'string' && !pluginForm.homepage.trim())
+    pluginForm.homepage = manifest.homepage
+
+  if (manifest.category && typeof manifest.category === 'string' && isPluginCategoryId(manifest.category))
+    pluginForm.category = manifest.category
+
+  if (readme && !pluginForm.readme.trim())
+    pluginForm.readme = readme
+}
+
+function applyManifestToVersionForm(manifest: ExtractedManifest | null) {
+  if (!manifest)
+    return
+
+  if (typeof manifest.version === 'string' && !versionForm.version.trim())
+    versionForm.version = manifest.version
+
+  const manifestChannel = typeof manifest.channel === 'string' ? manifest.channel.toUpperCase() : undefined
+  if (isValidChannel(manifestChannel))
+    versionForm.channel = manifestChannel
+
+  if (typeof manifest.homepage === 'string' && !versionForm.homepage.trim())
+    versionForm.homepage = manifest.homepage
+
+  if (typeof manifest.changelog === 'string' && !versionForm.changelog.trim())
+    versionForm.changelog = manifest.changelog
 }
 
 function revokeObjectUrl(url: string | null) {
@@ -239,6 +335,11 @@ const pluginActionError = ref<string | null>(null)
 const versionActionError = ref<string | null>(null)
 const iconPreviewObjectUrl = ref<string | null>(null)
 const editingPluginHasIcon = ref(false)
+const pluginPackageLoading = ref(false)
+const pluginPackageError = ref<string | null>(null)
+const pluginManifestPreview = ref<ExtractedManifest | null>(null)
+const pluginReadmePreview = ref('')
+const pluginPackageFileName = ref<string | null>(null)
 
 function resetPluginForm() {
   revokeObjectUrl(iconPreviewObjectUrl.value)
@@ -248,6 +349,11 @@ function resetPluginForm() {
   pluginFormError.value = null
   editingPluginInstalls.value = null
   editingPluginHasIcon.value = false
+  pluginPackageLoading.value = false
+  pluginPackageError.value = null
+  pluginManifestPreview.value = null
+  pluginReadmePreview.value = ''
+  pluginPackageFileName.value = null
 }
 
 watch(() => pluginForm.name, (name) => {
@@ -340,6 +446,32 @@ function removePluginIconPreview() {
   iconPreviewObjectUrl.value = null
   pluginForm.iconPreviewUrl = null
   editingPluginHasIcon.value = false
+}
+
+async function handlePluginPackageInput(event: Event) {
+  const target = event.target as HTMLInputElement | null
+  const file = target?.files?.[0] ?? null
+  pluginPackageFileName.value = file?.name ?? null
+  pluginPackageError.value = null
+  pluginManifestPreview.value = null
+  pluginReadmePreview.value = ''
+
+  if (!file)
+    return
+
+  pluginPackageLoading.value = true
+  try {
+    const preview = await requestPackagePreview(file)
+    pluginManifestPreview.value = preview.manifest
+    pluginReadmePreview.value = preview.readmeMarkdown ?? ''
+    applyManifestToPluginForm(preview.manifest, preview.readmeMarkdown ?? '')
+  }
+  catch (error: unknown) {
+    pluginPackageError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+  }
+  finally {
+    pluginPackageLoading.value = false
+  }
 }
 
 function canSubmitPluginForReview(plugin: DashboardPlugin) {
@@ -439,6 +571,12 @@ async function submitPluginForm() {
     if (!isPluginCategoryId(pluginForm.category))
       throw new Error(t('dashboard.sections.plugins.errors.invalidCategory'))
 
+    if (!slug.length)
+      throw new Error(t('dashboard.sections.plugins.errors.missingIdentifier', 'Please provide a plugin identifier.'))
+
+    if (!PLUGIN_IDENTIFIER_PATTERN.test(slug))
+      throw new Error(t('dashboard.sections.plugins.errors.invalidIdentifierFormat', 'The plugin identifier must look like domain.style identifiers (e.g. alpha.beta.plugin).'))
+
     const badges = pluginForm.badges
       .split(',')
       .map(badge => badge.trim())
@@ -446,10 +584,13 @@ async function submitPluginForm() {
 
     const homepage = pluginForm.homepage.trim()
     const readme = pluginForm.readme.trim()
+    const name = pluginForm.name.trim()
+    const restrictedBypass = Boolean(isAdmin.value && pluginForm.isOfficial)
 
-    if (pluginFormMode.value === 'create' && !slug.length)
-      throw new Error(t('dashboard.sections.plugins.errors.missingIdentifier', 'Please provide a plugin identifier.'))
-    if (!pluginForm.name.trim().length)
+    if (!restrictedBypass && (containsReservedToken(slug) || containsReservedToken(name)))
+      throw new Error(t('dashboard.sections.plugins.errors.restrictedIdentifier', 'Plugin identifier or name contains reserved terms.'))
+
+    if (!name.length)
       throw new Error(t('dashboard.sections.plugins.errors.missingName', 'Name is required.'))
     if (!readme.length)
       throw new Error(t('dashboard.sections.plugins.errors.missingReadme', 'README is required.'))
@@ -459,7 +600,7 @@ async function submitPluginForm() {
     if (pluginFormMode.value === 'create')
       formData.append('slug', slug)
 
-    formData.append('name', pluginForm.name.trim())
+    formData.append('name', name)
     formData.append('summary', pluginForm.summary.trim())
     formData.append('category', pluginForm.category.trim())
     formData.append('readme', readme)
@@ -530,7 +671,6 @@ function createVersionFormState(plugin?: DashboardPlugin): VersionFormState {
     homepage: plugin?.homepage ?? '',
     changelog: '',
     packageFile: null,
-    iconFile: null,
   }
 }
 
@@ -538,13 +678,18 @@ const versionForm = reactive(createVersionFormState())
 const showVersionForm = ref(false)
 const versionFormError = ref<string | null>(null)
 const versionSaving = ref(false)
+const versionManifest = ref<ExtractedManifest | null>(null)
 const versionReadme = ref('')
 const versionPreviewLoading = ref(false)
+const versionPreviewError = ref<string | null>(null)
 
 function resetVersionForm(plugin?: DashboardPlugin) {
   Object.assign(versionForm, createVersionFormState(plugin))
   versionFormError.value = null
+  versionManifest.value = null
   versionReadme.value = ''
+  versionPreviewLoading.value = false
+  versionPreviewError.value = null
   showVersionForm.value = Boolean(plugin)
 }
 
@@ -558,47 +703,31 @@ function openPublishVersionForm(plugin: DashboardPlugin) {
   showVersionForm.value = true
 }
 
-async function extractReadmePreview(file: File) {
-  versionPreviewLoading.value = true
-  versionReadme.value = ''
-  try {
-    const arrayBuffer = await file.arrayBuffer()
-    const zip = await JSZip.loadAsync(arrayBuffer)
-    const entries = Object.values(zip.files)
-    for (const entry of entries) {
-      if (entry.dir)
-        continue
-      const lower = entry.name.toLowerCase()
-      if (lower.endsWith('readme.md') || lower.endsWith('readme')) {
-        versionReadme.value = await entry.async('string')
-        break
-      }
-    }
-  }
-  catch (error: unknown) {
-    console.error('Failed to parse README from tpex:', error)
-    versionFormError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
-  }
-  finally {
-    versionPreviewLoading.value = false
-  }
-}
-
-function handleVersionPackageInput(event: Event) {
+async function handleVersionPackageInput(event: Event) {
   const target = event.target as HTMLInputElement | null
   const file = target?.files?.[0] ?? null
   versionForm.packageFile = file
   versionFormError.value = null
-  if (file)
-    extractReadmePreview(file)
-  else
-    versionReadme.value = ''
-}
+  versionManifest.value = null
+  versionReadme.value = ''
+  versionPreviewError.value = null
 
-function handleVersionIconInput(event: Event) {
-  const target = event.target as HTMLInputElement | null
-  versionForm.iconFile = target?.files?.[0] ?? null
-  versionFormError.value = null
+  if (!file)
+    return
+
+  versionPreviewLoading.value = true
+  try {
+    const preview = await requestPackagePreview(file)
+    versionManifest.value = preview.manifest
+    versionReadme.value = preview.readmeMarkdown ?? ''
+    applyManifestToVersionForm(preview.manifest)
+  }
+  catch (error: unknown) {
+    versionPreviewError.value = error instanceof Error ? error.message : t('dashboard.sections.plugins.errors.unknown')
+  }
+  finally {
+    versionPreviewLoading.value = false
+  }
 }
 
 async function submitVersionForm() {
@@ -612,8 +741,6 @@ async function submitVersionForm() {
       throw new Error(t('dashboard.sections.plugins.errors.missingVersion'))
     if (!versionForm.packageFile)
       throw new Error(t('dashboard.sections.plugins.errors.missingPackage'))
-    if (!versionForm.iconFile)
-      throw new Error(t('dashboard.sections.plugins.errors.missingIcon'))
 
     const formData = new FormData()
     formData.append('version', versionForm.version.trim())
@@ -630,7 +757,6 @@ async function submitVersionForm() {
     formData.append('changelog', changelog)
 
     formData.append('package', versionForm.packageFile)
-    formData.append('icon', versionForm.iconFile)
 
     await $fetch(`/api/dashboard/plugins/${versionForm.pluginId}/versions`, {
       method: 'POST',
@@ -811,6 +937,96 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               </div>
             </div>
           </div>
+          <label
+            v-if="pluginFormMode === 'create'"
+            class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60 md:col-span-2"
+          >
+            {{ t('dashboard.sections.plugins.form.packageUpload') }}
+            <input
+              type="file"
+              accept=".tpex"
+              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-dark/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-black transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
+              @change="handlePluginPackageInput"
+            >
+            <span class="text-[11px] font-medium normal-case text-black/40 dark:text-light/50">
+              {{ t('dashboard.sections.plugins.form.packageHelp') }}
+            </span>
+            <span
+              v-if="pluginPackageFileName"
+              class="text-[11px] font-medium normal-case text-black/60 dark:text-light/60"
+            >
+              {{ pluginPackageFileName }}
+            </span>
+          </label>
+          <div
+            v-if="pluginFormMode === 'create'"
+            class="md:col-span-2 rounded-2xl border border-primary/10 bg-dark/5 p-4 text-xs text-black/70 dark:border-light/20 dark:bg-light/10 dark:text-light/70"
+          >
+            <p class="font-semibold uppercase tracking-wide">
+              {{ t('dashboard.sections.plugins.manifestPreview') }}
+            </p>
+            <p class="mt-1 text-[11px]">
+              {{ t('dashboard.sections.plugins.readmePreviewServer') }}
+            </p>
+            <p v-if="pluginPackageLoading" class="mt-2 text-[11px]">
+              {{ t('dashboard.sections.plugins.previewLoading') }}
+            </p>
+            <p v-else-if="pluginPackageError" class="mt-2 text-[11px] text-red-500">
+              {{ pluginPackageError }}
+            </p>
+            <template v-else>
+              <div v-if="pluginManifestPreview" class="mt-3 space-y-2 text-[11px] leading-relaxed">
+                <p v-if="pluginManifestPreview.id">
+                  <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.id') }}:</span>
+                  {{ pluginManifestPreview.id }}
+                </p>
+                <p v-if="pluginManifestPreview.name">
+                  <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.name') }}:</span>
+                  {{ pluginManifestPreview.name }}
+                </p>
+                <p v-if="pluginManifestPreview.version">
+                  <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.version') }}:</span>
+                  {{ pluginManifestPreview.version }}
+                </p>
+                <p v-if="pluginManifestPreview.description">
+                  <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.description') }}:</span>
+                  {{ pluginManifestPreview.description }}
+                </p>
+                <p v-if="pluginManifestPreview.homepage">
+                  <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.homepage') }}:</span>
+                  {{ pluginManifestPreview.homepage }}
+                </p>
+                <details class="group rounded-lg border border-primary/10 bg-white/50 p-2 text-black dark:border-light/20 dark:bg-dark/40 dark:text-light">
+                  <summary class="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-wide text-black/70 transition group-open:text-black dark:text-light/70 dark:group-open:text-light">
+                    {{ t('dashboard.sections.plugins.manifestRaw') }}
+                  </summary>
+                  <pre class="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-black/5 p-2 font-mono text-[10px] text-black dark:bg-white/10 dark:text-light">
+                    {{ JSON.stringify(pluginManifestPreview, null, 2) }}
+                  </pre>
+                </details>
+              </div>
+              <p v-else-if="pluginPackageFileName" class="mt-3 text-[11px]">
+                {{ t('dashboard.sections.plugins.noManifest') }}
+              </p>
+              <p v-else class="mt-3 text-[11px] text-black/50 dark:text-light/60">
+                {{ t('dashboard.sections.plugins.packageAwaiting') }}
+              </p>
+              <div class="mt-4 border-t border-primary/10 pt-3 dark:border-light/20">
+                <p class="font-semibold uppercase tracking-wide">
+                  {{ t('dashboard.sections.plugins.readmePreview') }}
+                </p>
+                <div v-if="pluginReadmePreview" class="prose prose-sm mt-2 max-w-none dark:prose-invert">
+                  <ContentRendererMarkdown :value="pluginReadmePreview" />
+                </div>
+                <p v-else-if="pluginPackageFileName" class="mt-2 text-[11px]">
+                  {{ t('dashboard.sections.plugins.noReadme') }}
+                </p>
+                <p v-else class="mt-2 text-[11px] text-black/50 dark:text-light/60">
+                  {{ t('dashboard.sections.plugins.packageAwaiting') }}
+                </p>
+              </div>
+            </template>
+          </div>
           <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
             {{ t('dashboard.sections.plugins.form.homepage') }}
             <input
@@ -950,30 +1166,85 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
               @change="handleVersionPackageInput"
             >
           </label>
-          <label class="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-black/60 dark:text-light/60">
-            {{ t('dashboard.sections.plugins.versionForm.icon') }}
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
-              required
-              class="rounded-xl border border-primary/15 bg-white/90 px-3 py-2 text-sm text-black outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-dark/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-black transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20 dark:border-light/20 dark:bg-dark/40 dark:text-light dark:file:bg-light/10 dark:file:text-light"
-              @change="handleVersionIconInput"
-            >
-          </label>
         </div>
         <div class="rounded-2xl border border-primary/10 bg-dark/5 p-4 text-xs text-black/70 dark:border-light/20 dark:bg-light/10 dark:text-light/70">
-          <p class="font-semibold uppercase tracking-wide">
-            {{ t('dashboard.sections.plugins.readmePreview') }}
-          </p>
-          <p v-if="versionPreviewLoading" class="mt-2 text-[11px]">
-            {{ t('dashboard.sections.plugins.previewLoading') }}
-          </p>
-          <div v-else-if="versionReadme" class="prose prose-sm mt-2 max-w-none dark:prose-invert">
-            <ContentRendererMarkdown :value="versionReadme" />
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <p class="font-semibold uppercase tracking-wide">
+                {{ t('dashboard.sections.plugins.manifestPreview') }}
+              </p>
+              <p class="mt-1 text-[11px]">
+                {{ t('dashboard.sections.plugins.readmePreviewServer') }}
+              </p>
+              <p v-if="versionPreviewLoading" class="mt-2 text-[11px]">
+                {{ t('dashboard.sections.plugins.previewLoading') }}
+              </p>
+              <p v-else-if="versionPreviewError" class="mt-2 text-[11px] text-red-500">
+                {{ versionPreviewError }}
+              </p>
+              <template v-else>
+                <div v-if="versionManifest" class="mt-3 space-y-2 text-[11px] leading-relaxed">
+                  <p v-if="versionManifest.id">
+                    <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.id') }}:</span>
+                    {{ versionManifest.id }}
+                  </p>
+                  <p v-if="versionManifest.name">
+                    <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.name') }}:</span>
+                    {{ versionManifest.name }}
+                  </p>
+                  <p v-if="versionManifest.version">
+                    <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.version') }}:</span>
+                    {{ versionManifest.version }}
+                  </p>
+                  <p v-if="versionManifest.description">
+                    <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.description') }}:</span>
+                    {{ versionManifest.description }}
+                  </p>
+                  <p v-if="versionManifest.homepage">
+                    <span class="font-semibold">{{ t('dashboard.sections.plugins.previewFields.homepage') }}:</span>
+                    {{ versionManifest.homepage }}
+                  </p>
+                  <details class="group rounded-lg border border-primary/10 bg-white/50 p-2 text-black dark:border-light/20 dark:bg-dark/40 dark:text-light">
+                    <summary class="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-wide text-black/70 transition group-open:text-black dark:text-light/70 dark:group-open:text-light">
+                      {{ t('dashboard.sections.plugins.manifestRaw') }}
+                    </summary>
+                    <pre class="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-black/5 p-2 font-mono text-[10px] text-black dark:bg-white/10 dark:text-light">
+                      {{ JSON.stringify(versionManifest, null, 2) }}
+                    </pre>
+                  </details>
+                </div>
+                <p v-else-if="versionForm.packageFile" class="mt-3 text-[11px]">
+                  {{ t('dashboard.sections.plugins.noManifest') }}
+                </p>
+                <p v-else class="mt-3 text-[11px] text-black/50 dark:text-light/60">
+                  {{ t('dashboard.sections.plugins.packageAwaiting') }}
+                </p>
+              </template>
+            </div>
+            <div class="border-t border-primary/10 pt-3 dark:border-light/20 md:border-l md:border-t-0 md:pl-4 md:pt-0">
+              <p class="font-semibold uppercase tracking-wide">
+                {{ t('dashboard.sections.plugins.readmePreview') }}
+              </p>
+              <p class="mt-1 text-[11px]">
+                {{ t('dashboard.sections.plugins.readmePreviewServer') }}
+              </p>
+              <p v-if="versionPreviewLoading" class="mt-2 text-[11px]">
+                {{ t('dashboard.sections.plugins.previewLoading') }}
+              </p>
+              <p v-else-if="versionPreviewError" class="mt-2 text-[11px] text-red-500">
+                {{ versionPreviewError }}
+              </p>
+              <div v-else-if="versionReadme" class="prose prose-sm mt-2 max-w-none dark:prose-invert">
+                <ContentRendererMarkdown :value="versionReadme" />
+              </div>
+              <p v-else-if="versionForm.packageFile" class="mt-2 text-[11px]">
+                {{ t('dashboard.sections.plugins.noReadme') }}
+              </p>
+              <p v-else class="mt-2 text-[11px] text-black/50 dark:text-light/60">
+                {{ t('dashboard.sections.plugins.packageAwaiting') }}
+              </p>
+            </div>
           </div>
-          <p v-else class="mt-2 text-[11px]">
-            {{ t('dashboard.sections.plugins.noReadme') }}
-          </p>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-3">
           <p
@@ -1018,8 +1289,8 @@ async function deletePluginVersion(plugin: DashboardPlugin, version: DashboardPl
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
           <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-dark/5 dark:border-light/20 dark:bg-light/10">
             <img
-              v-if="plugin.latestVersion?.iconUrl"
-              :src="plugin.latestVersion.iconUrl"
+              v-if="plugin.iconUrl"
+              :src="plugin.iconUrl"
               :alt="`${plugin.name} icon`"
               class="h-full w-full object-cover"
             >

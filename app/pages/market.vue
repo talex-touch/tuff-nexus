@@ -26,7 +26,6 @@ interface MarketplacePluginVersion {
   id: string
   channel: PluginChannel
   version: string
-  iconUrl: string
   createdAt: string
   signature: string
   packageUrl: string
@@ -44,6 +43,7 @@ interface MarketplacePluginSummary {
   installs: number
   isOfficial: boolean
   badges: string[]
+  iconUrl?: string | null
   author?: MarketplacePluginAuthor | null
   latestVersion?: MarketplacePluginVersion | null
 }
@@ -324,8 +324,8 @@ useSeoMeta({
               <div class="flex items-center gap-3">
                 <span class="flex size-12 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-dark/10 text-black dark:border-light/20 dark:bg-light/10 dark:text-light">
                   <img
-                    v-if="plugin.latestVersion?.iconUrl"
-                    :src="plugin.latestVersion.iconUrl"
+                    v-if="plugin.iconUrl"
+                    :src="plugin.iconUrl"
                     :alt="`${plugin.name} icon`"
                     class="h-full w-full object-cover"
                   >
