@@ -10,6 +10,8 @@ loadEnv({ path: `.env.${process.env.NODE_ENV ?? 'development'}` })
 loadEnv({ path: '.env.local', override: true })
 loadEnv({ path: `.env.${process.env.NODE_ENV ?? 'development'}.local`, override: true })
 
+const isDev = process.env.NODE_ENV !== 'production'
+
 export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
@@ -22,6 +24,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@clerk/nuxt',
     '@sentry/nuxt/module',
+    ...(isDev ? ['nitro-cloudflare-dev'] : []),
   ],
 
   sentry: {
@@ -107,6 +110,13 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'cloudflare-pages',
+    ...(isDev
+      ? {
+          cloudflareDev: {
+            environment: process.env.CLOUDFLARE_DEV_ENVIRONMENT,
+          },
+        }
+      : {}),
     esbuild: {
       options: {
         target: 'esnext',

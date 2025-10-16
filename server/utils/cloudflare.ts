@@ -1,11 +1,25 @@
 import type { H3Event } from 'h3'
 import { createError } from 'h3'
 
+let hasLoggedBindings = false
+
 /**
  * Safely read Cloudflare bindings when running inside a Worker/Pages function.
  */
 export function readCloudflareBindings(event: H3Event) {
-  return event.context.cloudflare?.env as TuffCloudflareBindings | undefined
+  const bindings = event.context.cloudflare?.env as TuffCloudflareBindings | undefined
+
+  if (!hasLoggedBindings) {
+    const keys = bindings ? Object.keys(bindings) : []
+    console.info('[cloudflare] 解析到的绑定', {
+      keys,
+      hasDB: Boolean(bindings?.DB),
+      hasR2: Boolean(bindings?.R2 ?? bindings?.ASSETS ?? bindings?.IMAGES ?? bindings?.PACKAGES),
+    })
+    hasLoggedBindings = true
+  }
+
+  return bindings
 }
 
 /**

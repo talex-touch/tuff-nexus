@@ -43,6 +43,7 @@ catalogs:
     '@cloudflare/workers-types': ^4.20241218.0
     eslint: ^9.31.0
     eslint-plugin-format: ^1.0.1
+    nitro-cloudflare-dev: ^0.2.2
     typescript: ^5.8.3
     vue-tsc: ^3.0.1
     webpack: ^5.101.3

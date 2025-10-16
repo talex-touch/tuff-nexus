@@ -12,6 +12,8 @@ const PLUGINS_TABLE = 'dashboard_plugins'
 const UPDATES_TABLE = 'dashboard_updates'
 
 let schemaInitialized = false
+let hasLoggedDashboardDb = false
+let hasLoggedDashboardFallback = false
 
 interface D1PluginRow {
   id: string
@@ -46,7 +48,20 @@ function getD1Database(event?: H3Event | null): D1Database | null {
     return null
 
   const bindings = readCloudflareBindings(event)
-  return bindings?.DB ?? null
+  const db = bindings?.DB ?? null
+
+  if (db) {
+    if (!hasLoggedDashboardDb) {
+      console.info('[dashboardStore] 已连接到 D1 绑定，所有仪表盘数据将写入数据库。')
+      hasLoggedDashboardDb = true
+    }
+  }
+  else if (!hasLoggedDashboardFallback) {
+    console.warn('[dashboardStore] 未检测到 D1 绑定，仪表盘逻辑将退回内存存储。')
+    hasLoggedDashboardFallback = true
+  }
+
+  return db
 }
 
 async function ensureDashboardSchema(db: D1Database) {

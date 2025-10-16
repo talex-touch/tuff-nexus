@@ -19,6 +19,8 @@ const MAX_PLUGINS_PER_USER = 10
 const SUBMISSION_COOLDOWN_MS = 5 * 60 * 1000
 
 let schemaInitialized = false
+let hasLoggedPluginsDb = false
+let hasLoggedPluginsFallback = false
 
 export type PluginChannel = 'SNAPSHOT' | 'BETA' | 'RELEASE'
 export type PluginStatus = 'draft' | 'pending' | 'approved' | 'rejected'
@@ -166,7 +168,20 @@ function getD1Database(event?: H3Event | null): D1Database | null {
     return null
 
   const bindings = readCloudflareBindings(event)
-  return bindings?.DB ?? null
+  const db = bindings?.DB ?? null
+
+  if (db) {
+    if (!hasLoggedPluginsDb) {
+      console.info('[pluginsStore] 已连接到 D1 绑定，插件数据将使用 Cloudflare D1。')
+      hasLoggedPluginsDb = true
+    }
+  }
+  else if (!hasLoggedPluginsFallback) {
+    console.warn('[pluginsStore] 未检测到 D1 绑定，插件数据仅存储在内存中。')
+    hasLoggedPluginsFallback = true
+  }
+
+  return db
 }
 
 async function ensurePluginSchema(db: D1Database) {

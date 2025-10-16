@@ -71,6 +71,9 @@ catalogs:
     eslint-plugin-format:
       specifier: ^1.0.1
       version: 1.0.1
+    nitro-cloudflare-dev:
+      specifier: ^0.2.2
+      version: 0.2.2
     typescript:
       specifier: ^5.8.3
       version: 5.9.2
@@ -194,6 +197,9 @@ importers:
       eslint-plugin-format:
         specifier: catalog:dev
         version: 1.0.1(eslint@9.34.0(jiti@2.5.1))
+      nitro-cloudflare-dev:
+        specifier: catalog:dev
+        version: 0.2.2
       nuxt:
         specifier: ^4.0.0
         version: 4.1.0(@parcel/watcher@2.5.1)(@types/node@24.3.0)(@vue/compiler-sfc@3.5.21)(db0@0.3.2)(eslint@9.34.0(jiti@2.5.1))(ioredis@5.7.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.4(@types/node@24.3.0)(jiti@2.5.1)(terser@5.44.0)(yaml@2.8.1))(vue-tsc@3.0.6(typescript@5.9.2))(yaml@2.8.1)
@@ -6675,6 +6681,9 @@ packages:
 
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+
+  nitro-cloudflare-dev@0.2.2:
+    resolution: {integrity: sha512-aZfNTVdgXPQeAmXW0Tw8hm3usAHr4qVG4Bg3WhHBGeZYuXr9OyT04Ztb+STkMzhyaXvfMHViAaPUPg06iAYqag==}
 
   nitropack@2.12.5:
     resolution: {integrity: sha512-KDTFhATOzqWHXFZkNlAH9J989Wibpl6s38eaYZj/Km2GbcUBLdcDxL4x7vd9pHWhD1Yk1u5oLh8+MsqJeQ7GMA==}
@@ -16736,6 +16745,12 @@ snapshots:
   natural-orderby@5.0.0: {}
 
   neo-async@2.6.2: {}
+
+  nitro-cloudflare-dev@0.2.2:
+    dependencies:
+      consola: 3.4.2
+      mlly: 1.8.0
+      pkg-types: 2.3.0
 
   nitropack@2.12.5:
     dependencies:

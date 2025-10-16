@@ -101,6 +101,8 @@ preview_bucket_name = "tuff-nexus-assets-preview"
 pnpm dev
 ```
 
+> 借助新增的 `nitro-cloudflare-dev` 模块，开发服务器会通过 Wrangler 注入 Cloudflare 的运行时绑定（含 D1/R2），因此本地也会直连远端数据库。首次运行若提示未登录，请执行 `npx wrangler login`。如需切换到特定 Pages 环境，可在启动前设置 `CLOUDFLARE_DEV_ENVIRONMENT=<env>`。
+
 ### 5.2 模拟 Cloudflare Pages
 ```bash
 pnpm preview:cf
@@ -166,6 +168,11 @@ pnpm preview:cf
    ```
    `NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY` 等非机密变量可使用 `npx wrangler pages project create-env` 或在 Dashboard 中直接填写。
 4. 部署后访问 `/sign-in` 与 `/sign-up` 可直接使用 Clerk 预置组件。普通访客可自由浏览产品与文档，已登录用户可通过头部导航进入强制登录的 `Dashboard` 页面，亦可快速查看账户或退出登录。
+
+## 11. Drizzle ORM 方案评估
+- **引入价值**：Drizzle 提供基于 TypeScript 的 schema 定义与类型安全查询，可减少手写 SQL 时的拼写错误，并提升编辑器提示体验。其 `drizzle-orm/d1` 适配器基于 SQLite 方言，已经在 Cloudflare 官方示例中使用，语法特性与当前 D1 功能保持一致。
+- **局限/成本**：现有 `pluginsStore` 与 `dashboardStore` 中包含大量多表查询、动态排序与事务逻辑，引入 Drizzle 需要为这些表补充 schema 与 relations，短期内迁移成本较高；另外需额外安装 `drizzle-orm` 与 `drizzle-kit`，并配置生成步骤。
+- **推荐做法**：可以先为新增的表或 API 采用 Drizzle，逐步抽离已有模块（例如先迁移 dashboard/update，再处理 plugins）；迁移时保持 D1 迁移脚本仍由 Wrangler 管理，Drizzle schema 作为类型安全层；后续若需要自动生成 SQL，可在 CI 中加入 `drizzle-kit generate` 校验。
 
 ---
 
