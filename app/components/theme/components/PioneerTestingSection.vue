@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TouchAurora from "./base/TouchAurora.vue";
+import TouchAurora from "../../tuff/background/TouchAurora.vue";
 import TouchButton from "./base/TouchButton.vue";
 </script>
 

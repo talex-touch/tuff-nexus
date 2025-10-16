@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import BetaIcon from './BetaIcon.vue'
 import Logo from './icon/Logo.vue'
-import TouchAurora from './theme/components/base/TouchAurora.vue'
+import TouchAurora from './tuff/background/TouchAurora.vue'
 
 const { t } = useI18n()
 

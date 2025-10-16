@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TouchRay from './TouchRay.vue'
+import TouchRay from '../../../tuff/background/TouchRay.vue'
 
 </script>
 
