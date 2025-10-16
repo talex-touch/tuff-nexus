@@ -163,6 +163,53 @@ interface PublishVersionInput {
   canModerate?: boolean
 }
 
+function sanitizeSerializable(value: unknown): unknown {
+  if (value == null)
+    return value
+
+  if (typeof Buffer !== 'undefined' && Buffer.isBuffer(value))
+    return (value as Buffer).toJSON()
+
+  if (ArrayBuffer.isView(value)) {
+    const view = value as { buffer: ArrayBuffer, byteOffset: number, byteLength: number }
+    return Array.from(new Uint8Array(view.buffer, view.byteOffset, view.byteLength))
+  }
+
+  if (value instanceof ArrayBuffer)
+    return Array.from(new Uint8Array(value))
+
+  if (Array.isArray(value))
+    return value.map(item => sanitizeSerializable(item))
+
+  if (typeof value === 'object') {
+    const proto = Object.getPrototypeOf(value)
+    if (proto === null || proto === Object.prototype) {
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([key, nested]) => [key, sanitizeSerializable(nested)]),
+      )
+    }
+  }
+
+  return value
+}
+
+function sanitizeManifest(manifest: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!manifest)
+    return null
+
+  const sanitized = sanitizeSerializable(manifest)
+  return sanitized && typeof sanitized === 'object'
+    ? sanitized as Record<string, unknown>
+    : null
+}
+
+function sanitizeVersion(version: DashboardPluginVersion): DashboardPluginVersion {
+  return {
+    ...version,
+    manifest: sanitizeManifest(version.manifest ?? undefined),
+  }
+}
+
 function getD1Database(event?: H3Event | null): D1Database | null {
   if (!event)
     return null
@@ -326,7 +373,7 @@ function mapPluginRow(row: D1PluginRow): DashboardPlugin {
 }
 
 function mapPluginVersionRow(row: D1PluginVersionRow): DashboardPluginVersion {
-  return {
+  return sanitizeVersion({
     id: row.id,
     pluginId: row.plugin_id,
     createdBy: row.created_by,
@@ -345,7 +392,7 @@ function mapPluginVersionRow(row: D1PluginVersionRow): DashboardPluginVersion {
     reviewedAt: row.reviewed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-  }
+  })
 }
 
 function sanitizeBadges(badges?: string[]): string[] {
@@ -512,6 +559,18 @@ async function writeCollection<T>(key: string, items: T[]) {
   await storage.setItem(key, items)
 }
 
+async function readStoredPluginVersions(): Promise<DashboardPluginVersion[]> {
+  const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+  return versions.map(version => sanitizeVersion({
+    ...version,
+    status: (version.status ?? 'pending') as PluginVersionStatus,
+  }))
+}
+
+async function writeStoredPluginVersions(versions: DashboardPluginVersion[]) {
+  await writeCollection(PLUGIN_VERSIONS_KEY, versions.map(sanitizeVersion))
+}
+
 async function countUserPluginsInDb(db: D1Database, userId: string) {
   const result = await db.prepare(`
     SELECT COUNT(*) as count
@@ -573,7 +632,7 @@ async function ensureSubmissionCooldown(event: H3Event, userId: string) {
     }
   }
   else {
-    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const versions = await readStoredPluginVersions()
     const latest = versions
       .filter(version => version.createdBy === userId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
@@ -688,10 +747,7 @@ export async function listPlugins(event: H3Event | undefined, options: PluginVis
   if (!options.includeVersions)
     return plugins
 
-  const storedVersions = (await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)).map(version => ({
-    ...version,
-    status: (version.status ?? 'pending') as PluginVersionStatus,
-  }))
+  const storedVersions = await readStoredPluginVersions()
   const byPlugin = new Map<string, DashboardPluginVersion[]>()
 
   for (const version of storedVersions) {
@@ -767,7 +823,7 @@ export async function getPluginById(event: H3Event | undefined, id: string, opti
   if (!options.includeVersions)
     return plugin
 
-  const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+  const versions = await readStoredPluginVersions()
   const pluginVersions = versions
     .filter(version => version.pluginId === id)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -1040,7 +1096,7 @@ export async function deletePlugin(event: H3Event, id: string) {
       await deleteImage(event, plugin.iconKey)
   }
   else {
-    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const versions = await readStoredPluginVersions()
     const remainingVersions = versions.filter(version => version.pluginId !== id)
 
     const orphaned = versions.filter(version => version.pluginId === id)
@@ -1049,7 +1105,7 @@ export async function deletePlugin(event: H3Event, id: string) {
       await deleteImage(event, version.iconKey)
     }
 
-    await writeCollection(PLUGIN_VERSIONS_KEY, remainingVersions)
+    await writeStoredPluginVersions(remainingVersions)
 
     const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
     const pluginToDelete = plugins.find(item => item.id === id)
@@ -1131,7 +1187,7 @@ export async function setPluginVersionStatus(event: H3Event, pluginId: string, v
     `).bind(status, reviewedAt, now, versionId).run()
   }
   else {
-    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const versions = await readStoredPluginVersions()
     const index = versions.findIndex(item => item.id === versionId)
     if (index === -1)
       throw createError({ statusCode: 404, statusMessage: 'Version not found.' })
@@ -1141,7 +1197,7 @@ export async function setPluginVersionStatus(event: H3Event, pluginId: string, v
       reviewedAt,
       updatedAt: now,
     }
-    await writeCollection(PLUGIN_VERSIONS_KEY, versions)
+    await writeStoredPluginVersions(versions)
   }
 
   if (db) {
@@ -1235,7 +1291,7 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
   const now = new Date().toISOString()
   const status: PluginVersionStatus = 'pending'
   const reviewedAt: string | null = null
-  const version: DashboardPluginVersion = {
+  const rawVersion: DashboardPluginVersion = {
     id: randomUUID(),
     pluginId: plugin.id,
     createdBy: input.createdBy,
@@ -1255,6 +1311,7 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     createdAt: now,
     updatedAt: now,
   }
+  const version = sanitizeVersion(rawVersion)
 
   const db = getD1Database(event)
 
@@ -1332,13 +1389,13 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     ).run()
   }
   else {
-    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const versions = await readStoredPluginVersions()
     if (versions.some(item => item.pluginId === plugin.id && item.version === input.version && item.channel === input.channel)) {
       throw createError({ statusCode: 400, statusMessage: 'This version and channel have already been published.' })
     }
 
-    versions.unshift(version)
-    await writeCollection(PLUGIN_VERSIONS_KEY, versions)
+    const updatedVersions = [version, ...versions]
+    await writeStoredPluginVersions(updatedVersions)
 
     const plugins = await readCollection<DashboardPlugin>(PLUGINS_KEY)
     const index = plugins.findIndex(item => item.id === plugin.id)
@@ -1417,9 +1474,9 @@ export async function deletePluginVersion(event: H3Event, pluginId: string, vers
     ).run()
   }
   else {
-    const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+    const versions = await readStoredPluginVersions()
     const remaining = versions.filter(item => item.id !== version.id)
-    await writeCollection(PLUGIN_VERSIONS_KEY, remaining)
+    await writeStoredPluginVersions(remaining)
 
     await deletePluginPackage(event, version.packageKey)
     await deleteImage(event, version.iconKey)
@@ -1479,7 +1536,7 @@ export async function findVersionByPackageKey(event: H3Event, packageKey: string
     }
   }
 
-  const versions = await readCollection<DashboardPluginVersion>(PLUGIN_VERSIONS_KEY)
+  const versions = await readStoredPluginVersions()
   const version = versions.find(item => item.packageKey === packageKey)
 
   if (!version)
