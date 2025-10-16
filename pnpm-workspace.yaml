@@ -3,6 +3,8 @@ packages: []
 catalog:
   '@clerk/nuxt': ^1.10.0
   '@floating-ui/vue': ^1.1.9
+  '@lobehub/icons': ^2.43.1
+  '@sentry/nuxt': ^10.20.0
   fighting-design: 0.25.1
   gsap: ^3.12.5
   jszip: ^3.10.1

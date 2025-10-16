@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import type { PluginCategoryId } from '~/utils/plugin-categories'
+import type {
+  FilterCategory,
+  MarketplacePluginDetail,
+  MarketplacePluginSummary,
+} from '~/types/marketplace'
 import { computed, reactive, ref } from 'vue'
+import MarketItem from '~/components/market/MarketItem.vue'
 import MarketSearch from '~/components/market/MarketSearch.vue'
-import { PLUGIN_CATEGORIES } from '~/utils/plugin-categories'
+import { useMarketCategories } from '~/composables/useMarketCategories'
+import { useMarketFormatters } from '~/composables/useMarketFormatters'
 
 definePageMeta({
   layout: 'marketplace',
@@ -14,47 +20,7 @@ definePageMeta({
 
 defineI18nRoute(false)
 
-const { t, locale } = useI18n()
-
-interface MarketplacePluginAuthor {
-  name: string
-  avatarColor?: string
-}
-
-type PluginChannel = 'SNAPSHOT' | 'BETA' | 'RELEASE'
-
-interface MarketplacePluginVersion {
-  id: string
-  channel: PluginChannel
-  version: string
-  createdAt: string
-  signature: string
-  packageUrl: string
-  packageSize?: number
-  changelog?: string | null
-  readmeMarkdown?: string | null
-}
-
-interface MarketplacePluginSummary {
-  id: string
-  slug: string
-  name: string
-  summary: string
-  category: string
-  installs: number
-  isOfficial: boolean
-  badges: string[]
-  iconUrl?: string | null
-  author?: MarketplacePluginAuthor | null
-  latestVersion?: MarketplacePluginVersion | null
-}
-
-interface MarketplacePluginDetail extends MarketplacePluginSummary {
-  readmeMarkdown?: string | null
-  versions?: MarketplacePluginVersion[]
-}
-
-type FilterCategory = PluginCategoryId | 'all'
+const { t } = useI18n()
 
 const filters = reactive({
   search: '',
@@ -72,71 +38,14 @@ const {
 } = await useAsyncData('market-plugins', () =>
   $fetch<{ plugins: MarketplacePluginSummary[] }>('/api/market/plugins'))
 
-const localeTag = computed(() => (locale.value === 'zh' ? 'zh-CN' : 'en-US'))
-
-const numberFormatter = computed(() => new Intl.NumberFormat(localeTag.value))
-const dateFormatter = computed(() => new Intl.DateTimeFormat(localeTag.value, { dateStyle: 'medium' }))
-
-const categoryOptions = computed(() => [
-  {
-    id: 'all' as const,
-    icon: 'i-carbon-view-all',
-    label: t('market.filters.all'),
-  },
-  ...PLUGIN_CATEGORIES.map(category => ({
-    ...category,
-    label: t(category.i18nKey),
-  })),
-])
-
-const categoryLabels = computed<Record<string, string>>(() => {
-  const map: Record<string, string> = {}
-  for (const option of categoryOptions.value) {
-    if (option.id === 'all')
-      continue
-    map[option.id] = option.label
-    map[option.id.toLowerCase()] = option.label
-    map[option.label] = option.label
-    map[option.label.toLowerCase()] = option.label
-  }
-  return map
-})
+const { resolveCategoryLabel, matchesCategory } = useMarketCategories()
+const { formatDate, formatInstalls, formatPackageSize } = useMarketFormatters()
 
 const allPlugins = computed(() => (pluginsPayload.value?.plugins ?? []).filter(plugin => plugin.latestVersion))
 
 const totalPlugins = computed(() => allPlugins.value.length)
 
 const normalizedSearch = computed(() => filters.search.trim().toLowerCase())
-
-function resolveCategoryLabel(category: string) {
-  const exact = categoryLabels.value[category]
-  if (exact)
-    return exact
-  const lower = categoryLabels.value[category.toLowerCase()]
-  if (lower)
-    return lower
-  return category
-}
-
-function matchesCategoryFilter(plugin: MarketplacePluginSummary) {
-  if (filters.category === 'all')
-    return true
-
-  const target = filters.category
-  if (plugin.category === target)
-    return true
-
-  const pluginLower = plugin.category.toLowerCase()
-  if (pluginLower === target)
-    return true
-
-  const desiredLabel = categoryLabels.value[target]
-  if (!desiredLabel)
-    return true
-
-  const pluginLabel = resolveCategoryLabel(plugin.category)
-  return pluginLabel === desiredLabel || pluginLabel.toLowerCase() === desiredLabel.toLowerCase()
-}
 
 async function openPluginDetail(plugin: MarketplacePluginSummary) {
   selectedSlug.value = plugin.slug
@@ -161,19 +70,11 @@ function closePluginDetail() {
   detailError.value = null
 }
 
-function formatPackageSize(bytes?: number) {
-  if (!bytes || Number.isNaN(bytes))
-    return t('market.detail.sizeUnknown', 'Size unknown')
-  if (bytes >= 1024 * 1024)
-    return `${(bytes / 1024 / 1024).toFixed(2)} MB`
-  return `${(bytes / 1024).toFixed(1)} KB`
-}
-
 const filteredPlugins = computed(() => {
   const query = normalizedSearch.value
 
   return allPlugins.value.filter((plugin) => {
-    if (!matchesCategoryFilter(plugin))
+    if (!matchesCategory(plugin.category, filters.category))
       return false
 
     if (!query.length)
@@ -211,19 +112,6 @@ const resultSummary = computed(() => {
 
   return t('market.results.filtered', { count, total })
 })
-
-function formatInstalls(count: number) {
-  return numberFormatter.value.format(count)
-}
-
-function formatDate(value?: string) {
-  if (!value)
-    return '—'
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime()))
-    return value
-  return dateFormatter.value.format(parsed)
-}
 
 const pageTitle = computed(() => `${t('nav.market')} · Tuff Nexus`)
 const pageDescription = computed(() => t('market.hero.subtitle'))
@@ -267,104 +155,14 @@ useSeoMeta({
       </div>
       <div
         v-else
-        class="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+        class="grid gap-4 md:grid-cols-1 xl:grid-cols-2"
       >
-        <article
+        <MarketItem
           v-for="plugin in filteredPlugins"
           :key="plugin.id"
-          class="group h-full flex flex-col justify-between border border-primary/10 rounded-3xl bg-white/90 p-6 shadow-sm transition dark:border-light/15 dark:bg-dark/30 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 dark:hover:shadow-light/10"
-        >
-          <div class="space-y-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="size-12 flex items-center justify-center overflow-hidden border border-primary/15 rounded-2xl bg-dark/10 text-black dark:border-light/20 dark:bg-light/10 dark:text-light">
-                  <img
-                    v-if="plugin.iconUrl"
-                    :src="plugin.iconUrl"
-                    :alt="`${plugin.name} icon`"
-                    class="h-full w-full object-cover"
-                  >
-                  <span v-else class="text-2xl font-semibold">
-                    {{ plugin.name.charAt(0) }}
-                  </span>
-                </span>
-                <div>
-                  <h3 class="text-lg text-black font-semibold dark:text-light">
-                    {{ plugin.name }}
-                  </h3>
-                  <p class="text-[11px] text-black/50 font-semibold tracking-[0.35em] uppercase dark:text-light/60">
-                    {{ resolveCategoryLabel(plugin.category) }}
-                  </p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 border border-primary/20 rounded-full bg-dark/5 px-3 py-1 text-[10px] text-black/80 font-semibold tracking-[0.35em] uppercase dark:border-light/20 dark:bg-light/10 dark:text-light/80">
-                <span class="i-carbon-badge text-sm" aria-hidden="true" />
-                <template v-if="plugin.isOfficial">
-                  {{ t('market.badges.official') }}
-                </template>
-                <template v-else-if="plugin.author">
-                  {{ plugin.author.name }}
-                </template>
-                <template v-else>
-                  {{ t('market.badges.community', 'Community') }}
-                </template>
-              </span>
-            </div>
-
-            <p class="line-clamp-3 text-sm text-black/70 leading-relaxed dark:text-light/80">
-              {{ plugin.summary }}
-            </p>
-
-            <div class="flex flex-wrap gap-2 text-xs text-black/60 dark:text-light/70">
-              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
-                <span class="i-carbon-calendar text-sm" aria-hidden="true" />
-                {{ t('dashboard.sections.plugins.updatedOn', { date: formatDate(plugin.latestVersion?.createdAt) }) }}
-              </span>
-              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
-                <span class="i-carbon-version text-sm" aria-hidden="true" />
-                <template v-if="plugin.latestVersion">
-                  v{{ plugin.latestVersion.version }}
-                </template>
-                <template v-else>
-                  —
-                </template>
-              </span>
-              <span
-                v-if="plugin.latestVersion"
-                class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80"
-              >
-                <span class="i-carbon-skill-level text-sm" aria-hidden="true" />
-                {{ plugin.latestVersion.channel }}
-              </span>
-              <span class="inline-flex items-center gap-1 rounded-full bg-dark/10 px-2 py-1 dark:bg-light/10 dark:text-light/80">
-                <span class="i-carbon-user-multiple text-sm" aria-hidden="true" />
-                {{ t('dashboard.sections.plugins.stats.installs', { count: formatInstalls(plugin.installs) }) }}
-              </span>
-            </div>
-
-            <div
-              v-if="plugin.badges.length"
-              class="flex flex-wrap gap-2"
-            >
-              <span
-                v-for="badge in plugin.badges"
-                :key="badge"
-                class="inline-flex items-center gap-1 border border-primary/15 rounded-full px-2 py-0.5 text-[10px] text-black/60 tracking-[0.35em] uppercase dark:border-light/20 dark:text-light/70"
-              >
-                <span class="i-carbon-tag text-xs" aria-hidden="true" />
-                {{ badge }}
-              </span>
-            </div>
-            <button
-              type="button"
-              class="inline-flex items-center gap-1 border border-primary/20 rounded-full px-3 py-1 text-[11px] text-black font-semibold tracking-[0.35em] uppercase transition dark:border-light/20 hover:border-primary/40 hover:bg-dark/10 dark:text-light dark:hover:bg-light/10"
-              @click="openPluginDetail(plugin)"
-            >
-              <span class="i-carbon-open-panel-top text-sm" aria-hidden="true" />
-              {{ t('market.actions.viewDetails') }}
-            </button>
-          </div>
-        </article>
+          :plugin="plugin"
+          @view-detail="openPluginDetail"
+        />
       </div>
     </div>
     <div
