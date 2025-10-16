@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PluginCategoryId } from '~/utils/plugin-categories'
 import { computed, reactive, ref } from 'vue'
+import MarketSearch from '~/components/market/MarketSearch.vue'
 import { PLUGIN_CATEGORIES } from '~/utils/plugin-categories'
 
 definePageMeta({
@@ -237,43 +238,11 @@ useSeoMeta({
 
 <template>
   <section class="relative mx-auto max-w-6xl w-full flex flex-col gap-8 px-24 py-20 lg:px-12 sm:px-6">
-    <div class="border border-primary/10 rounded-3xl bg-white/80 p-8 shadow-lg shadow-primary/10 backdrop-blur space-y-6 dark:border-light/15 dark:bg-dark/30 dark:shadow-light/10">
-      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <label class="w-full flex items-center gap-3 border border-primary/20 rounded-2xl bg-white/90 px-4 py-3 text-sm text-black/70 shadow-sm transition dark:border-light/20 focus-within:border-primary/40 dark:bg-dark/40 dark:text-light/80 focus-within:ring-2 focus-within:ring-primary/15">
-          <span class="i-carbon-search text-lg" aria-hidden="true" />
-          <input
-            v-model="filters.search"
-            type="search"
-            :placeholder="t('market.search.placeholder')"
-            :aria-label="t('market.search.label')"
-            class="w-full bg-transparent text-sm text-black outline-none dark:text-light"
-          >
-        </label>
-        <p class="text-xs text-black/50 font-semibold tracking-[0.35em] uppercase dark:text-light/60">
-          {{ resultSummary }}
-        </p>
-      </div>
-
-      <div class="flex flex-wrap gap-3">
-        <button
-          v-for="category in categoryOptions"
-          :key="category.id"
-          type="button"
-          class="inline-flex items-center gap-2 border rounded-full px-3 py-1.5 text-[11px] font-semibold tracking-[0.35em] uppercase transition focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 focus-visible:outline dark:focus-visible:outline-light"
-          :class="filters.category === category.id
-            ? 'border-primary bg-dark text-white shadow-primary/30 dark:border-light dark:bg-light dark:text-black'
-            : 'border-primary/15 bg-white/70 text-black hover:border-primary/30 hover:bg-white/90 hover:text-black/80 dark:border-light/20 dark:bg-dark/40 dark:text-light/80 dark:hover:border-light/30 dark:hover:bg-dark/30'"
-          @click="filters.category = category.id"
-        >
-          <span
-            v-if="category.icon"
-            class="text-base" :class="[category.icon]"
-            aria-hidden="true"
-          />
-          <span>{{ category.label }}</span>
-        </button>
-      </div>
-    </div>
+    <MarketSearch v-model:filter="filters.category" v-model="filters.search" class="w-full">
+      <template #result>
+        {{ resultSummary }}
+      </template>
+    </MarketSearch>
 
     <div
       v-if="pluginsPending"
