@@ -7,5 +7,5 @@ dist
 .env.local
 .idea/
 public/assets/fonts
-.data
+.data/
 .wrangler
