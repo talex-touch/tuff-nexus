@@ -1,23 +1,90 @@
-import { createError } from 'h3'
 import type { H3Event } from 'h3'
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
+import { createError } from 'h3'
 import { readCloudflareBindings } from './cloudflare'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const ALLOWED_TYPES = [
+  'image/*',
+]
 const ATTACHMENT_TYPES = [
   ...ALLOWED_TYPES,
   'application/pdf',
   'application/zip',
   'application/x-zip-compressed',
+  'application/x-7z-compressed',
+  'application/x-rar-compressed',
+  'application/x-tar',
+  'application/gzip',
+  'application/x-gzip',
+  'application/x-bzip2',
+  'application/x-bzip',
+  'application/x-xz',
+  'application/x-lzip',
   'application/octet-stream',
   'application/json',
   'text/plain',
   'text/markdown',
 ]
 
+const IMAGE_ALLOWED_EXTENSIONS = [
+  'jpg',
+  'jpeg',
+  'png',
+  'gif',
+  'webp',
+  'svg',
+  'ico',
+  'bmp',
+  'avif',
+  'heic',
+  'heif',
+  'tif',
+  'tiff',
+]
+
 export const RESOURCE_ALLOWED_TYPES = ATTACHMENT_TYPES
+export const RESOURCE_ALLOWED_EXTENSIONS = [
+  ...IMAGE_ALLOWED_EXTENSIONS,
+  'tpex',
+  'zip',
+  'rar',
+  '7z',
+  'gz',
+  'tgz',
+  'tar',
+  'bz',
+  'bz2',
+  'xz',
+  'lz',
+]
+
+const MIME_EXTENSION_MAP: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg',
+  'application/pdf': 'pdf',
+  'application/zip': 'zip',
+  'application/x-zip-compressed': 'zip',
+  'application/x-7z-compressed': '7z',
+  'application/x-rar-compressed': 'rar',
+  'application/x-tar': 'tar',
+  'application/gzip': 'gz',
+  'application/x-gzip': 'gz',
+  'application/x-bzip2': 'bz2',
+  'application/x-bzip': 'bz',
+  'application/x-xz': 'xz',
+  'application/x-lzip': 'lz',
+  'application/octet-stream': 'bin',
+  'application/json': 'json',
+  'text/plain': 'txt',
+  'text/markdown': 'md',
+}
+
+let hasLoggedImageStorageBinding = false
 
 // 内存存储（用于开发环境）
 const memoryStorage = new Map<string, { data: Buffer, contentType: string }>()
@@ -35,14 +102,59 @@ function getR2Bucket(event?: H3Event | null): R2Bucket | null {
     return null
 
   const bindings = readCloudflareBindings(event)
-  return bindings?.IMAGES ?? bindings?.R2 ?? bindings?.ASSETS ?? null
+  let bucket: R2Bucket | null = null
+  let bindingName: string | null = null
+
+  if (bindings?.IMAGES) {
+    bucket = bindings.IMAGES
+    bindingName = 'IMAGES'
+  }
+  else if (bindings?.R2) {
+    bucket = bindings.R2
+    bindingName = 'R2'
+  }
+  else if (bindings?.ASSETS) {
+    bucket = bindings.ASSETS
+    bindingName = 'ASSETS'
+  }
+
+  if (!hasLoggedImageStorageBinding) {
+    console.warn('[imageStorage] 存储绑定检测', {
+      usingR2: Boolean(bucket),
+      binding: bindingName,
+    })
+    hasLoggedImageStorageBinding = true
+  }
+
+  return bucket
 }
 
 /**
  * 验证文件类型和大小
  */
-function validateFile(file: File, allowedTypes: string[]): void {
-  if (!allowedTypes.includes(file.type)) {
+function matchesAllowedMime(type: string, allowedTypes: string[]): boolean {
+  const normalized = (type || '').toLowerCase()
+
+  return allowedTypes.some((allowed) => {
+    const value = allowed.toLowerCase()
+
+    if (value.endsWith('/*')) {
+      const prefix = value.slice(0, -1)
+      return normalized.startsWith(prefix)
+    }
+
+    return normalized === value
+  })
+}
+
+function validateFile(file: File, allowedTypes: string[], allowedExtensions: string[]): void {
+  const normalizedExtensions = allowedExtensions.map(ext => ext.toLowerCase())
+  const extension = sanitizeExtension(extractExtensionFromName(file.name))
+
+  const isMimeAllowed = matchesAllowedMime(file.type, allowedTypes)
+  const isExtensionAllowed = extension ? normalizedExtensions.includes(extension) : false
+
+  if (!(isMimeAllowed || isExtensionAllowed)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid file type.',
@@ -60,14 +172,32 @@ function validateFile(file: File, allowedTypes: string[]): void {
 /**
  * 生成文件扩展名
  */
-function getFileExtension(contentType: string): string {
-  const extensions: Record<string, string> = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/gif': 'gif',
-    'image/webp': 'webp',
-  }
-  return extensions[contentType] || 'jpg'
+function sanitizeExtension(extension?: string | null): string | null {
+  if (!extension)
+    return null
+
+  const normalized = extension.toLowerCase().replace(/[^a-z0-9]/g, '')
+  return normalized.length ? normalized : null
+}
+
+function extractExtensionFromName(name?: string | null): string | null {
+  if (!name)
+    return null
+
+  const match = name.toLowerCase().match(/\.([a-z0-9]+)$/)
+  return match ? sanitizeExtension(match[1]) : null
+}
+
+function getFileExtension(file: File): string {
+  const mapped = sanitizeExtension(MIME_EXTENSION_MAP[file.type])
+  if (mapped)
+    return mapped
+
+  const fromName = extractExtensionFromName(file.name)
+  if (fromName)
+    return fromName
+
+  return 'bin'
 }
 
 /**
@@ -92,13 +222,18 @@ async function uploadToR2(
 async function getFromR2(
   bucket: R2Bucket,
   key: string,
-): Promise<{ data: ArrayBuffer, contentType: string } | null> {
+): Promise<{ data: ArrayBuffer | Buffer, contentType: string } | null> {
   const object = await bucket.get(key)
   if (!object)
     return null
 
+  const arrayBuffer = await object.arrayBuffer()
+  const data = typeof Buffer !== 'undefined'
+    ? Buffer.from(arrayBuffer)
+    : arrayBuffer
+
   return {
-    data: await object.arrayBuffer(),
+    data,
     contentType: object.httpMetadata?.contentType || 'image/jpeg',
   }
 }
@@ -141,11 +276,14 @@ function deleteFromMemory(key: string): void {
 export async function uploadImage(
   event: H3Event,
   file: File,
-  options: { allowedTypes?: string[] } = {},
+  options: { allowedTypes?: string[], allowedExtensions?: string[] } = {},
 ): Promise<UploadResult> {
-  validateFile(file, options.allowedTypes ?? ALLOWED_TYPES)
+  const allowedTypes = options.allowedTypes ?? ALLOWED_TYPES
+  const allowedExtensions = options.allowedExtensions ?? IMAGE_ALLOWED_EXTENSIONS
 
-  const ext = getFileExtension(file.type)
+  validateFile(file, allowedTypes, allowedExtensions)
+
+  const ext = getFileExtension(file)
   const key = `${randomUUID()}.${ext}`
 
   const bucket = getR2Bucket(event)
@@ -182,7 +320,9 @@ export async function getImage(
     const result = await getFromR2(bucket, key)
     return result
       ? {
-          data: result.data,
+          data: typeof Buffer !== 'undefined' && result.data instanceof ArrayBuffer
+            ? Buffer.from(result.data)
+            : result.data,
           contentType: result.contentType,
         }
       : null

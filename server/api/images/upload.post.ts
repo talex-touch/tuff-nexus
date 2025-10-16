@@ -1,6 +1,6 @@
 import { createError, readFormData } from 'h3'
 import { requireAdmin } from '../../utils/auth'
-import { uploadImage, RESOURCE_ALLOWED_TYPES } from '../../utils/imageStorage'
+import { RESOURCE_ALLOWED_EXTENSIONS, RESOURCE_ALLOWED_TYPES, uploadImage } from '../../utils/imageStorage'
 
 const isFile = (value: unknown): value is File => typeof File !== 'undefined' && value instanceof File
 
@@ -18,7 +18,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const result = await uploadImage(event, file, { allowedTypes: RESOURCE_ALLOWED_TYPES })
+  const result = await uploadImage(event, file, {
+    allowedTypes: RESOURCE_ALLOWED_TYPES,
+    allowedExtensions: RESOURCE_ALLOWED_EXTENSIONS,
+  })
 
   return {
     success: true,

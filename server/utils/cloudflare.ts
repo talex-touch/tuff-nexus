@@ -10,12 +10,6 @@ export function readCloudflareBindings(event: H3Event) {
   const bindings = event.context.cloudflare?.env as TuffCloudflareBindings | undefined
 
   if (!hasLoggedBindings) {
-    const keys = bindings ? Object.keys(bindings) : []
-    console.info('[cloudflare] 解析到的绑定', {
-      keys,
-      hasDB: Boolean(bindings?.DB),
-      hasR2: Boolean(bindings?.R2 ?? bindings?.ASSETS ?? bindings?.IMAGES ?? bindings?.PACKAGES),
-    })
     hasLoggedBindings = true
   }
 

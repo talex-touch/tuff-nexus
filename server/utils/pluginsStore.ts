@@ -219,7 +219,6 @@ function getD1Database(event?: H3Event | null): D1Database | null {
 
   if (db) {
     if (!hasLoggedPluginsDb) {
-      console.info('[pluginsStore] 已连接到 D1 绑定，插件数据将使用 Cloudflare D1。')
       hasLoggedPluginsDb = true
     }
   }
