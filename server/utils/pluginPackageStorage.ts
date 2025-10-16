@@ -1,8 +1,8 @@
 import type { R2Bucket } from '@cloudflare/workers-types'
 import type { H3Event } from 'h3'
-import { createError } from 'h3'
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
+import { createError } from 'h3'
 import { readCloudflareBindings } from './cloudflare'
 
 const MAX_PACKAGE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -52,17 +52,18 @@ function ensureTpexFile(file: File) {
 export async function uploadPluginPackage(
   event: H3Event,
   file: File,
-  buffer?: Buffer,
+  arrayBuffer?: ArrayBuffer,
 ): Promise<UploadResult> {
   ensureTpexFile(file)
 
-  const pkgBuffer = buffer ?? Buffer.from(await file.arrayBuffer())
+  const resolvedArrayBuffer = arrayBuffer ?? await file.arrayBuffer()
+  const pkgBytes = new Uint8Array(resolvedArrayBuffer)
   const contentType = file.type || DEFAULT_CONTENT_TYPE
   const key = `${randomUUID()}.tpex`
   const bucket = getPackageBucket(event)
 
   if (bucket) {
-    await bucket.put(key, pkgBuffer, {
+    await bucket.put(key, pkgBytes, {
       httpMetadata: {
         contentType,
       },
@@ -70,7 +71,7 @@ export async function uploadPluginPackage(
   }
   else {
     memoryStorage.set(key, {
-      data: pkgBuffer,
+      data: Buffer.from(pkgBytes),
       contentType,
     })
   }
@@ -78,7 +79,7 @@ export async function uploadPluginPackage(
   return {
     key,
     url: `/api/plugins/assets/${key}`,
-    size: pkgBuffer.length,
+    size: pkgBytes.byteLength,
     contentType,
   }
 }

@@ -145,7 +145,7 @@ useSeoMeta({
         v-if="!hasPlugins"
         class="border border-primary/10 rounded-3xl bg-white/80 px-6 py-12 text-center text-sm text-black/70 shadow-sm dark:border-light/15 dark:bg-dark/30 dark:text-light/80"
       >
-        {{ t('market.r esults.none') }}
+        {{ t('market.results.none') }}
       </div>
       <div
         v-else-if="!hasResults"

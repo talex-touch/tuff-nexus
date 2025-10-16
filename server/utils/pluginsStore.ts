@@ -1,9 +1,9 @@
 import type { D1Database } from '@cloudflare/workers-types'
 import type { H3Event } from 'h3'
-import { useStorage } from '#imports'
-import { createError } from 'h3'
 import { Buffer } from 'node:buffer'
 import { createHash, randomUUID } from 'node:crypto'
+import { useStorage } from '#imports'
+import { createError } from 'h3'
 import { isPluginCategoryId } from '~/utils/plugin-categories'
 import { readCloudflareBindings } from './cloudflare'
 import { deleteImage, uploadImage } from './imageStorage'
@@ -299,7 +299,7 @@ async function ensurePluginSchema(db: D1Database) {
   await addColumnIfMissing('owner_org_id', 'owner_org_id TEXT')
   await addColumnIfMissing('latest_version_id', 'latest_version_id TEXT')
   await addColumnIfMissing('slug', 'slug TEXT')
-  await addColumnIfMissing('status', "status TEXT NOT NULL DEFAULT 'draft'")
+  await addColumnIfMissing('status', 'status TEXT NOT NULL DEFAULT \'draft\'')
   await addColumnIfMissing('readme_markdown', 'readme_markdown TEXT')
   await addColumnIfMissing('icon_key', 'icon_key TEXT')
   await addColumnIfMissing('icon_url', 'icon_url TEXT')
@@ -315,7 +315,7 @@ async function ensurePluginSchema(db: D1Database) {
   }
 
   await addVersionColumnIfMissing('notes', 'notes TEXT')
-  await addVersionColumnIfMissing('status', "status TEXT NOT NULL DEFAULT 'pending'")
+  await addVersionColumnIfMissing('status', 'status TEXT NOT NULL DEFAULT \'pending\'')
   await addVersionColumnIfMissing('reviewed_at', 'reviewed_at TEXT')
 
   schemaInitialized = true
@@ -1272,7 +1272,8 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
 
   await ensureSubmissionCooldown(event, input.createdBy)
 
-  const packageBuffer = Buffer.from(await input.packageFile.arrayBuffer())
+  const packageArrayBuffer = await input.packageFile.arrayBuffer()
+  const packageBuffer = Buffer.from(packageArrayBuffer)
   const signature = createHash('sha256').update(packageBuffer).digest('hex')
 
   const metadata = await extractTpexMetadata(packageBuffer)
@@ -1285,7 +1286,7 @@ export async function publishPluginVersion(event: H3Event, input: PublishVersion
     iconUrl = iconUpload.url
   }
 
-  const packageResult = await uploadPluginPackage(event, input.packageFile, packageBuffer)
+  const packageResult = await uploadPluginPackage(event, input.packageFile, packageArrayBuffer)
 
   const now = new Date().toISOString()
   const status: PluginVersionStatus = 'pending'
