@@ -119,8 +119,11 @@ const socialLinks = computed(() => [
               <NuxtLink to="/privacy" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
                 {{ t('landing.footer.privacy') }}
               </NuxtLink>
-              <NuxtLink to="/terms" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
-                {{ t('landing.footer.terms') }}
+              <NuxtLink to="/license" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
+                Tuff
+              </NuxtLink>
+              <NuxtLink to="/protocol" class="text-black/60 no-underline transition-colors dark:text-white/60 hover:op-70">
+                Tuff
               </NuxtLink>
             </div>
           </div>
