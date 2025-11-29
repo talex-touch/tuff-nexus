@@ -35,7 +35,7 @@ function handleSubmit(event: Event) {
     id="download"
     :sticky="pioneer.eyebrow"
     section-class="flex flex-col justify-center pb-32 pt-24"
-    container-class="max-w-5xl w-full"
+    container-class="max-w-6xl w-full"
     :reveal-options="{
       from: {
         opacity: 0,
@@ -44,19 +44,19 @@ function handleSubmit(event: Event) {
       },
     }"
   >
-    <div class="overflow-hidden rounded-[32px] border border-white/10 bg-[#06070c]/95 px-8 py-16 text-center shadow-[0_28px_110px_rgba(0,0,0,0.5)] sm:px-12">
-      <div class="mx-auto flex max-w-2xl flex-col items-center gap-6">
+    <div class="overflow-hidden rounded-[32px] border border-white/10 bg-[#06070c]/95 px-8 py-16 text-center shadow-[0_28px_110px_rgba(0,0,0,0.5)] sm:px-12 lg:px-16 lg:py-20">
+      <div class="mx-auto flex max-w-4xl flex-col items-center gap-6">
         <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
           {{ pioneer.eyebrow }}
         </span>
         <h2 class="text-3xl font-semibold text-white sm:text-4xl">
           {{ pioneer.headline }}
         </h2>
-        <p class="text-base text-white/70">
+        <p class="text-base text-white/70 sm:text-lg">
           {{ pioneer.subheadline }}
         </p>
         <form
-          class="flex w-full max-w-md flex-col gap-3 sm:flex-row"
+          class="flex w-full max-w-xl flex-col gap-3 sm:flex-row"
           @submit="handleSubmit"
         >
           <input

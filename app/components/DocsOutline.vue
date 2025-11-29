@@ -18,12 +18,60 @@ const activeHash = ref('')
 const headingElements = ref<Record<string, HTMLElement>>({})
 const SCROLL_OFFSET = 120
 
+// Marker state
+const markerTop = ref(0)
+const markerHeight = ref(0)
+const hasActive = ref(false)
+const navRef = ref<HTMLElement | null>(null)
+
 function setActiveHash(hash?: string | null) {
   if (!hash) {
     activeHash.value = ''
     return
   }
   activeHash.value = hash.replace(/^#/, '')
+}
+
+function updateMarker() {
+  if (!navRef.value || !activeHash.value) {
+    hasActive.value = false
+    return
+  }
+
+  const activeLink = navRef.value.querySelector(`a[data-id="${activeHash.value}"]`) as HTMLElement
+  if (!activeLink) {
+    hasActive.value = false
+    return
+  }
+
+  hasActive.value = true
+  markerTop.value = activeLink.offsetTop + (activeLink.offsetHeight - 16) / 2 // Center 16px height marker or adjust
+  // Actually, let's match the link height or a fixed small height
+  // Design: 4px height rounded pill or full height line?
+  // The template used h-4 w-1 before.
+  // Let's use a dynamic height matching the link content or fixed.
+  // Template has `h-4` in previous design.
+  // Let's make it cover the text height roughly or be a small pill.
+  // Let's try to match the link's vertical center.
+  
+  // Let's use a fixed height marker like 20px or match the link height.
+  // The template has `height: ${markerHeight}px`.
+  // Let's set markerHeight to a fixed value like 16px (h-4) and center it.
+  markerHeight.value = 16
+  markerTop.value = activeLink.offsetTop + (activeLink.offsetHeight - 16) / 2
+}
+
+function scrollToHeading(id: string) {
+  const element = document.getElementById(id)
+  if (element) {
+    const top = element.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET
+    window.scrollTo({
+      top,
+      behavior: 'smooth',
+    })
+    history.replaceState(null, '', `#${id}`)
+    setActiveHash(`#${id}`)
+  }
 }
 
 function refreshHeadingElements() {
@@ -67,6 +115,7 @@ if (import.meta.client) {
     nextTick(() => {
       refreshHeadingElements()
       updateActiveFromScroll()
+      updateMarker()
     })
   })
   useEventListener(window, 'hashchange', () => {
@@ -83,6 +132,7 @@ if (import.meta.client) {
   useEventListener(window, 'resize', () => {
     refreshHeadingElements()
     updateActiveFromScroll()
+    updateMarker()
   })
 }
 
@@ -117,10 +167,15 @@ watch(
     nextTick(() => {
       refreshHeadingElements()
       updateActiveFromScroll()
+      updateMarker()
     })
   },
   { immediate: true },
 )
+
+watch(activeHash, () => {
+  nextTick(updateMarker)
+})
 </script>
 
 <template>
@@ -135,26 +190,35 @@ watch(
     </div>
 
     <div v-if="hasOutline" class="relative flex-1">
-      <div class="absolute inset-y-2 left-2 w-px bg-dark/10 dark:bg-light/15" />
-      <nav class="flex flex-col gap-1 pl-5">
+      <!-- Track line -->
+      <div class="absolute inset-y-2 left-2 w-px bg-dark/5 dark:bg-light/10" />
+      
+      <!-- Sliding Marker -->
+      <div
+        class="absolute left-2 w-0.5 rounded-full bg-primary transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)]"
+        :style="{
+          top: `${markerTop}px`,
+          height: `${markerHeight}px`,
+          opacity: hasActive ? 1 : 0
+        }"
+      />
+
+      <nav ref="navRef" class="flex flex-col gap-1 pl-5 relative">
         <NuxtLink
           v-for="entry in outlineEntries"
           :key="entry.id"
           :to="`#${entry.id}`"
           replace
-          class="group relative flex items-center gap-2 rounded-xl px-2 py-2 text-sm leading-snug no-underline transition"
+          class="group relative flex items-center gap-2 rounded-md px-2 py-1.5 text-sm leading-snug no-underline transition-colors duration-200"
           :style="{ marginLeft: `${entry.indent * 12}px` }"
           :class="[
             activeHash === entry.id
-              ? 'bg-primary/10 text-black font-semibold dark:bg-primary/20 dark:text-light'
-              : 'text-black/70 hover:bg-dark/5 hover:text-black dark:text-light/70 dark:hover:bg-light/5 dark:hover:text-light',
+              ? 'text-primary font-medium'
+              : 'text-black/60 hover:text-black dark:text-light/60 dark:hover:text-light',
           ]"
+          :data-id="entry.id"
+          @click.prevent="scrollToHeading(entry.id)"
         >
-          <span
-            class="absolute left-[-14px] h-4 w-1 rounded-full bg-primary transition-all duration-200 ease-out group-hover:opacity-60"
-            :class="activeHash === entry.id ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'"
-          />
-          <span class="i-heroicons-bolt-solid text-[10px] text-black/30 transition dark:text-light/30 group-hover:text-black/50 dark:group-hover:text-light/60" />
           <span class="line-clamp-2">{{ entry.text }}</span>
         </NuxtLink>
       </nav>

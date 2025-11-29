@@ -11,8 +11,8 @@ const localePath = useLocalePath()
 const SUPPORTED_LOCALES = ['en', 'zh']
 
 const docLabels = computed<Record<string, string>>(() => ({
-  '/docs/documents/start': t('docsNav.start'),
-  '/docs/documents/start.zh': t('docsNav.start'),
+  '/docs/guide/start': t('docsNav.start'),
+  '/docs/guide/start.zh': t('docsNav.start'),
 }))
 
 function stripLocalePrefix(path: string | null | undefined) {
@@ -137,7 +137,7 @@ watch(
 </script>
 
 <template>
-  <nav class="flex flex-col gap-3">
+  <nav class="flex flex-col gap-1">
     <template v-if="pending">
       <div v-for="index in 6" :key="index" class="h-8 animate-pulse rounded-md bg-gray-100 dark:bg-gray-800" />
     </template>
@@ -153,7 +153,6 @@ watch(
         :active="isSectionExpanded(section)"
         :link="linkTarget(section) || undefined"
         :list="section.children?.length || 0"
-        class="overflow-hidden"
         @click="toggleSection(section)"
       >
         <template #header>
@@ -166,10 +165,10 @@ watch(
           <NuxtLink
             v-if="linkTarget(child)"
             :to="localePath(linkTarget(child)!)"
-            class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm no-underline transition"
+            class="group/link flex items-center gap-2 border-l border-transparent px-4 py-1.5 text-sm no-underline transition-colors"
             :class="isLinkActive(linkTarget(child) || child.path || '')
-              ? 'bg-dark/5 text-black font-semibold dark:bg-light/10 dark:text-light'
-              : 'text-black/70 hover:bg-dark/5 dark:text-light/70 dark:hover:bg-light/10'"
+              ? 'border-primary text-primary font-medium'
+              : 'text-black/60 hover:border-black/10 hover:text-black dark:text-white/60 dark:hover:border-white/10 dark:hover:text-white'"
           >
             <span class="truncate">{{ itemTitle(child.title, child.path ?? linkTarget(child) ?? undefined) }}</span>
           </NuxtLink>

@@ -259,17 +259,17 @@ onBeforeUnmount(() => {
     >
       <ContentRenderer
         :value="doc"
-        class="docs-prose max-w-none prose prose-neutral dark:prose-invert"
+        class="docs-prose markdown-body max-w-none prose prose-neutral dark:prose-invert"
       />
       <div
         v-if="githubEditUrl || formattedLastUpdated"
-        class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dark/10 bg-white/80 px-5 py-4 text-sm text-black/70 dark:border-light/10 dark:bg-white/5 dark:text-light/70"
+        class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-dark/5 pt-6 text-sm text-black/40 dark:border-light/5 dark:text-light/40"
       >
-        <div v-if="formattedLastUpdated" class="flex items-center gap-2">
-          <span class="i-carbon-time text-base" />
+        <div v-if="formattedLastUpdated" class="flex items-center gap-1.5">
+          <span class="i-carbon-time" />
           <span>
             {{ t('docs.lastUpdatedLabel') }}
-            <strong class="font-semibold text-black dark:text-light">{{ formattedLastUpdated }}</strong>
+            <span class="text-black/70 dark:text-light/70">{{ formattedLastUpdated }}</span>
           </span>
         </div>
         <NuxtLink
@@ -277,41 +277,41 @@ onBeforeUnmount(() => {
           :href="githubEditUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 rounded-full border border-primary/40 px-3 py-2 text-sm font-medium text-primary no-underline transition hover:border-primary hover:bg-primary/10 dark:border-primary/60 dark:text-primary-200 dark:hover:border-primary-200 dark:hover:bg-primary/15"
+          class="flex items-center gap-1.5 transition-colors hover:text-primary"
         >
-          <span class="i-carbon-logo-github text-base" />
+          <span class="i-carbon-logo-github" />
           {{ t('docs.editOnGitHub') }}
         </NuxtLink>
       </div>
 
       <div v-if="pagerPrevPath || pagerNextPath" class="space-y-4">
-        <div v-if="docPager.sectionTitle" class="text-xs uppercase tracking-[0.2em] text-black/40 dark:text-light/40">
+        <div v-if="docPager.sectionTitle" class="text-xs text-black/40 tracking-[0.2em] uppercase dark:text-light/40">
           {{ docPager.sectionTitle }}
         </div>
         <div class="grid gap-4 lg:grid-cols-2">
           <NuxtLink
             v-if="pagerPrevPath"
             :to="localePath(pagerPrevPath)"
-            class="group flex flex-col gap-2 rounded-2xl border border-dark/10 px-5 py-4 no-underline transition hover:border-dark/20 hover:bg-dark/5 dark:border-light/10 dark:hover:border-light/20 dark:hover:bg-light/5"
+            class="group flex flex-col gap-2 border border-dark/10 rounded-2xl px-5 py-4 no-underline transition dark:border-light/10 hover:border-dark/20 hover:bg-dark/5 dark:hover:border-light/20 dark:hover:bg-light/5"
           >
-            <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-black/40 group-hover:text-primary dark:text-light/40 dark:group-hover:text-primary-200">
+            <span class="dark:group-hover:text-primary-200 flex items-center gap-2 text-xs text-black/40 font-medium tracking-[0.2em] uppercase dark:text-light/40 group-hover:text-primary">
               <span class="i-carbon-arrow-left text-base" />
               {{ t('docs.previousChapter') }}
             </span>
-            <span class="text-base font-semibold text-black transition group-hover:text-primary dark:text-light dark:group-hover:text-primary-200">
+            <span class="dark:group-hover:text-primary-200 text-base text-black font-semibold transition dark:text-light group-hover:text-primary">
               {{ pagerPrevTitle }}
             </span>
           </NuxtLink>
           <NuxtLink
             v-if="pagerNextPath"
             :to="localePath(pagerNextPath)"
-            class="group flex flex-col gap-2 rounded-2xl border border-dark/10 px-5 py-4 no-underline transition hover:border-primary/30 hover:bg-primary/5 dark:border-light/10 dark:hover:border-primary/40 dark:hover:bg-primary/10"
+            class="group flex flex-col gap-2 border border-dark/10 rounded-2xl px-5 py-4 no-underline transition dark:border-light/10 hover:border-primary/30 hover:bg-primary/5 dark:hover:border-primary/40 dark:hover:bg-primary/10"
           >
-            <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-black/40 group-hover:text-primary dark:text-light/40 dark:group-hover:text-primary-200">
+            <span class="dark:group-hover:text-primary-200 flex items-center gap-2 text-xs text-black/40 font-medium tracking-[0.2em] uppercase dark:text-light/40 group-hover:text-primary">
               {{ t('docs.nextChapter') }}
               <span class="i-carbon-arrow-right text-base" />
             </span>
-            <span class="text-base font-semibold text-black transition group-hover:text-primary dark:text-light dark:group-hover:text-primary-200">
+            <span class="dark:group-hover:text-primary-200 text-base text-black font-semibold transition dark:text-light group-hover:text-primary">
               {{ pagerNextTitle }}
             </span>
           </NuxtLink>
@@ -343,33 +343,118 @@ onBeforeUnmount(() => {
   </div>
 </template>
 
+<style src="../../components/docs/github-markdown.css" />
+
 <style scoped>
-:deep(.docs-prose h1) {
+/* :deep(.docs-prose h1) {
   font-size: 2.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
 }
 
 :deep(.docs-prose h2) {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin-top: 2.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+:deep(.dark .docs-prose h2) {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.docs-prose h3) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
   margin-bottom: 1rem;
 }
 
 :deep(.docs-prose p),
 :deep(.docs-prose ul),
 :deep(.docs-prose ol) {
-  line-height: 1.75;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+:deep(.dark .docs-prose p),
+:deep(.dark .docs-prose ul),
+:deep(.dark .docs-prose ol) {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 :deep(.docs-prose code) {
-  border-radius: 0.4rem;
-  padding: 0.2rem 0.4rem;
-  background-color: rgba(18, 18, 18, 0.06);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  border-radius: 0.375rem;
+  padding: 0.2rem 0.3rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #eb5757;
 }
 
 :deep(.dark .docs-prose code) {
-  background-color: rgba(250, 250, 250, 0.08);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ff7b72;
 }
+
+:deep(.docs-prose pre) {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: #1e1e1e !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+:deep(.dark .docs-prose pre) {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #0d1117 !important;
+}
+
+:deep(.docs-prose pre code) {
+  background-color: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+:deep(.docs-prose blockquote) {
+  border-left: 4px solid var(--color-primary, #3b82f6);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+:deep(.dark .docs-prose blockquote) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:deep(.docs-prose ul) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+:deep(.docs-prose ol) {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+:deep(.docs-prose a) {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+:deep(.docs-prose a:hover) {
+  border-bottom-color: currentColor;
+} */
 </style>

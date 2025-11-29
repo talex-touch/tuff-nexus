@@ -10,13 +10,22 @@ const props = withDefaults(defineProps<Props>(), {
   list: 0,
 })
 
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
+
 const linkable = computed(() => props.list <= 0)
 </script>
 
 <template>
   <div class="DocSection flex flex-col">
-    <div class="DocSection-Header w-full flex cursor-pointer items-center justify-between px-4 py-2">
-      <span class="!text-black !font-medium !dark:text-white">
+    <button
+      type="button"
+      class="DocSection-Header group w-full flex cursor-pointer items-center justify-between py-2.5 text-sm font-medium transition-colors"
+      :class="active ? 'text-black dark:text-white' : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'"
+      @click="emit('click')"
+    >
+      <span class="truncate pl-1">
         <slot v-if="!linkable" name="header" />
         <NuxtLink v-else class="text-inherit no-underline" :to="link">
           <slot name="header" />
@@ -25,32 +34,21 @@ const linkable = computed(() => props.list <= 0)
 
       <span
         v-if="!linkable"
-        class="i-carbon-chevron-down text-base transition-transform duration-200"
-        :class="active ? 'rotate-180 text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
+        class="i-carbon-chevron-right text-[10px] transition-transform duration-200"
+        :class="active ? 'rotate-90 opacity-100' : 'opacity-40 group-hover:opacity-100'"
       />
-
-      <span
-        v-else
-        class="i-carbon-arrow-up-right text-base"
-        :class="active ? 'text-black dark:text-light' : 'text-black/40 dark:text-light/40'"
-      />
-    </div>
-    <div class="DocSection-Main">
-      <transition
-        enter-active-class="overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
-        enter-from-class="max-h-0 opacity-0"
-        enter-to-class="max-h-[480px] opacity-100"
-        leave-active-class="overflow-hidden transition-[max-height,opacity] duration-150 ease-in"
-        leave-from-class="max-h-[480px] opacity-100"
-        leave-to-class="max-h-0 opacity-0"
-      >
-        <ul
-          v-if="active && list > 0"
-          class="m-0 flex flex-col list-none gap-1 px-2 py-0"
-        >
+    </button>
+    
+    <div
+      class="grid transition-[grid-template-rows] duration-300 ease-out"
+      :style="{ gridTemplateRows: active && list > 0 ? '1fr' : '0fr' }"
+    >
+      <div class="overflow-hidden">
+        <ul class="m-0 flex flex-col list-none gap-0.5 pb-2 pl-3">
           <slot />
         </ul>
-      </transition>
+      </div>
     </div>
   </div>
 </template>
+

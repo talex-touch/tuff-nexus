@@ -2,7 +2,7 @@
 const { t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
-const target = computed(() => localePath('/docs/documents/start'))
+const target = computed(() => localePath('/docs/guide/start'))
 
 if (import.meta.server) {
   await navigateTo(target.value, { redirectCode: 302 })

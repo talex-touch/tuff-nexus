@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
     <div class="relative flex items-center gap-[1.5] sm:ml-auto">
       <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
       <LanguageToggle />
-      <div class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
+      <div v-if="props.showDarkToggle" class="mx-2 block h-6 w-[1px] bg-black/10 dark:bg-white/10" />
       <DarkToggle
         v-if="props.showDarkToggle"
       />
